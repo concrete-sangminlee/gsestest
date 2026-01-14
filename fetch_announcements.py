@@ -268,6 +268,12 @@ def main():
     processed_bbsidx = state['processed_bbsidx']
     is_initialized = state['initialized']
     
+    print(f"📊 State 상태:")
+    print(f"   - 초기화 여부: {is_initialized}")
+    print(f"   - 처리한 공지사항 수: {len(processed_bbsidx)}")
+    if state['last_updated']:
+        print(f"   - 마지막 업데이트: {state['last_updated']}")
+    
     # --init 옵션: 기준점만 저장
     if args.init:
         if announcements:
@@ -291,7 +297,7 @@ def main():
                 processed_bbsidx.add(latest_bbsidx)
                 save_state(processed_bbsidx, initialized=True)
                 print("ℹ️  최초 실행: 기준점만 저장하고 알림은 보내지 않습니다 (스팸 방지)")
-                print(f"   기준점: bbsidx={latest_bbsidx}")
+                print(f"   기준점: bbsidx={latest_bbsidx} ({announcements[0]['title'][:50]}...)")
                 print("   다음 실행부터 새 공지사항이 있으면 알림을 보냅니다.")
                 print("   최초 실행에서도 알림을 받으려면 --send-on-first-run 옵션을 사용하세요.")
                 return
