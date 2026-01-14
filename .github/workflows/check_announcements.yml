@@ -1,0 +1,41 @@
+name: GSES 공지사항 확인 및 Slack 알림
+
+on:
+  schedule:
+    # 매시간 정각에 실행 (UTC 기준)
+    # 한국 시간으로 오전 9시부터 오후 6시까지 매시간 확인하려면:
+    # - cron: '0 0-9 * * *' (UTC 0시~9시 = KST 9시~18시)
+    - cron: '0 * * * *'  # 매시간 정각
+  workflow_dispatch:  # 수동 실행도 가능하도록 설정
+
+jobs:
+  check_announcements:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+      
+      - name: Python 설정
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: 의존성 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: 공지사항 확인 및 Slack 알림
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python fetch_announcements.py
+      
+      - name: 처리된 공지사항 저장 (선택사항)
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: processed-announcements
+          path: processed_announcements.json
+          retention-days: 30
