@@ -2,9 +2,9 @@ name: GSES 공지사항 확인 및 Slack 알림
 
 on:
   schedule:
-    # 5분마다 실행 (UTC 기준)
+    # 30분마다 실행 (UTC 기준)
     # 한국 시간으로는 UTC 시간 + 9시간
-    - cron: '*/5 * * * *'  # 5분마다
+    - cron: '*/30 * * * *'  # 30분마다
   workflow_dispatch:  # 수동 실행도 가능하도록 설정
     inputs:
       ping:
