@@ -7,6 +7,22 @@ on:
     # - cron: '0 0-9 * * *' (UTC 0시~9시 = KST 9시~18시)
     - cron: '0 * * * *'  # 매시간 정각
   workflow_dispatch:  # 수동 실행도 가능하도록 설정
+    inputs:
+      ping:
+        description: 'Slack 연결 테스트 (ping)'
+        required: false
+        type: boolean
+        default: false
+      test_post:
+        description: '최신 공지사항 1개만 테스트 전송'
+        required: false
+        type: boolean
+        default: false
+      send_on_first_run:
+        description: '최초 실행 시에도 최신 공지사항 전송'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   check_announcements:
@@ -26,16 +42,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
+      - name: State 복원 (캐시)
+        uses: actions/cache@v4
+        id: cache-state
+        with:
+          path: state.json
+          key: gses-state-${{ github.repository }}
+          restore-keys: |
+            gses-state-${{ github.repository }}
+      
       - name: 공지사항 확인 및 Slack 알림
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_MODE: ${{ inputs.test_post && 'true' || 'false' }}
+          SEND_ON_FIRST_RUN: ${{ inputs.send_on_first_run && 'true' || 'false' }}
         run: |
-          python fetch_announcements.py
+          if [ "${{ inputs.ping }}" == "true" ]; then
+            python fetch_announcements.py --ping
+          else
+            python fetch_announcements.py
+          fi
       
-      - name: 처리된 공지사항 저장 (선택사항)
+      - name: State 저장 (캐시)
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: state.json
+          key: gses-state-${{ github.repository }}-${{ github.run_id }}
+          restore-keys: |
+            gses-state-${{ github.repository }}
+      
+      - name: State 아티팩트 저장 (백업)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: state
+          name: state-backup
           path: state.json
           retention-days: 30
+          if-no-files-found: ignore

@@ -4,11 +4,20 @@ GSES 공지사항을 가져와서 Slack으로 전송하는 스크립트
 """
 
 import os
+import sys
+import argparse
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import json
 import re
+
+# .env 파일 지원
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv가 없어도 환경변수로 동작 가능
 
 
 def fetch_announcements():
@@ -36,7 +45,7 @@ def fetch_announcements():
         # 페이지 구조: ul 태그 안에 li 태그로 각 공지사항이 구성됨
         # 각 li 안에 a 태그로 제목과 링크가 있음
         
-        # 방법 1: bbsidx가 포함된 링크를 찾기 (가장 확실한 방법)
+        # bbsidx가 포함된 링크를 찾기
         notice_links = soup.find_all('a', href=lambda x: x and 'bbsidx' in x)
         
         for link in notice_links:
@@ -74,10 +83,10 @@ def fetch_announcements():
         return announcements
         
     except requests.RequestException as e:
-        print(f"공지사항을 가져오는 중 오류 발생: {e}")
+        print(f"❌ 공지사항을 가져오는 중 오류 발생: {e}", file=sys.stderr)
         return []
     except Exception as e:
-        print(f"공지사항 파싱 중 오류 발생: {e}")
+        print(f"❌ 공지사항 파싱 중 오류 발생: {e}", file=sys.stderr)
         return []
 
 
@@ -88,21 +97,30 @@ def load_state():
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-                return set(data.get('processed_bbsidx', []))
-        except:
-            return set()
-    return set()
+                return {
+                    'processed_bbsidx': set(data.get('processed_bbsidx', [])),
+                    'last_updated': data.get('last_updated'),
+                    'initialized': data.get('initialized', False)
+                }
+        except Exception as e:
+            print(f"⚠️  state.json 로드 중 오류: {e}", file=sys.stderr)
+            return {'processed_bbsidx': set(), 'last_updated': None, 'initialized': False}
+    return {'processed_bbsidx': set(), 'last_updated': None, 'initialized': False}
 
 
-def save_state(processed_bbsidx):
+def save_state(processed_bbsidx, initialized=True):
     """state.json에 처리한 공지사항의 bbsidx 목록을 저장합니다."""
     file_path = 'state.json'
     data = {
         'processed_bbsidx': list(processed_bbsidx),
-        'last_updated': datetime.now().isoformat()
+        'last_updated': datetime.now().isoformat(),
+        'initialized': initialized
     }
-    with open(file_path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"❌ state.json 저장 중 오류: {e}", file=sys.stderr)
 
 
 def send_to_slack(announcements, webhook_url):
@@ -147,38 +165,136 @@ def send_to_slack(announcements, webhook_url):
     try:
         response = requests.post(webhook_url, json=message, timeout=10)
         response.raise_for_status()
-        print(f"Slack 메시지 전송 성공: {len(announcements)}개의 공지사항")
+        print(f"✅ Slack 메시지 전송 성공: {len(announcements)}개의 공지사항")
         return True
     except requests.RequestException as e:
-        print(f"Slack 메시지 전송 실패: {e}")
+        print(f"❌ Slack 메시지 전송 실패: {e}", file=sys.stderr)
+        return False
+
+
+def send_ping_test(webhook_url):
+    """Slack 연결 테스트용 ping 메시지 전송"""
+    message = {
+        "text": "🧪 GSES Slack Bot 연결 테스트",
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*🧪 GSES Slack Bot 연결 테스트*\n\n이 메시지는 테스트 메시지입니다."
+                }
+            }
+        ]
+    }
+    
+    try:
+        response = requests.post(webhook_url, json=message, timeout=10)
+        response.raise_for_status()
+        print("✅ Slack ping 테스트 성공")
+        return True
+    except requests.RequestException as e:
+        print(f"❌ Slack ping 테스트 실패: {e}", file=sys.stderr)
         return False
 
 
 def main():
     """메인 함수"""
-    webhook_url = os.getenv('SLACK_WEBHOOK_URL')
+    parser = argparse.ArgumentParser(
+        description='GSES 공지사항을 확인하고 Slack으로 알림을 보냅니다.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+예시:
+  # 최초 실행: 기준점만 저장 (스팸 방지)
+  python fetch_announcements.py --init
+  
+  # Dry-run: 전송 없이 확인만
+  python fetch_announcements.py --dry-run
+  
+  # 정상 실행: 새 공지사항 있으면 Slack 전송
+  python fetch_announcements.py
+  
+  # 테스트: 최신 1개만 전송
+  TEST_MODE=true python fetch_announcements.py
+  
+  # Slack 연결 테스트
+  python fetch_announcements.py --ping
+        """
+    )
     
+    parser.add_argument('--init', action='store_true',
+                       help='최초 실행 시 기준점만 저장하고 알림은 보내지 않음 (스팸 방지)')
+    parser.add_argument('--dry-run', action='store_true',
+                       help='전송 없이 새 공지사항만 확인')
+    parser.add_argument('--ping', action='store_true',
+                       help='Slack 연결 테스트 메시지 전송')
+    parser.add_argument('--send-on-first-run', action='store_true',
+                       help='최초 실행 시에도 최신 공지사항 전송 (기본값: False, 스팸 방지)')
+    
+    args = parser.parse_args()
+    
+    # 환경 변수에서 설정 읽기
+    webhook_url = os.getenv('SLACK_WEBHOOK_URL')
+    test_mode = os.getenv('TEST_MODE', 'false').lower() == 'true'
+    send_on_first_run = args.send_on_first_run or os.getenv('SEND_ON_FIRST_RUN', 'false').lower() == 'true'
+    
+    # Slack 웹훅 URL 확인
     if not webhook_url:
-        print("오류: SLACK_WEBHOOK_URL 환경 변수가 설정되지 않았습니다.")
+        print("❌ 오류: SLACK_WEBHOOK_URL 환경 변수가 설정되지 않았습니다.", file=sys.stderr)
+        print("   .env 파일을 만들거나 환경 변수를 설정해주세요.", file=sys.stderr)
+        sys.exit(1)
+    
+    # Ping 테스트
+    if args.ping:
+        send_ping_test(webhook_url)
         return
     
-    # 테스트 모드 확인 (환경 변수로 제어)
-    test_mode = os.getenv('TEST_MODE', 'false').lower() == 'true'
-    
     # 공지사항 가져오기
+    print("📡 공지사항을 가져오는 중...")
     announcements = fetch_announcements()
     
     if not announcements:
-        print("공지사항을 가져올 수 없습니다.")
-        return
+        print("⚠️  공지사항을 가져올 수 없습니다.")
+        sys.exit(1)
+    
+    print(f"📋 총 {len(announcements)}개의 공지사항을 찾았습니다.")
     
     # 테스트 모드일 경우 최신 1개만 사용
     if test_mode:
         announcements = announcements[:1]
-        print(f"테스트 모드: 최신 공지사항 1개만 처리합니다.")
+        print(f"🧪 테스트 모드: 최신 공지사항 1개만 처리합니다.")
     
-    # 이미 처리한 공지사항 로드 (bbsidx 기준)
-    processed_bbsidx = load_state()
+    # state 로드
+    state = load_state()
+    processed_bbsidx = state['processed_bbsidx']
+    is_initialized = state['initialized']
+    
+    # --init 옵션: 기준점만 저장
+    if args.init:
+        if announcements:
+            latest_bbsidx = announcements[0]['bbsidx']
+            if latest_bbsidx:
+                processed_bbsidx.add(latest_bbsidx)
+                save_state(processed_bbsidx, initialized=True)
+                print(f"✅ 기준점 저장 완료: bbsidx={latest_bbsidx}")
+                print(f"   다음 실행부터 이 공지사항 이후의 새 공지사항만 알림을 보냅니다.")
+            else:
+                print("⚠️  bbsidx를 찾을 수 없어 기준점을 저장할 수 없습니다.")
+        else:
+            print("⚠️  공지사항을 찾을 수 없어 기준점을 저장할 수 없습니다.")
+        return
+    
+    # 최초 실행이고 send_on_first_run이 False면 스팸 방지
+    if not is_initialized and not send_on_first_run:
+        if announcements:
+            latest_bbsidx = announcements[0]['bbsidx']
+            if latest_bbsidx:
+                processed_bbsidx.add(latest_bbsidx)
+                save_state(processed_bbsidx, initialized=True)
+                print("ℹ️  최초 실행: 기준점만 저장하고 알림은 보내지 않습니다 (스팸 방지)")
+                print(f"   기준점: bbsidx={latest_bbsidx}")
+                print("   다음 실행부터 새 공지사항이 있으면 알림을 보냅니다.")
+                print("   최초 실행에서도 알림을 받으려면 --send-on-first-run 옵션을 사용하세요.")
+                return
     
     # 새로운 공지사항만 필터링 (bbsidx 기준)
     new_announcements = [
@@ -187,10 +303,17 @@ def main():
     ]
     
     if not new_announcements:
-        print("새로운 공지사항이 없습니다.")
+        print("✅ 새로운 공지사항이 없습니다.")
         return
     
-    print(f"새로운 공지사항 {len(new_announcements)}개를 발견했습니다.")
+    print(f"🆕 새로운 공지사항 {len(new_announcements)}개를 발견했습니다:")
+    for ann in new_announcements:
+        print(f"   - {ann['title']}")
+    
+    # Dry-run 모드
+    if args.dry_run:
+        print("\n🔍 Dry-run 모드: 실제로 전송하지 않습니다.")
+        return
     
     # 새로운 공지사항들을 한 번에 Slack으로 전송
     if send_to_slack(new_announcements, webhook_url):
@@ -200,10 +323,11 @@ def main():
                 processed_bbsidx.add(ann['bbsidx'])
         
         # state 저장
-        save_state(processed_bbsidx)
-        print(f"처리 완료: {len(new_announcements)}개의 새로운 공지사항을 전송했습니다.")
+        save_state(processed_bbsidx, initialized=True)
+        print(f"✅ 처리 완료: {len(new_announcements)}개의 새로운 공지사항을 전송했습니다.")
     else:
-        print("Slack 전송 실패로 인해 state를 업데이트하지 않았습니다.")
+        print("❌ Slack 전송 실패로 인해 state를 업데이트하지 않았습니다.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
