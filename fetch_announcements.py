@@ -258,11 +258,6 @@ def main():
     
     print(f"📋 총 {len(announcements)}개의 공지사항을 찾았습니다.")
     
-    # 테스트 모드일 경우 최신 1개만 사용
-    if test_mode:
-        announcements = announcements[:1]
-        print(f"🧪 테스트 모드: 최신 공지사항 1개만 처리합니다.")
-    
     # state 로드
     state = load_state()
     processed_bbsidx = state['processed_bbsidx']
@@ -289,6 +284,26 @@ def main():
             print("⚠️  공지사항을 찾을 수 없어 기준점을 저장할 수 없습니다.")
         return
     
+    # 테스트 모드: 최신 1개를 강제로 전송 (state 무시)
+    if test_mode:
+        if announcements:
+            test_announcement = announcements[0]
+            print(f"🧪 테스트 모드: 최신 공지사항 1개를 강제로 전송합니다.")
+            print(f"   - {test_announcement['title']}")
+            
+            # Dry-run 모드가 아니면 전송
+            if not args.dry_run:
+                if send_to_slack([test_announcement], webhook_url):
+                    print("✅ 테스트 메시지 전송 완료 (state는 업데이트하지 않음)")
+                else:
+                    print("❌ 테스트 메시지 전송 실패")
+                    sys.exit(1)
+            else:
+                print("\n🔍 Dry-run 모드: 실제로 전송하지 않습니다.")
+        else:
+            print("⚠️  테스트할 공지사항이 없습니다.")
+        return
+    
     # 최초 실행이고 send_on_first_run이 False면 스팸 방지
     if not is_initialized and not send_on_first_run:
         if announcements:
@@ -301,6 +316,31 @@ def main():
                 print("   다음 실행부터 새 공지사항이 있으면 알림을 보냅니다.")
                 print("   최초 실행에서도 알림을 받으려면 --send-on-first-run 옵션을 사용하세요.")
                 return
+    
+    # send_on_first_run 모드: 최초 실행이어도 최신 1개만 전송
+    if not is_initialized and send_on_first_run:
+        if announcements:
+            # 최신 1개만 선택
+            first_run_announcement = announcements[0]
+            print(f"🆕 최초 실행 모드: 최신 공지사항 1개를 전송합니다.")
+            print(f"   - {first_run_announcement['title']}")
+            
+            # Dry-run 모드가 아니면 전송
+            if not args.dry_run:
+                if send_to_slack([first_run_announcement], webhook_url):
+                    # 전송 성공 시 state 업데이트
+                    if first_run_announcement['bbsidx']:
+                        processed_bbsidx.add(first_run_announcement['bbsidx'])
+                    save_state(processed_bbsidx, initialized=True)
+                    print("✅ 최초 실행 메시지 전송 완료")
+                else:
+                    print("❌ 최초 실행 메시지 전송 실패")
+                    sys.exit(1)
+            else:
+                print("\n🔍 Dry-run 모드: 실제로 전송하지 않습니다.")
+        else:
+            print("⚠️  전송할 공지사항이 없습니다.")
+        return
     
     # 새로운 공지사항만 필터링 (bbsidx 기준)
     new_announcements = [
