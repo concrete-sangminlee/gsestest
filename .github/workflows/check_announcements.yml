@@ -36,6 +36,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: processed-announcements
-          path: processed_announcements.json
+          name: state
+          path: state.json
           retention-days: 30

@@ -25,6 +25,7 @@ wheels/
 
 # 처리된 공지사항 기록 (선택사항)
 processed_announcements.json
+state.json
 
 # 환경 변수
 .env
