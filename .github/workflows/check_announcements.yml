@@ -34,7 +34,7 @@ jobs:
       
       - name: 처리된 공지사항 저장 (선택사항)
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: processed-announcements
           path: processed_announcements.json
