@@ -41,22 +41,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: State 복원 (캐시)
-        uses: actions/cache@v4
-        id: cache-state
+      - name: State 복원 (Artifact에서)
+        uses: dawidd6/action-download-artifact@v3
         with:
-          path: state.json
-          key: gses-state-v1-${{ github.repository }}
-          restore-keys: |
-            gses-state-v1-${{ github.repository }}
+          name: state-backup
+          path: .
+          if_no_artifact_found: ignore
+        continue-on-error: true
       
       - name: State 파일 확인
         run: |
           if [ -f state.json ]; then
-            echo "✅ state.json 파일이 복원되었습니다 (캐시 hit: ${{ steps.cache-state.outputs.cache-hit }}):"
+            echo "✅ state.json 파일이 복원되었습니다:"
             cat state.json
           else
-            echo "ℹ️  state.json 파일이 없습니다 (최초 실행 또는 캐시 miss)"
+            echo "ℹ️  state.json 파일이 없습니다 (최초 실행 또는 아티팩트 없음)"
           fi
       
       - name: 공지사항 확인 및 Slack 알림
@@ -81,16 +80,7 @@ jobs:
             echo "⚠️  state.json 파일이 생성되지 않았습니다"
           fi
       
-      - name: State 저장 (캐시)
-        if: always()
-        uses: actions/cache@v4
-        with:
-          path: state.json
-          key: gses-state-v1-${{ github.repository }}
-          restore-keys: |
-            gses-state-v1-${{ github.repository }}
-      
-      - name: State 아티팩트 저장 (백업)
+      - name: State 아티팩트 저장 (다음 실행을 위해)
         if: always()
         uses: actions/upload-artifact@v4
         with:
