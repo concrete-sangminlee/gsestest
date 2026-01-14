@@ -314,7 +314,7 @@ def main():
         if announcements:
             latest_bbsidx = announcements[0]['bbsidx']
             if latest_bbsidx:
-                processed_bbsidx.add(latest_bbsidx)
+                processed_bbsidx.add(str(latest_bbsidx))
                 save_state(processed_bbsidx, initialized=True)
                 print("ℹ️  최초 실행: 기준점만 저장하고 알림은 보내지 않습니다 (스팸 방지)")
                 print(f"   기준점: bbsidx={latest_bbsidx} ({announcements[0]['title'][:50]}...)")
@@ -335,7 +335,7 @@ def main():
                 if send_to_slack([first_run_announcement], webhook_url):
                     # 전송 성공 시 state 업데이트
                     if first_run_announcement['bbsidx']:
-                        processed_bbsidx.add(first_run_announcement['bbsidx'])
+                        processed_bbsidx.add(str(first_run_announcement['bbsidx']))
                     save_state(processed_bbsidx, initialized=True)
                     print("✅ 최초 실행 메시지 전송 완료")
                 else:
