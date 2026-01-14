@@ -53,10 +53,10 @@ jobs:
       - name: State 파일 확인
         run: |
           if [ -f state.json ]; then
-            echo "✅ state.json 파일이 존재합니다:"
+            echo "✅ state.json 파일이 복원되었습니다 (캐시 hit: ${{ steps.cache-state.outputs.cache-hit }}):"
             cat state.json
           else
-            echo "ℹ️  state.json 파일이 없습니다 (최초 실행)"
+            echo "ℹ️  state.json 파일이 없습니다 (최초 실행 또는 캐시 miss)"
           fi
       
       - name: 공지사항 확인 및 Slack 알림
@@ -86,8 +86,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: state.json
-          key: gses-state-${{ github.repository }}-${{ github.run_id }}
+          key: gses-state-${{ github.repository }}-${{ github.run_number }}
           restore-keys: |
+            gses-state-${{ github.repository }}-
             gses-state-${{ github.repository }}
       
       - name: State 아티팩트 저장 (백업)
@@ -96,5 +97,6 @@ jobs:
         with:
           name: state-backup
           path: state.json
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: ignore
+          overwrite: true

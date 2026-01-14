@@ -348,13 +348,21 @@ def main():
         if ann['bbsidx'] and ann['bbsidx'] not in processed_bbsidx
     ]
     
+    # 디버깅: 처리된 bbsidx와 현재 공지사항의 bbsidx 비교
+    current_bbsidx_list = [ann['bbsidx'] for ann in announcements if ann['bbsidx']]
+    print(f"🔍 디버깅 정보:")
+    print(f"   - 현재 공지사항 bbsidx: {current_bbsidx_list[:5]}... (총 {len(current_bbsidx_list)}개)")
+    print(f"   - 처리된 bbsidx: {sorted(list(processed_bbsidx), reverse=True)[:5]}... (총 {len(processed_bbsidx)}개)")
+    
     if not new_announcements:
         print("✅ 새로운 공지사항이 없습니다.")
         return
     
     print(f"🆕 새로운 공지사항 {len(new_announcements)}개를 발견했습니다:")
-    for ann in new_announcements:
+    for ann in new_announcements[:5]:  # 처음 5개만 출력
         print(f"   - {ann['title']}")
+    if len(new_announcements) > 5:
+        print(f"   ... 외 {len(new_announcements) - 5}개")
     
     # Dry-run 모드
     if args.dry_run:
@@ -371,6 +379,7 @@ def main():
         # state 저장
         save_state(processed_bbsidx, initialized=True)
         print(f"✅ 처리 완료: {len(new_announcements)}개의 새로운 공지사항을 전송했습니다.")
+        print(f"📊 저장된 처리된 공지사항 수: {len(processed_bbsidx)}")
     else:
         print("❌ Slack 전송 실패로 인해 state를 업데이트하지 않았습니다.")
         sys.exit(1)
