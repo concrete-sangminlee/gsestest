@@ -97,8 +97,11 @@ def load_state():
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+                # bbsidx를 문자열로 통일하여 비교 문제 방지
+                processed_list = data.get('processed_bbsidx', [])
+                processed_set = set(str(bbsidx) for bbsidx in processed_list)
                 return {
-                    'processed_bbsidx': set(data.get('processed_bbsidx', [])),
+                    'processed_bbsidx': processed_set,
                     'last_updated': data.get('last_updated'),
                     'initialized': data.get('initialized', False)
                 }
@@ -111,8 +114,10 @@ def load_state():
 def save_state(processed_bbsidx, initialized=True):
     """state.json에 처리한 공지사항의 bbsidx 목록을 저장합니다."""
     file_path = 'state.json'
+    # bbsidx를 문자열 리스트로 저장 (정렬하여 일관성 유지)
+    processed_list = sorted([str(bbsidx) for bbsidx in processed_bbsidx], reverse=True)
     data = {
-        'processed_bbsidx': list(processed_bbsidx),
+        'processed_bbsidx': processed_list,
         'last_updated': datetime.now().isoformat(),
         'initialized': initialized
     }
@@ -343,16 +348,21 @@ def main():
         return
     
     # 새로운 공지사항만 필터링 (bbsidx 기준)
-    new_announcements = [
-        ann for ann in announcements 
-        if ann['bbsidx'] and ann['bbsidx'] not in processed_bbsidx
-    ]
+    # bbsidx를 문자열로 통일하여 비교
+    new_announcements = []
+    for ann in announcements:
+        if ann['bbsidx']:
+            bbsidx_str = str(ann['bbsidx'])
+            if bbsidx_str not in processed_bbsidx:
+                new_announcements.append(ann)
     
     # 디버깅: 처리된 bbsidx와 현재 공지사항의 bbsidx 비교
-    current_bbsidx_list = [ann['bbsidx'] for ann in announcements if ann['bbsidx']]
+    current_bbsidx_list = [str(ann['bbsidx']) for ann in announcements if ann['bbsidx']]
+    processed_bbsidx_list = sorted(list(processed_bbsidx), reverse=True)
     print(f"🔍 디버깅 정보:")
     print(f"   - 현재 공지사항 bbsidx: {current_bbsidx_list[:5]}... (총 {len(current_bbsidx_list)}개)")
-    print(f"   - 처리된 bbsidx: {sorted(list(processed_bbsidx), reverse=True)[:5]}... (총 {len(processed_bbsidx)}개)")
+    print(f"   - 처리된 bbsidx: {processed_bbsidx_list[:5]}... (총 {len(processed_bbsidx_list)}개)")
+    print(f"   - 새로 발견된 bbsidx: {[str(ann['bbsidx']) for ann in new_announcements[:5]]}... (총 {len(new_announcements)}개)")
     
     if not new_announcements:
         print("✅ 새로운 공지사항이 없습니다.")
@@ -371,10 +381,10 @@ def main():
     
     # 새로운 공지사항들을 한 번에 Slack으로 전송
     if send_to_slack(new_announcements, webhook_url):
-        # 전송 성공 시 처리한 bbsidx를 state에 추가
+        # 전송 성공 시 처리한 bbsidx를 state에 추가 (문자열로 통일)
         for ann in new_announcements:
             if ann['bbsidx']:
-                processed_bbsidx.add(ann['bbsidx'])
+                processed_bbsidx.add(str(ann['bbsidx']))
         
         # state 저장
         save_state(processed_bbsidx, initialized=True)
