@@ -9,17 +9,20 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import json
 import hashlib
+import re
 
 
 def fetch_announcements():
     """
     gses.snu.ac.kr에서 공지사항을 가져옵니다.
-    실제 페이지 구조에 맞게 수정이 필요할 수 있습니다.
+    공지사항 페이지: https://gses.snu.ac.kr/news/notice/notice?sc=y
     """
-    url = "https://gses.snu.ac.kr/board/notice"
+    url = "https://gses.snu.ac.kr/news/notice/notice?sc=y"
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7'
     }
     
     try:
@@ -28,44 +31,62 @@ def fetch_announcements():
         response.encoding = 'utf-8'
         
         soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # 공지사항 목록을 찾습니다 (실제 페이지 구조에 맞게 수정 필요)
-        # 일반적으로 table, ul, div 등의 구조를 가집니다
         announcements = []
         
-        # 예시: table 구조인 경우
-        # table = soup.find('table', class_='board-list')  # 실제 클래스명으로 변경
-        # rows = table.find_all('tr')[1:]  # 헤더 제외
+        # 공지사항 목록을 찾습니다
+        # 페이지 구조: ul 태그 안에 li 태그로 각 공지사항이 구성됨
+        # 각 li 안에 a 태그로 제목과 링크가 있음
         
-        # 예시: div 구조인 경우
-        # items = soup.find_all('div', class_='notice-item')  # 실제 클래스명으로 변경
+        # 방법 1: bbsidx가 포함된 링크를 찾기 (가장 확실한 방법)
+        notice_links = soup.find_all('a', href=lambda x: x and 'bbsidx' in x)
         
-        # 임시로 모든 링크가 있는 항목을 찾는 예시 코드
-        # 실제 페이지 구조를 확인 후 수정이 필요합니다
-        notice_links = soup.find_all('a', href=True)
-        
-        for link in notice_links[:10]:  # 최신 10개만 가져오기
+        for link in notice_links:
             title = link.get_text(strip=True)
             href = link.get('href')
             
-            # 상대 경로를 절대 경로로 변환
-            if href and not href.startswith('http'):
-                if href.startswith('/'):
-                    href = f"https://gses.snu.ac.kr{href}"
-                else:
-                    href = f"https://gses.snu.ac.kr/{href}"
+            # 제목이 너무 짧거나 의미없는 경우 스킵
+            if not title or len(title) < 3:
+                continue
             
-            if title and len(title) > 5:  # 의미있는 제목만 필터링
+            # 상대 경로를 절대 경로로 변환
+            if href:
+                if not href.startswith('http'):
+                    if href.startswith('/'):
+                        href = f"https://gses.snu.ac.kr{href}"
+                    else:
+                        href = f"https://gses.snu.ac.kr/{href}"
+                
+                # 중복 제거를 위한 해시 생성 (제목 + URL의 bbsidx 값 사용)
+                # bbsidx를 추출하여 더 정확한 중복 체크
+                bbsidx_match = re.search(r'bbsidx=(\d+)', href)
+                bbsidx = bbsidx_match.group(1) if bbsidx_match else None
+                
+                # 해시 생성: bbsidx가 있으면 사용, 없으면 제목+URL 조합 사용
+                if bbsidx:
+                    hash_value = hashlib.md5(f"bbsidx_{bbsidx}".encode()).hexdigest()
+                else:
+                    hash_value = hashlib.md5(f"{title}{href}".encode()).hexdigest()
+                
                 announcements.append({
                     'title': title,
                     'url': href,
-                    'hash': hashlib.md5(f"{title}{href}".encode()).hexdigest()
+                    'hash': hash_value,
+                    'bbsidx': bbsidx
                 })
+        
+        # bbsidx 기준으로 정렬 (최신순, 숫자가 큰 것이 최신)
+        if announcements:
+            announcements.sort(key=lambda x: int(x['bbsidx']) if x['bbsidx'] else 0, reverse=True)
+            # 최신 20개만 반환 (너무 많으면 중복 체크 파일이 커질 수 있음)
+            announcements = announcements[:20]
         
         return announcements
         
     except requests.RequestException as e:
         print(f"공지사항을 가져오는 중 오류 발생: {e}")
+        return []
+    except Exception as e:
+        print(f"공지사항 파싱 중 오류 발생: {e}")
         return []
 
 
