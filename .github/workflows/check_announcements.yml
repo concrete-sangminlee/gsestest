@@ -46,9 +46,9 @@ jobs:
         id: cache-state
         with:
           path: state.json
-          key: gses-state-${{ github.repository }}
+          key: gses-state-v1-${{ github.repository }}
           restore-keys: |
-            gses-state-${{ github.repository }}
+            gses-state-v1-${{ github.repository }}
       
       - name: State 파일 확인
         run: |
@@ -86,10 +86,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: state.json
-          key: gses-state-${{ github.repository }}-${{ github.run_number }}
+          key: gses-state-v1-${{ github.repository }}
           restore-keys: |
-            gses-state-${{ github.repository }}-
-            gses-state-${{ github.repository }}
+            gses-state-v1-${{ github.repository }}
       
       - name: State 아티팩트 저장 (백업)
         if: always()
