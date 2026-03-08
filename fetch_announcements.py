@@ -134,43 +134,89 @@ def send_to_slack(announcements, webhook_url):
     """
     if not announcements:
         return False
-    
-    # 여러 공지사항을 하나의 메시지로 구성
+
+    count = len(announcements)
+    now_kst = datetime.now().strftime("%Y. %m. %d  %H:%M")
+
     blocks = [
         {
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"📢 새로운 GSES 공지사항 ({len(announcements)}개)"
+                "text": "📢  GSES 새 공지사항",
+                "emoji": True
             }
         },
         {
-            "type": "divider"
-        }
+            "type": "context",
+            "elements": [
+                {
+                    "type": "mrkdwn",
+                    "text": f"서울대학교 공학전문대학원  ｜  🔔 *{count}건*의 새로운 공지사항"
+                }
+            ]
+        },
+        {"type": "divider"}
     ]
-    
-    # 각 공지사항을 섹션으로 추가
-    for ann in announcements:
+
+    for i, ann in enumerate(announcements):
         blocks.append({
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*{ann['title']}*\n<{ann['url']}|공지사항 보기>"
+                "text": f"> *{ann['title']}*"
+            },
+            "accessory": {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "확인하기",
+                    "emoji": True
+                },
+                "url": ann['url'],
+                "style": "primary"
             }
         })
-        blocks.append({
-            "type": "divider"
-        })
-    
+
+    blocks.append({"type": "divider"})
+    blocks.append({
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "📋  전체 공지사항 보기",
+                    "emoji": True
+                },
+                "url": "https://gses.snu.ac.kr/news/notice/notice"
+            }
+        ]
+    })
+    blocks.append({
+        "type": "context",
+        "elements": [
+            {
+                "type": "mrkdwn",
+                "text": f"🏫 GSES Notice Bot  ｜  {now_kst} KST"
+            }
+        ]
+    })
+
     message = {
-        "text": f"새로운 GSES 공지사항 {len(announcements)}개가 있습니다!",
-        "blocks": blocks
+        "text": f"새로운 GSES 공지사항 {count}건",
+        "attachments": [
+            {
+                "color": "#003876",
+                "blocks": blocks
+            }
+        ]
     }
-    
+
     try:
         response = requests.post(webhook_url, json=message, timeout=10)
         response.raise_for_status()
-        print(f"✅ Slack 메시지 전송 성공: {len(announcements)}개의 공지사항")
+        print(f"✅ Slack 메시지 전송 성공: {count}개의 공지사항")
         return True
     except requests.RequestException as e:
         print(f"❌ Slack 메시지 전송 실패: {e}", file=sys.stderr)
@@ -179,19 +225,46 @@ def send_to_slack(announcements, webhook_url):
 
 def send_ping_test(webhook_url):
     """Slack 연결 테스트용 ping 메시지 전송"""
-    message = {
-        "text": "🧪 GSES Slack Bot 연결 테스트",
-        "blocks": [
-            {
-                "type": "section",
-                "text": {
+    now_kst = datetime.now().strftime("%Y. %m. %d  %H:%M")
+
+    blocks = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "🧪  연결 테스트",
+                "emoji": True
+            }
+        },
+        {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "GSES Slack Bot이 정상적으로 연결되어 있습니다.\n새로운 공지사항이 등록되면 이 채널로 알림을 보내드립니다."
+            }
+        },
+        {"type": "divider"},
+        {
+            "type": "context",
+            "elements": [
+                {
                     "type": "mrkdwn",
-                    "text": "*🧪 GSES Slack Bot 연결 테스트*\n\n이 메시지는 테스트 메시지입니다."
+                    "text": f"✅ *Status: Connected*  ｜  🏫 GSES Notice Bot  ｜  {now_kst} KST"
                 }
+            ]
+        }
+    ]
+
+    message = {
+        "text": "GSES Slack Bot 연결 테스트",
+        "attachments": [
+            {
+                "color": "#2eb67d",
+                "blocks": blocks
             }
         ]
     }
-    
+
     try:
         response = requests.post(webhook_url, json=message, timeout=10)
         response.raise_for_status()
