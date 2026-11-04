@@ -2,90 +2,113 @@ name: GSES 공지사항 확인 및 Slack 알림
 
 on:
   schedule:
-    # 30분마다 실행 (UTC 기준)
-    # 한국 시간으로는 UTC 시간 + 9시간
-    - cron: '*/30 * * * *'  # 30분마다
-  workflow_dispatch:  # 수동 실행도 가능하도록 설정
+    # 30분마다 (UTC). 정각/30분은 GitHub 스케줄러가 붐벼 지연이 커서 7분/37분에 실행합니다.
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
     inputs:
-      ping:
-        description: 'Slack 연결 테스트 (ping)'
-        required: false
-        type: boolean
-        default: false
-      test_post:
-        description: '최신 공지사항 1개만 테스트 전송'
-        required: false
-        type: boolean
-        default: false
+      mode:
+        description: '실행 모드'
+        type: choice
+        default: run
+        options:
+          - run        # 새 글 확인 후 전송
+          - dry-run    # 전송/저장 없이 확인만
+          - ping       # Slack 연결 테스트
+          - test-post  # 최신 글 1건 테스트 전송 (state 변경 없음)
+          - init       # 알림 없이 기준점 재설정
+          - status     # state 요약 출력
+      board:
+        description: 'test-post 대상 게시판'
+        type: choice
+        default: notice
+        options: [notice, seminars, admissions, news]
+      bbsidx:
+        description: 'test-post 대상 글 번호 (비우면 최신 글)'
+        type: string
+        default: ''
       send_on_first_run:
-        description: '최초 실행 시에도 최신 공지사항 전송'
-        required: false
+        description: 'state 가 없을 때도 최신 글 1건 전송'
         type: boolean
         default: false
 
+permissions:
+  contents: write  # bot-state 브랜치에 state.json 저장
+  actions: write   # 60일 비활성 자동 중지 방지 (워크플로 재활성화 API)
+
+# 실행이 겹치면 같은 글을 두 번 보내거나 state 가 덮어써질 수 있으므로 직렬화합니다.
+concurrency:
+  group: gses-notice-bot
+  cancel-in-progress: false
+
+env:
+  STATE_BRANCH: bot-state
+  GSES_STATE_FILE: ${{ github.workspace }}/.state/state.json
+  PYTHONUNBUFFERED: '1'
+
 jobs:
-  check_announcements:
+  notify:
+    name: 공지 확인 및 전송
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 15
     steps:
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
-      
+
       - name: Python 설정
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
       - name: 의존성 설치
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      
-      - name: State 복원 (Artifact에서)
-        uses: dawidd6/action-download-artifact@v3
-        with:
-          name: state-backup
-          path: .
-          if_no_artifact_found: ignore
-        continue-on-error: true
-      
-      - name: State 파일 확인
-        run: |
-          if [ -f state.json ]; then
-            echo "✅ state.json 파일이 복원되었습니다:"
-            cat state.json
-          else
-            echo "ℹ️  state.json 파일이 없습니다 (최초 실행 또는 아티팩트 없음)"
-          fi
-      
-      - name: 공지사항 확인 및 Slack 알림
+        run: pip install --disable-pip-version-check -r requirements.txt
+
+      - name: State 복원 (bot-state 브랜치)
+        id: restore
+        run: scripts/state_branch.sh restore
+
+      - name: 봇 실행
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_MODE: ${{ inputs.test_post && 'true' || 'false' }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ vars.SLACK_CHANNEL }}
+          SLACK_ALERT_WEBHOOK_URL: ${{ secrets.SLACK_ALERT_WEBHOOK_URL }}
+          GSES_BOARDS: ${{ vars.GSES_BOARDS }}
+          GSES_INCLUDE_KEYWORDS: ${{ vars.GSES_INCLUDE_KEYWORDS }}
+          GSES_EXCLUDE_KEYWORDS: ${{ vars.GSES_EXCLUDE_KEYWORDS }}
+          GSES_HIGHLIGHT_KEYWORDS: ${{ vars.GSES_HIGHLIGHT_KEYWORDS }}
+          GSES_MENTION: ${{ vars.GSES_MENTION }}
+          GSES_NOTIFY_TITLE_CHANGES: ${{ vars.GSES_NOTIFY_TITLE_CHANGES }}
+          GSES_MAX_POSTS_PER_RUN: ${{ vars.GSES_MAX_POSTS_PER_RUN }}
+          GSES_FAILURE_ALERT_THRESHOLD: ${{ vars.GSES_FAILURE_ALERT_THRESHOLD }}
           SEND_ON_FIRST_RUN: ${{ inputs.send_on_first_run && 'true' || 'false' }}
+          MODE: ${{ inputs.mode || 'run' }}
+          BOARD: ${{ inputs.board || 'notice' }}
+          BBSIDX: ${{ inputs.bbsidx }}
         run: |
-          if [ "${{ inputs.ping }}" == "true" ]; then
-            python fetch_announcements.py --ping
-          else
-            python fetch_announcements.py
-          fi
-      
-      - name: 실행 후 State 파일 확인
-        if: always()
-        run: |
-          if [ -f state.json ]; then
-            echo "✅ 실행 후 state.json:"
-            cat state.json
-          else
-            echo "⚠️  state.json 파일이 생성되지 않았습니다"
-          fi
-      
-      - name: State 아티팩트 저장 (다음 실행을 위해)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: state-backup
-          path: state.json
-          retention-days: 90
-          if-no-files-found: ignore
-          overwrite: true
+          case "$MODE" in
+            run)       python -m gses_bot run ;;
+            dry-run)   python -m gses_bot run --dry-run ;;
+            ping)      python -m gses_bot ping ;;
+            test-post) python -m gses_bot test-post --board "$BOARD" ${BBSIDX:+--bbsidx "$BBSIDX"} ;;
+            init)      python -m gses_bot init ;;
+            status)    python -m gses_bot status ;;
+            *) echo "::error::알 수 없는 모드: $MODE"; exit 2 ;;
+          esac
+
+      # 봇이 실패해도(예: Slack 오류) 이미 보낸 글은 state 에 기록되어 있으므로 저장합니다.
+      # 단, 복원에 실패했다면 잘못된 state 로 덮어쓰지 않도록 저장하지 않습니다.
+      - name: State 저장 (bot-state 브랜치)
+        if: always() && steps.restore.outcome == 'success'
+        run: scripts/state_branch.sh save
+
+      # GitHub 는 공개 저장소에서 60일간 활동이 없으면 스케줄 워크플로를 자동 중지합니다
+      # (2026-05-08 에 실제로 중지되어 약 6개월간 알림이 끊겼던 원인).
+      # 이미 활성화된 워크플로에 enable API 를 호출하면 비활성 타이머가 초기화됩니다.
+      - name: Keepalive (비활성 자동 중지 방지)
+        if: always() && github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/check_announcements.yml/enable"
