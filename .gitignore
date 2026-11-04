@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 build/
 develop-eggs/
@@ -23,9 +24,16 @@ wheels/
 .installed.cfg
 *.egg
 
-# 처리된 공지사항 기록 (선택사항)
+# 봇 상태 (GitHub Actions 에서는 bot-state 브랜치에 보관)
 processed_announcements.json
 state.json
+.state/
+
+# 테스트/린트 캐시
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # 환경 변수
 .env
