@@ -9,15 +9,16 @@ Slack 제한: 메시지당 블록 50개, section/context 텍스트 3000자, head
 from __future__ import annotations
 
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from gses_bot import __version__
 from gses_bot.boards import BOARDS, Board
 from gses_bot.config import Settings
-from gses_bot.models import Post, TitleChange
+from gses_bot.deadlines import Deadline, fmt_dday, fmt_deadline, upcoming
+from gses_bot.models import NoticeRef, Post, TitleChange
 from gses_bot.state import Health
-from gses_bot.utils import fmt_date, fmt_datetime, fmt_duration, slack_escape, truncate
+from gses_bot.utils import KST, fmt_date, fmt_datetime, fmt_duration, slack_escape, truncate
 
 Block = dict[str, Any]
 Message = dict[str, Any]
@@ -114,17 +115,46 @@ def _meta_line(post: Post) -> str:
     return "  ·  ".join(parts)
 
 
-def post_blocks(post: Post, include_images: bool = True) -> list[Block]:
-    """게시글 1건 → 최대 4블록 (본문 섹션, 미리보기, 첨부, 이미지)."""
+def deadline_line(deadlines: Sequence[Deadline], now: datetime) -> str | None:
+    """'⏰ *D-22* · 11.27 (금) 17:00 — 논문 프로포절 신청서 제출  외 3건'"""
+    pending = upcoming(list(deadlines), now)
+    if not pending:
+        return None
+    first = pending[0]
+    days = first.days_left(now)
+    icon = "🚨" if days <= 1 else "⏰"
+    text = f"{icon} *{fmt_dday(days)}* · {fmt_deadline(first)}"
+    if first.label:
+        text += f" — {slack_escape(truncate(first.label, 40))}"
+    if len(pending) > 1:
+        text += f"  _외 {len(pending) - 1}건_"
+    return text
+
+
+def post_blocks(
+    post: Post, include_images: bool = True, now: datetime | None = None
+) -> list[Block]:
+    """게시글 1건 → 최대 4블록 (본문 섹션, 요약/미리보기, 첨부, 이미지)."""
     prefix = "🔥 " if post.highlight else ""
     title = truncate(post.display_title, 280)
     text = f"{prefix}*{link(post.url, title)}*"
     meta = _meta_line(post)
     if meta:
         text += f"\n{meta}"
+    due = deadline_line(post.deadlines, now) if now and post.deadlines else None
+    if due:
+        text += f"\n{due}"
     blocks = [section(text, accessory=button("열기", post.url, f"open-{post.bbsidx}"))]
 
-    if post.preview:
+    if post.ai:
+        lines = [f"🤖 {slack_escape(post.ai.summary)}"]
+        extra = [f"👥 {slack_escape(post.ai.audience)}"] if post.ai.audience else []
+        if post.ai.action:
+            extra.append(f"✅ {slack_escape(post.ai.action)}")
+        if extra:
+            lines.append("  ·  ".join(extra))
+        blocks.append(context("\n".join(lines)))
+    elif post.preview:
         blocks.append(context(slack_escape(post.preview)))
 
     if post.attachments:
@@ -181,7 +211,7 @@ def build_post_messages(
         for position, post in enumerate(chunk):
             if position:
                 card.append(divider())
-            card.extend(post_blocks(post, include_images=include_images))
+            card.extend(post_blocks(post, include_images=include_images, now=now))
         if index == len(chunks) and overflow:
             card.append(divider())
             card.append(
@@ -316,3 +346,137 @@ def build_recovery_message(previous: Health, now: datetime) -> Message:
     ]
     card = [context(f"이전 실패 {previous.consecutive_failures}회  ·  🕐 {fmt_datetime(now)} KST")]
     return _message("✅ GSES 게시판 수집 정상화", blocks, COLOR_OK, card)
+
+
+# ---------------------------------------------------------------------- 마감 리마인더
+COLOR_REMIND = "#f2994a"
+MAX_REMINDERS_PER_MESSAGE = 12
+
+
+def build_reminder_message(
+    items: Sequence[tuple[NoticeRef, Deadline]], now: datetime, *, mention: str | None = None
+) -> Message:
+    items = list(items)[:MAX_REMINDERS_PER_MESSAGE]
+    soonest = min((deadline.days_left(now) for _, deadline in items), default=0)
+    title = "오늘 마감" if soonest <= 0 else "내일 마감" if soonest == 1 else "마감 임박"
+    blocks = [
+        header(f"⏰  {title} · {len(items)}건"),
+        context(f"🏫 {BRAND}  ·  🕐 {fmt_datetime(now)} KST"),
+    ]
+    highlighted = [ref for ref, _ in items if ref.highlight]
+    if highlighted and mention:
+        blocks.append(section(f"{mention} 🔥 주요 키워드 공지의 마감이 다가왔어요."))
+    card: list[Block] = []
+    for position, (ref, deadline) in enumerate(items):
+        if position:
+            card.append(divider())
+        board = BOARDS[ref.board]
+        label = f" — {slack_escape(truncate(deadline.label, 40))}" if deadline.label else ""
+        fire = "🔥 " if ref.highlight else ""
+        card.append(
+            section(
+                f"*{fmt_dday(deadline.days_left(now))}* · *{fmt_deadline(deadline)}*{label}\n"
+                f"{board.emoji} {fire}{link(ref.url, truncate(ref.title, 200))}",
+                accessory=button("열기", ref.url, f"remind-{ref.bbsidx}-{position}"),
+            )
+        )
+    card.append(_footer())
+    first_ref, first = items[0]
+    summary = f"{first.label or first_ref.title} ({fmt_deadline(first)})"
+    if len(items) > 1:
+        summary += f" 외 {len(items) - 1}건"
+    text = f"⏰ {title}: {summary}"
+    if highlighted and mention:
+        text = f"{mention} {text}"
+    return _message(text, blocks, COLOR_REMIND, card)
+
+
+# ---------------------------------------------------------------------- 주간 브리핑
+MAX_DIGEST_DEADLINES = 15
+MAX_DIGEST_POSTS = 12
+
+
+def _list_sections(heading: str, lines: Sequence[str]) -> list[Block]:
+    """줄 목록을 3000자 제한 안에서 여러 section 으로 나눕니다."""
+    blocks: list[Block] = []
+    chunk = heading
+    for line in lines:
+        if len(chunk) + len(line) + 1 > 2900:
+            blocks.append(section(chunk))
+            chunk = line
+        else:
+            chunk += "\n" + line
+    blocks.append(section(chunk))
+    return blocks
+
+
+def _digest_post_line(ref: NoticeRef) -> str:
+    when = f"`{ref.posted:%m.%d}` " if ref.posted else ""
+    return f"• {when}{BOARDS[ref.board].emoji} {link(ref.url, truncate(ref.title, 110))}"
+
+
+def build_digest_message(
+    deadlines: Sequence[tuple[NoticeRef, Deadline]],
+    new_posts: Sequence[NoticeRef],
+    now: datetime,
+    *,
+    days: int,
+    base_url: str,
+    boards: Sequence[str],
+) -> Message:
+    start = now.astimezone(KST).date()
+    end = start + timedelta(days=days - 1)
+    blocks = [
+        header(f"🗓  주간 브리핑 · {fmt_date(start)} ~ {fmt_date(end)}"),
+        context(f"🏫 {BRAND}  ·  다가오는 마감과 지난 {days}일 새 글을 모았어요"),
+    ]
+    card: list[Block] = []
+    if deadlines:
+        lines = []
+        for ref, deadline in list(deadlines)[:MAX_DIGEST_DEADLINES]:
+            label = f" {slack_escape(truncate(deadline.label, 30))}" if deadline.label else ""
+            lines.append(
+                f"• *{fmt_deadline(deadline)}* `{fmt_dday(deadline.days_left(now))}`{label} — "
+                f"{BOARDS[ref.board].emoji} {link(ref.url, truncate(ref.title, 90))}"
+            )
+        extra = len(deadlines) - MAX_DIGEST_DEADLINES
+        if extra > 0:
+            lines.append(f"_외 {extra}건_")
+        card.extend(_list_sections(f"*⏰ 다가오는 마감 {len(deadlines)}건*", lines))
+    else:
+        card.append(section(f"*⏰ 다가오는 마감*\n앞으로 {days}일 안에 마감되는 공지가 없어요."))
+    card.append(divider())
+
+    counts: dict[str, int] = {}
+    for ref in new_posts:
+        counts[ref.board] = counts.get(ref.board, 0) + 1
+    if new_posts:
+        tally = "  ·  ".join(
+            f"{BOARDS[key].emoji} {BOARDS[key].name} {counts[key]}"
+            for key in boards
+            if key in counts
+        )
+        lines = [_digest_post_line(ref) for ref in list(new_posts)[:MAX_DIGEST_POSTS]]
+        extra = len(new_posts) - MAX_DIGEST_POSTS
+        if extra > 0:
+            lines.append(f"_외 {extra}건_")
+        card.extend(_list_sections(f"*🆕 지난 {days}일 새 글 {len(new_posts)}건*\n{tally}", lines))
+    else:
+        card.append(section(f"*🆕 지난 {days}일 새 글*\n새 글이 없었어요."))
+
+    card.append(
+        {
+            "type": "actions",
+            "elements": [
+                button(
+                    f"{BOARDS[key].emoji} {BOARDS[key].name}",
+                    BOARDS[key].list_url(base_url),
+                    f"digest-{key}",
+                )
+                for key in boards[:5]
+            ],
+        }
+    )
+    card.append(_footer())
+    text = f"🗓 주간 브리핑: 마감 {len(deadlines)}건 · 새 글 {len(new_posts)}건"
+    return _message(text, blocks, BOARDS["notice"].color, card)

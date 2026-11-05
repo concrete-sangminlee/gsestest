@@ -86,3 +86,40 @@ def test_actions_annotations():
     assert formatter.format(record) == "::error::줄1%0A줄2 100%25"
     info = logging.LogRecord("x", logging.INFO, __file__, 1, "정보", None, None)
     assert formatter.format(info) == "정보"
+
+
+def test_digest_command_dry_run(capsys):
+    assert cli.main(["init", "--boards", "notice"]) == 0
+    capsys.readouterr()
+    assert cli.main(["digest", "--dry-run", "--boards", "notice"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["blocks"][0]["text"]["text"].startswith("🗓  주간 브리핑")
+
+
+def test_digest_requires_slack_when_sending():
+    assert cli.main(["digest"]) == 2
+
+
+def test_heartbeat_success_and_failure(monkeypatch):
+    calls = []
+    monkeypatch.setattr(cli.requests, "get", lambda url, timeout: calls.append(url))
+    cli.send_heartbeat("https://hc-ping.com/abc/", ok=True)
+    cli.send_heartbeat("https://hc-ping.com/abc", ok=False)
+    cli.send_heartbeat(None, ok=True)
+    assert calls == ["https://hc-ping.com/abc", "https://hc-ping.com/abc/fail"]
+
+
+def test_heartbeat_errors_are_swallowed(monkeypatch):
+    def boom(url, timeout):
+        raise cli.requests.ConnectionError("down")
+
+    monkeypatch.setattr(cli.requests, "get", boom)
+    cli.send_heartbeat("https://hc-ping.com/abc", ok=True)  # 예외 없이 통과
+
+
+def test_run_pings_heartbeat(monkeypatch, tmp_path):
+    calls = []
+    monkeypatch.setattr(cli.requests, "get", lambda url, timeout: calls.append(url))
+    monkeypatch.setenv("GSES_HEARTBEAT_URL", "https://hc-ping.com/abc")
+    assert cli.main(["init", "--boards", "notice"]) == 0
+    assert calls == ["https://hc-ping.com/abc"]

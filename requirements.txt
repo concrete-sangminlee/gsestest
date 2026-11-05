@@ -2,3 +2,5 @@ requests>=2.31.0
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
 python-dotenv>=1.0.0
+# AI 요약(선택, ANTHROPIC_API_KEY 가 있을 때만 사용)
+anthropic>=2.5.0

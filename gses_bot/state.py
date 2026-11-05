@@ -23,6 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from gses_bot.deadlines import Deadline
 from gses_bot.models import Post
 
 STATE_VERSION = 2
@@ -66,9 +67,11 @@ class State:
         created_at: str | None = None,
         updated_at: str | None = None,
         migrated_from: int | None = None,
+        digest: dict[str, Any] | None = None,
     ) -> None:
         self.seen: dict[str, dict[str, Any]] = seen or {}
         self.boards: dict[str, dict[str, Any]] = boards or {}
+        self.digest: dict[str, Any] = digest or {}
         self.health = health or Health()
         self.created_at = created_at
         self.updated_at = updated_at
@@ -129,6 +132,7 @@ class State:
             health=Health.from_dict(raw.get("health")),
             created_at=raw.get("created_at"),
             updated_at=raw.get("updated_at"),
+            digest=dict(raw.get("digest") or {}),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -138,6 +142,7 @@ class State:
             "boards": dict(sorted(self.boards.items())),
             "seen": ordered,
             "health": asdict(self.health),
+            "digest": self.digest,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
@@ -186,20 +191,74 @@ class State:
     def remember(self, post: Post, now: datetime) -> None:
         entry = self.seen.get(post.bbsidx)
         if entry is None:
-            self.seen[post.bbsidx] = {
+            entry = self.seen[post.bbsidx] = {
                 "board": post.board,
                 "title": post.title,
                 "category": post.category,
                 "first_seen": _iso(now),
             }
+        else:
+            # v1 에서 넘어온 항목 등 비어 있는 메타데이터만 보충합니다.
+            if not entry.get("title"):
+                entry["title"] = post.title
+            if not entry.get("category") and post.category:
+                entry["category"] = post.category
+            if not entry.get("board"):
+                entry["board"] = post.board
+        if post.posted and not entry.get("posted"):
+            entry["posted"] = post.posted.isoformat()
+        if post.detail_loaded:
+            self.update_details(post)
+
+    def update_details(self, post: Post) -> None:
+        """상세 페이지에서 얻은 전체 제목·마감 정보를 기록 (제목 변경 시 마감도 갱신)."""
+        entry = self.seen.get(post.bbsidx)
+        if entry is None:
             return
-        # v1 에서 넘어온 항목 등 비어 있는 메타데이터만 보충합니다.
-        if not entry.get("title"):
-            entry["title"] = post.title
-        if not entry.get("category") and post.category:
-            entry["category"] = post.category
-        if not entry.get("board"):
-            entry["board"] = post.board
+        if post.full_title and post.full_title != entry.get("title"):
+            entry["full_title"] = post.full_title
+        if post.deadlines:
+            entry["deadlines"] = [deadline.to_dict() for deadline in post.deadlines]
+        else:
+            entry.pop("deadlines", None)
+
+    # ------------------------------------------------------------------ 마감 리마인더
+    def deadlines(self) -> list[tuple[str, dict[str, Any], Deadline]]:
+        items = []
+        for bbsidx, entry in self.seen.items():
+            for raw in entry.get("deadlines") or []:
+                deadline = Deadline.from_dict(raw)
+                if deadline is not None:
+                    items.append((bbsidx, entry, deadline))
+        return sorted(items, key=lambda item: item[2].at)
+
+    def reminded(self, bbsidx: str) -> set[str]:
+        return set(self.seen.get(bbsidx, {}).get("reminded") or [])
+
+    def mark_reminded(self, bbsidx: str, keys: set[str]) -> None:
+        entry = self.seen.get(bbsidx)
+        if entry is not None:
+            entry["reminded"] = sorted(set(entry.get("reminded") or []) | keys)
+
+    def prune_deadlines(self, now: datetime) -> None:
+        """하루 넘게 지난 마감과 그 리마인더 기록을 정리합니다."""
+        cutoff = now.timestamp() - 86400
+        for entry in self.seen.values():
+            keep = []
+            for raw in entry.get("deadlines") or []:
+                deadline = Deadline.from_dict(raw)
+                if deadline is not None and deadline.at.timestamp() >= cutoff:
+                    keep.append(raw)
+            if keep:
+                entry["deadlines"] = keep
+            else:
+                entry.pop("deadlines", None)
+            live = {raw["at"] for raw in keep}
+            reminded = [key for key in entry.get("reminded") or [] if key.split("|")[0] in live]
+            if reminded:
+                entry["reminded"] = reminded
+            else:
+                entry.pop("reminded", None)
 
     def stored_title(self, bbsidx: str) -> str | None:
         entry = self.seen.get(bbsidx)

@@ -97,3 +97,29 @@ def test_normalize_mention(raw, expected):
 
 def test_parse_boards_all():
     assert parse_boards("all") == DEFAULT_BOARDS
+
+
+def test_reminder_ai_routing_and_heartbeat_settings():
+    settings = Settings.from_env(
+        {
+            "GSES_REMINDER_DAYS": "1, 3,0",
+            "ANTHROPIC_API_KEY": "sk-ant-x",
+            "GSES_AI_MODEL": "",
+            "SLACK_WEBHOOK_URL_SEMINARS": "https://hooks.slack.test/sem",
+            "SLACK_WEBHOOK_URL_NEWS": "",
+            "GSES_HEARTBEAT_URL": "https://hc-ping.com/uuid",
+        }
+    )
+    assert settings.reminder_days == (3, 1, 0)
+    assert settings.ai_enabled and settings.ai_model == "claude-opus-5-5"
+    assert settings.board_webhooks == {"seminars": "https://hooks.slack.test/sem"}
+    assert settings.heartbeat_url == "https://hc-ping.com/uuid"
+    assert Settings.from_env({}).reminder_days == (1,)
+    assert Settings.from_env({"GSES_REMINDER_DAYS": "off"}).reminder_days == ()
+    assert not Settings.from_env({"ANTHROPIC_API_KEY": "k", "GSES_AI_SUMMARY": "false"}).ai_enabled
+
+
+@pytest.mark.parametrize("raw", ["1,x", "99"])
+def test_invalid_reminder_days(raw):
+    with pytest.raises(ConfigError, match="GSES_REMINDER_DAYS"):
+        Settings.from_env({"GSES_REMINDER_DAYS": raw})

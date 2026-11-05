@@ -17,7 +17,10 @@ from collections.abc import Sequence
 from pathlib import Path
 from urllib.parse import quote
 
+import requests
+
 from gses_bot import __version__
+from gses_bot.ai import Summarizer
 from gses_bot.boards import BOARDS
 from gses_bot.bot import EXIT_CONFIG, EXIT_FAILURE, EXIT_OK, EXIT_STATE, Bot, payloads_json
 from gses_bot.config import ConfigError, Settings, parse_boards
@@ -28,7 +31,7 @@ from gses_bot.state import StateError
 
 log = logging.getLogger("gses_bot")
 
-COMMANDS = ("run", "init", "ping", "test-post", "preview", "status")
+COMMANDS = ("run", "init", "ping", "test-post", "preview", "digest", "status")
 BLOCK_KIT_BUILDER = "https://app.slack.com/block-kit-builder/#"
 
 EPILOG = """\
@@ -38,6 +41,7 @@ EPILOG = """\
   ping         Slack 연결 테스트 메시지 전송
   test-post    게시판 최신 글(또는 --bbsidx) 1건을 테스트 전송 (state 변경 없음)
   preview      test-post 메시지의 Slack JSON 과 Block Kit Builder 링크 출력 (전송 안 함)
+  digest       주간 브리핑 전송 (다가오는 마감 + 지난 7일 새 글, 6일 안에 보냈으면 건너뜀)
   status       state 파일 요약 출력
 
 예시:
@@ -100,6 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--send-on-first-run", action="store_true", help="state 가 없을 때도 최신 글 1건은 전송"
     )
     parser.add_argument("--json", action="store_true", help="Slack 메시지 JSON 출력")
+    parser.add_argument("--force", action="store_true", help="digest: 최근에 보냈어도 다시 전송")
     parser.add_argument("-v", "--verbose", action="store_true", help="디버그 로그")
     parser.add_argument("-q", "--quiet", action="store_true", help="경고 이상만 출력")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -130,7 +135,9 @@ def _load_dotenv() -> None:
     load_dotenv()
 
 
-def make_clients(settings: Settings) -> tuple[SlackClient | None, SlackClient | None]:
+def make_clients(
+    settings: Settings,
+) -> tuple[SlackClient | None, SlackClient | None, dict[str, SlackClient]]:
     slack = None
     if settings.slack_configured:
         slack = SlackClient(
@@ -141,14 +148,45 @@ def make_clients(settings: Settings) -> tuple[SlackClient | None, SlackClient | 
     alert = (
         SlackClient(webhook_url=settings.alert_webhook_url) if settings.alert_webhook_url else None
     )
-    return slack, alert
+    routes = {key: SlackClient(webhook_url=url) for key, url in settings.board_webhooks.items()}
+    return slack, alert, routes
+
+
+def make_summarizer(settings: Settings) -> Summarizer | None:
+    if not settings.ai_enabled:
+        return None
+    try:
+        summarizer = Summarizer(settings.anthropic_api_key or "", model=settings.ai_model)
+    except ImportError:
+        log.warning("⚠️  anthropic 패키지가 없어 AI 요약을 끕니다 (pip install anthropic)")
+        return None
+    log.info("🤖 AI 요약 사용 (%s)", settings.ai_model)
+    return summarizer
+
+
+def send_heartbeat(url: str | None, ok: bool) -> None:
+    """외부 감시(healthchecks.io 등)에 생존 신호. 실패 시 '<url>/fail' 로 알립니다.
+
+    GitHub 스케줄이 멈추면 봇 스스로는 알릴 방법이 없으므로, 신호가 끊기면 외부 서비스가
+    메일/Slack 으로 알려 주는 'dead man's switch' 역할을 합니다.
+    """
+    if not url:
+        return
+    target = url.rstrip("/") + ("" if ok else "/fail")
+    try:
+        requests.get(target, timeout=10)
+    except requests.RequestException as exc:
+        log.warning("⚠️  heartbeat 전송 실패: %s", exc.__class__.__name__)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     _load_dotenv()
     args = build_parser().parse_args(argv)
     command = resolve_command(args)
-    setup_logging(args.verbose, args.quiet, to_stderr=args.json or command in {"preview", "status"})
+    machine_output = (
+        args.json or command in {"preview", "status"} or (command == "digest" and args.dry_run)
+    )
+    setup_logging(args.verbose, args.quiet, to_stderr=machine_output)
     dry_run = args.dry_run or command == "preview"
 
     try:
@@ -161,21 +199,32 @@ def main(argv: Sequence[str] | None = None) -> int:
             settings.send_on_first_run = True
         if args.bbsidx and not args.bbsidx.isdigit():
             raise ConfigError(f"--bbsidx 는 숫자여야 합니다: {args.bbsidx!r}")
-        if command == "ping" or (command in {"run", "test-post"} and not dry_run):
+        if command == "ping" or (command in {"run", "test-post", "digest"} and not dry_run):
             settings.require_slack()
     except ConfigError as exc:
         log.error("❌ 설정 오류: %s", exc)
         return EXIT_CONFIG
 
-    slack, alert = make_clients(settings)
-    bot = Bot(settings, slack=slack, alert_slack=alert)
+    slack, alert, routes = make_clients(settings)
+    summarizer = make_summarizer(settings) if command in {"run", "test-post", "preview"} else None
+    bot = Bot(settings, slack=slack, alert_slack=alert, routes=routes, summarizer=summarizer)
 
     try:
         if command in {"run", "init"}:
-            return _run(bot, dry_run=dry_run, force_init=command == "init", show_json=args.json)
+            code = _run(bot, dry_run=dry_run, force_init=command == "init", show_json=args.json)
+            if not dry_run:
+                send_heartbeat(settings.heartbeat_url, code == EXIT_OK)
+            return code
         if command == "ping":
-            bot.ping()
-            log.info("✅ Slack ping 테스트 성공 (%s)", slack.mode if slack else "-")
+            channels = bot.ping()
+            log.info(
+                "✅ Slack ping 테스트 성공 (%s, 채널 %d곳)", slack.mode if slack else "-", channels
+            )
+            return EXIT_OK
+        if command == "digest":
+            message = bot.digest(dry_run=dry_run, force=args.force)
+            if message is not None and (dry_run or args.json):
+                print(json.dumps(message, ensure_ascii=False, indent=2))
             return EXIT_OK
         if command in {"test-post", "preview"}:
             return _test_post(

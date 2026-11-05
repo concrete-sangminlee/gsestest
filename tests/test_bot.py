@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 
 import pytest
 
 from gses_bot.bot import EXIT_FAILURE, EXIT_OK, Bot, has_images
+from gses_bot.models import AISummary
 from gses_bot.slack import SlackError
 from gses_bot.state import State, StateError
+from gses_bot.utils import KST
 
 from conftest import BASE, NOW, FakeSlack
 
@@ -314,3 +317,177 @@ def test_filtered_title_change_is_recorded_silently(settings, scraper):
     assert report.title_changes == []
     assert slack.messages == []
     assert saved(settings)["seen"]["6184"]["title"].endswith("(연장)")
+
+
+# ---------------------------------------------------------------------- 마감 리마인더
+def at(month: int, day: int, hour: int = 9, minute: int = 10) -> datetime:
+    return datetime(2026, month, day, hour, minute, tzinfo=KST)
+
+
+def bot_at(settings, scraper, when, slack=None, **kwargs) -> Bot:
+    return Bot(settings, scraper=scraper, slack=slack, clock=lambda: when, **kwargs)
+
+
+def reminder_texts(slack: FakeSlack) -> list[str]:
+    return [m["text"] for m in slack.messages if m["text"].startswith(("⏰", "<!"))]
+
+
+def test_baseline_records_deadlines_of_recent_posts(settings, scraper):
+    report = make_bot(settings, scraper, FakeSlack()).run()
+    assert report.baseline_enriched >= 2
+    deadlines = saved(settings)["seen"]["6298"]["deadlines"]
+    assert deadlines[0] == {
+        "at": "2026-11-27T17:00+09:00",
+        "label": "논문 프로포절 신청서 제출",
+        "has_time": True,
+    }
+
+
+def test_reminder_sent_once_on_the_morning_before(settings, scraper):
+    baseline(settings, scraper)
+    early = FakeSlack()
+    bot_at(settings, scraper, at(11, 26, 8, 30), early).run()
+    assert reminder_texts(early) == []  # 아침 9시 전에는 대기
+
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 26, 9, 10), slack).run()
+    assert [(r.bbsidx, d.label) for r, d in report.reminders] == [
+        ("6298", "논문 프로포절 신청서 제출")
+    ]
+    (text,) = reminder_texts(slack)
+    assert text.startswith("⏰ 내일 마감: 논문 프로포절 신청서 제출 (11.27 (금) 17:00)")
+    assert saved(settings)["seen"]["6298"]["reminded"] == ["2026-11-27T17:00+09:00|1"]
+
+    again = FakeSlack()
+    bot_at(settings, scraper, at(11, 26, 15, 0), again).run()
+    bot_at(settings, scraper, at(11, 27, 9, 10), again).run()
+    assert reminder_texts(again) == []
+
+
+def test_multiple_offsets_and_late_recovery(settings, scraper):
+    baseline(settings, scraper)
+    settings.reminder_days = (3, 1, 0)
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 24, 10), slack).run()  # D-3
+    bot_at(settings, scraper, at(11, 27, 9, 30), slack).run()  # D-1 을 놓치고 당일에 복귀
+    texts = reminder_texts(slack)
+    assert len(texts) == 2
+    assert texts[1].startswith("⏰ 오늘 마감")
+    keys = saved(settings)["seen"]["6298"]["reminded"]
+    assert set(keys) == {f"2026-11-27T17:00+09:00|{k}" for k in (0, 1, 3)}
+
+
+def test_reminders_respect_filters_and_disable(settings, scraper):
+    baseline(settings, scraper)
+    settings.exclude_keywords = ("프로포절",)
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 26), slack).run()
+    assert reminder_texts(slack) == []
+
+    settings.exclude_keywords = ()
+    settings.reminder_days = ()
+    bot_at(settings, scraper, at(11, 26), slack).run()
+    assert reminder_texts(slack) == []
+
+
+def test_init_and_dry_run_never_send_reminders(settings, scraper):
+    baseline(settings, scraper)
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 26), slack).run(force_init=True)
+    assert slack.messages == [] and report.reminders == []
+    report = bot_at(settings, scraper, at(11, 26), slack).run(dry_run=True)
+    assert slack.messages == [] and len(report.reminders) == 1
+    assert "reminded" not in saved(settings)["seen"]["6298"]
+
+
+def test_reminder_failure_is_retried(settings, scraper):
+    baseline(settings, scraper)
+    report = bot_at(settings, scraper, at(11, 26), FakeSlack(fail_on=1)).run()
+    assert report.exit_code == EXIT_FAILURE
+    assert "reminded" not in saved(settings)["seen"]["6298"]
+    retry = FakeSlack()
+    bot_at(settings, scraper, at(11, 26, 9, 40), retry).run()
+    assert len(reminder_texts(retry)) == 1
+
+
+def test_passed_deadlines_are_pruned(settings, scraper):
+    baseline(settings, scraper)
+    bot_at(settings, scraper, at(12, 20), FakeSlack()).run()
+    assert "deadlines" not in saved(settings)["seen"]["6298"]
+
+
+# ---------------------------------------------------------------------- 신규 글 카드
+def test_new_post_card_shows_dday(settings, scraper):
+    baseline(settings, scraper, forget=["6298"])
+    slack = FakeSlack()
+    make_bot(settings, scraper, slack).run()
+    card = json.dumps(slack.messages[0], ensure_ascii=False)
+    assert "*D-23* · 11.27 (금) 17:00 — 논문 프로포절 신청서 제출" in card
+    assert "_외 3건_" in card
+
+
+def test_ai_summary_is_used_and_budgeted(settings, scraper):
+    baseline(settings, scraper, forget=["6298", "6301"])
+
+    class FakeSummarizer:
+        def __init__(self):
+            self.calls = []
+
+        def summarize(self, post):
+            self.calls.append(post.bbsidx)
+            return AISummary("2줄 요약입니다.", "환경관리학과 석사과정", "11/27까지 제출")
+
+    summarizer = FakeSummarizer()
+    settings.ai_max_posts_per_run = 1
+    slack = FakeSlack()
+    report = make_bot_with(settings, scraper, slack, summarizer=summarizer).run()
+    assert len(summarizer.calls) == 1  # 실행당 상한
+    assert report.ai_summaries == 1
+    card = json.dumps(slack.messages, ensure_ascii=False)
+    assert "🤖 2줄 요약입니다." in card and "👥 환경관리학과 석사과정" in card
+
+
+def make_bot_with(settings, scraper, slack, **kwargs) -> Bot:
+    return Bot(settings, scraper=scraper, slack=slack, clock=lambda: NOW, **kwargs)
+
+
+def test_board_routing(settings, scraper):
+    baseline(settings, scraper, forget=["6303", "6290"])
+    default, seminars = FakeSlack(), FakeSlack()
+    make_bot_with(settings, scraper, default, routes={"seminars": seminars}).run()
+    assert sent_ids(default) == ["6303"]
+    assert sent_ids(seminars) == ["6290"]
+
+
+def test_ping_reaches_every_channel(settings, scraper):
+    default, seminars = FakeSlack(), FakeSlack()
+    count = make_bot_with(settings, scraper, default, routes={"seminars": seminars}).ping()
+    assert count == 2 and len(default.messages) == len(seminars.messages) == 1
+
+
+# ---------------------------------------------------------------------- 주간 브리핑
+def test_digest_lists_deadlines_and_new_posts(settings, scraper):
+    baseline(settings, scraper)
+    slack = FakeSlack()
+    message = bot_at(settings, scraper, at(11, 23, 8, 41), slack).digest()
+    text = json.dumps(message, ensure_ascii=False)
+    assert "다가오는 마감 1건" in text and "논문 프로포절 신청서 제출" in text
+    assert len(slack.messages) == 1
+    assert saved(settings)["digest"]["last_sent_at"].startswith("2026-11-23T08:41")
+
+    # 6일 안에는 다시 보내지 않고, force 면 보냄
+    assert bot_at(settings, scraper, at(11, 25), slack).digest() is None
+    assert bot_at(settings, scraper, at(11, 25), slack).digest(force=True) is not None
+    assert len(slack.messages) == 2
+
+
+def test_digest_counts_recent_posts(settings, scraper):
+    baseline(settings, scraper)
+    message = bot_at(settings, scraper, at(11, 9), FakeSlack()).digest(dry_run=True)
+    text = json.dumps(message, ensure_ascii=False)
+    assert "지난 7일 새 글" in text and "6303" in text
+    assert "last_sent_at" not in saved(settings).get("digest", {})
+
+
+def test_digest_without_state_is_skipped(settings, scraper):
+    assert bot_at(settings, scraper, at(11, 9), FakeSlack()).digest() is None

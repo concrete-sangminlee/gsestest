@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from gses_bot import __version__
+from gses_bot.ai import DEFAULT_MODEL as AI_DEFAULT_MODEL
 from gses_bot.boards import BOARDS, DEFAULT_BOARDS
 from gses_bot.utils import parse_list
 
@@ -90,6 +91,33 @@ def parse_boards(raw: str | None) -> tuple[str, ...]:
     return keys
 
 
+def parse_days(raw: str | None, default: tuple[int, ...]) -> tuple[int, ...]:
+    """'3,1,0' → (3, 1, 0). 'off'/'none' 은 기능 끔."""
+    if raw is None:
+        return default
+    if raw.strip().lower() in {"off", "none", "false", "no", "0개"}:
+        return ()
+    try:
+        days = sorted({int(item) for item in parse_list(raw)}, reverse=True)
+    except ValueError:
+        raise ConfigError(
+            f"GSES_REMINDER_DAYS 는 '3,1,0' 같은 숫자 목록이어야 합니다: {raw!r}"
+        ) from None
+    if any(day < 0 or day > 30 for day in days):
+        raise ConfigError(f"GSES_REMINDER_DAYS 값은 0~30 사이여야 합니다: {raw!r}")
+    return tuple(days)
+
+
+def board_webhooks(env: Mapping[str, str]) -> dict[str, str]:
+    """SLACK_WEBHOOK_URL_SEMINARS 처럼 게시판별로 다른 채널로 보낼 Webhook."""
+    routes = {}
+    for key in BOARDS:
+        url = _get(env, f"SLACK_WEBHOOK_URL_{key.upper()}")
+        if url:
+            routes[key] = url
+    return routes
+
+
 def normalize_mention(raw: str | None) -> str | None:
     """'channel' / 'here' / 'U0123ABC' / 'S0123ABC'(사용자 그룹) → Slack 멘션 문법."""
     if raw is None:
@@ -116,6 +144,7 @@ class Settings:
     slack_bot_token: str | None = None
     slack_channel: str | None = None
     alert_webhook_url: str | None = None
+    board_webhooks: dict[str, str] = field(default_factory=dict)
     # 수집 대상
     base_url: str = DEFAULT_BASE_URL
     boards: tuple[str, ...] = DEFAULT_BOARDS
@@ -134,10 +163,22 @@ class Settings:
     highlight_keywords: tuple[str, ...] = ()
     mention: str | None = None
     send_on_first_run: bool = False
+    # 마감 리마인더 / 주간 브리핑
+    reminder_days: tuple[int, ...] = (1,)
+    reminder_hour: int = 9
+    baseline_detail_days: int = 21
+    baseline_detail_max: int = 40
+    digest_days: int = 7
+    # AI 요약 (Claude API)
+    anthropic_api_key: str | None = None
+    ai_summary: bool = True
+    ai_model: str = AI_DEFAULT_MODEL
+    ai_max_posts_per_run: int = 10
     # 운영
     state_file: Path = field(default_factory=lambda: Path("state.json"))
     failure_alert_threshold: int = 3
     max_state_entries: int = 3000
+    heartbeat_url: str | None = None
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -166,7 +207,21 @@ class Settings:
             state_file=Path(_get(env, "GSES_STATE_FILE", "STATE_FILE") or "state.json"),
             failure_alert_threshold=_int(env, "GSES_FAILURE_ALERT_THRESHOLD", 3, 1, 1000),
             max_state_entries=_int(env, "GSES_MAX_STATE_ENTRIES", 3000, 100, 100_000),
+            board_webhooks=board_webhooks(env),
+            reminder_days=parse_days(_get(env, "GSES_REMINDER_DAYS"), (1,)),
+            reminder_hour=_int(env, "GSES_REMINDER_HOUR", 9, 0, 23),
+            baseline_detail_days=_int(env, "GSES_BASELINE_DETAIL_DAYS", 21, 0, 365),
+            digest_days=_int(env, "GSES_DIGEST_DAYS", 7, 1, 31),
+            anthropic_api_key=_get(env, "ANTHROPIC_API_KEY"),
+            ai_summary=_bool(env, "GSES_AI_SUMMARY", True),
+            ai_model=_get(env, "GSES_AI_MODEL") or AI_DEFAULT_MODEL,
+            ai_max_posts_per_run=_int(env, "GSES_AI_MAX_POSTS_PER_RUN", 10, 1, 100),
+            heartbeat_url=_get(env, "GSES_HEARTBEAT_URL"),
         )
+
+    @property
+    def ai_enabled(self) -> bool:
+        return bool(self.ai_summary and self.anthropic_api_key)
 
     @property
     def slack_configured(self) -> bool:

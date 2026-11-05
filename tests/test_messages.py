@@ -1,22 +1,27 @@
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, datetime
 
 from gses_bot.boards import BOARDS
 from gses_bot.bot import has_images, strip_images
 from gses_bot.config import Settings
+from gses_bot.deadlines import Deadline
 from gses_bot.messages import (
     MAX_BLOCKS,
     build_alert_message,
+    build_digest_message,
     build_ping_message,
     build_post_messages,
     build_recovery_message,
+    build_reminder_message,
     build_title_change_message,
+    deadline_line,
     post_blocks,
 )
-from gses_bot.models import Attachment, Post, TitleChange
+from gses_bot.models import AISummary, Attachment, NoticeRef, Post, TitleChange
 from gses_bot.state import Health
+from gses_bot.utils import KST
 
 from conftest import BASE, NOW
 
@@ -168,3 +173,65 @@ def test_operational_messages_are_valid():
     ):
         assert_slack_limits(message)
     assert "3시간 30분" in json.dumps(recovery, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------------- 마감·요약·리마인더·브리핑
+def _deadline(day: int, label: str = "신청서 제출", hour: int | None = 17) -> Deadline:
+    has_time = hour is not None
+    return Deadline(
+        at=datetime(2026, 11, day, hour if has_time else 23, 0 if has_time else 59, tzinfo=KST),
+        label=label,
+        has_time=has_time,
+    )
+
+
+def test_deadline_line_shows_next_upcoming():
+    deadlines = [_deadline(3), _deadline(27, "프로포절 <신청>"), _deadline(30)]
+    line = deadline_line(deadlines, NOW)
+    assert line == "⏰ *D-23* · 11.27 (금) 17:00 — 프로포절 &lt;신청&gt;  _외 1건_"
+    assert deadline_line([_deadline(5)], NOW).startswith("🚨 *내일 마감*")
+    assert deadline_line([_deadline(3)], NOW) is None
+
+
+def test_ai_summary_replaces_preview():
+    post = rich_post(1, ai=AISummary("요약 <b>", "석사과정", "11/27까지 제출"))
+    texts = [e["text"] for b in post_blocks(post) if b["type"] == "context" for e in b["elements"]]
+    assert texts[0] == "🤖 요약 &lt;b&gt;\n👥 석사과정  ·  ✅ 11/27까지 제출"
+    assert not any("본문 미리보기" in t for t in texts)
+
+
+def _ref(i: int) -> NoticeRef:
+    return NoticeRef(
+        "notice",
+        str(i),
+        "긴 공지 제목 " * 30,
+        f"{BASE}/x?bbsidx={i}",
+        posted=date(2026, 11, 2),
+        highlight="논문" if i % 2 else None,
+    )
+
+
+def test_reminder_message_limits_and_mention():
+    items = [(_ref(i), _deadline(5, "라벨 " * 30)) for i in range(30)]
+    message = build_reminder_message(items, NOW, mention="<!here>")
+    assert_slack_limits(message)
+    assert message["text"].startswith("<!here> ⏰ 내일 마감")
+    assert "12건" in message["blocks"][0]["text"]["text"]
+
+
+def test_digest_message_limits():
+    deadlines = [(_ref(i), _deadline(5 + i % 5)) for i in range(40)]
+    posts = [_ref(i) for i in range(60)]
+    message = build_digest_message(
+        deadlines,
+        posts,
+        NOW,
+        days=7,
+        base_url=BASE,
+        boards=("notice", "seminars", "admissions", "news"),
+    )
+    assert_slack_limits(message)
+    text = json.dumps(message, ensure_ascii=False)
+    assert "외 25건" in text and "외 48건" in text
+    empty = build_digest_message([], [], NOW, days=7, base_url=BASE, boards=("notice",))
+    assert "마감되는 공지가 없어요" in json.dumps(empty, ensure_ascii=False)

@@ -8,6 +8,7 @@ from pathlib import Path
 
 from gses_bot.boards import BOARDS
 from gses_bot.bot import RunReport
+from gses_bot.deadlines import fmt_deadline
 from gses_bot.utils import slack_escape
 
 log = logging.getLogger(__name__)
@@ -49,6 +50,27 @@ def summary_markdown(report: RunReport) -> str:
                 f"| {BOARDS[post.board].name} | [#{post.bbsidx}]({post.url}) | "
                 f"{mark}{_md_escape(post.display_title)} |"
             )
+    if report.reminders:
+        verb = "보낼" if report.dry_run else "보낸"
+        lines += [
+            "",
+            f"**⏰ {verb} 마감 리마인더 {len(report.reminders)}건**",
+            "",
+            "| 마감 | 내용 | 글 |",
+            "|---|---|---|",
+        ]
+        for ref, deadline in report.reminders:
+            lines.append(
+                f"| {fmt_deadline(deadline)} | {_md_escape(deadline.label or '-')} | "
+                f"[{_md_escape(ref.title[:60])}]({ref.url}) |"
+            )
+    extras = []
+    if report.baseline_enriched:
+        extras.append(f"기준점 상세 확인 {report.baseline_enriched}건")
+    if report.ai_summaries:
+        extras.append(f"AI 요약 {report.ai_summaries}건")
+    if extras:
+        lines += ["", " · ".join(extras)]
     if report.slack_error:
         lines += ["", f"> ❌ **Slack 전송 실패**: {_md_escape(report.slack_error)}"]
     if report.alert == "sent":
