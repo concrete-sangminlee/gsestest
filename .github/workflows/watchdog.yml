@@ -1,0 +1,38 @@
+name: Bot Watchdog
+
+# 알림 봇(check_announcements.yml)의 스케줄이 멈췄을 때를 대비한 두 번째 스케줄.
+#
+# 2026-05 ~ 11월: 60일 비활성으로 스케줄이 자동 중지됐고, 다시 켜진 뒤에도 'active' 상태로
+# 스케줄이 돌지 않는 일이 있었습니다. 별도 워크플로(별도 스케줄 등록)가 매시간 봇의 마지막
+# 실행 시각을 보고, 너무 오래됐으면 workflow_dispatch 로 직접 실행시키고 다시 활성화합니다.
+# (GITHUB_TOKEN 으로 만든 이벤트 중 workflow_dispatch 는 새 실행을 만들 수 있습니다.)
+
+on:
+  schedule:
+    - cron: '23 * * * *'  # 매시 23분 (봇의 7분/37분과 겹치지 않게)
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: gses-bot-watchdog
+  cancel-in-progress: true
+
+jobs:
+  watchdog:
+    name: 봇 실행 감시
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - name: 봇 마지막 실행 확인 → 멈췄으면 직접 실행
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BOT_WORKFLOW: check_announcements.yml
+          MAX_SILENCE_MINUTES: '120'
+          WATCHDOG_REF: ${{ github.event.repository.default_branch || 'main' }}
+        run: scripts/watchdog.sh

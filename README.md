@@ -14,12 +14,20 @@ GitHub Actions 에서 30분마다 실행되며, 서버 없이 무료로 운영�
 | 🔎 **놓치지 않는 감지** | 상단 고정글 포함, 새 글이 많으면 다음 페이지까지 스캔. ID 순서가 아닌 '본 적 있는 글' 집합으로 판정 |
 | 🧾 **풍부한 카드** | 잘리지 않은 전체 제목, 분류, 등록일, 조회수, 본문 미리보기, 첨부파일 목록, 이미지 공지 썸네일 |
 | ✏️ **제목 변경 알림** | `…안내` → `…안내(연장)` 처럼 마감 연장·일정 변경을 따로 알림 |
+| ⏰ **마감 추출 + D-day 리마인더** | 본문의 `11. 27.(금) 17:00까지` 같은 마감을 찾아 카드에 `D-22` 표시, 전날 아침에 `내일 마감` 알림 |
+| 📅 **마감 변경 감지** | 제목은 그대로 두고 본문만 `★ 제출일 … 로 변경` 하는 경우도 하루 한 번 다시 읽어 `11.27 → 12.01` 알림, 리마인더도 새 날짜로 |
+| 📆 **캘린더 구독 · RSS** | 모든 마감을 `.ics` 캘린더로, 새 글을 Atom 피드로 공개 → Google/Apple 캘린더·RSS 리더에서 구독. 카드마다 `📅 캘린더` 추가 링크 |
+| 🗓 **주간 브리핑** | 매주 월요일 아침: 이번 주 마감 일정 + 지난 7일 새 글 |
+| 🤖 **AI 2줄 요약** (선택) | `ANTHROPIC_API_KEY` 가 있으면 Claude 가 요약·대상·할 일을 뽑아 카드에 표시 |
 | 🔥 **키워드 강조/필터** | 장학·등록금 등은 강조 + `@here` 멘션, 셔틀버스 등은 제외 |
+| 🔀 **게시판별 채널** | 세미나는 #seminars 로 처럼 게시판마다 다른 채널로 보내기 |
 | 🛡️ **알림 폭탄 방지** | 최초 실행·state 유실·게시판 추가 시 알림 없이 기준점만 기록, 1회 상한 초과분은 '외 N건' 요약 |
 | ♻️ **정확히 한 번** | 메시지 단위로 전송 성공 직후 기록 → 중간 실패 시에도 중복 없이 다음 실행에서 이어서 전송 |
 | 🚨 **장애 감시** | 연속 수집 실패 시 Slack 장애 알림 1회, 복구되면 복구 알림 |
 | 🗄️ **만료 없는 상태 저장** | `bot-state` 브랜치에 커밋 (Artifact 90일·Cache 7일 만료 문제 해결), 이력 추적 가능 |
-| 🔋 **자동 중지 방지** | 60일 비활성으로 스케줄이 꺼지지 않도록 정기 실행마다 워크플로 재활성화 API 호출 |
+| 🔋 **자동 중지 방지** | 매 실행·배포마다 워크플로 재활성화 API 호출 → 60일 비활성 중지 방지 + 스케줄 재등록 |
+| 🐕 **Watchdog** | 별도 워크플로가 매시간 봇의 마지막 실행을 확인, 2시간 넘게 멈췄으면 직접 실행 (스케줄 이중화) |
+| 💓 **생존 신호** (선택) | healthchecks.io 등에 매 실행 신호 → 봇이 멈추면 외부 서비스가 메일로 알려 줌 |
 
 ## ⚠️ 2026-11 현황과 업그레이드 후 할 일
 
@@ -31,13 +39,17 @@ v1 봇은 **2026-05-08 이후 약 6개월간 멈춰 있었습니다.**
 - **v1 의 잠재 버그**: `--init` 이 최신 글 1개만 기준점으로 저장 → 다음 실행에서 화면의 나머지 19개 글이 '새 글'로 한꺼번에 전송될 수 있었습니다.
   Artifact 에 저장되던 state 도 90일 보관 기한이 지나 이미 사라졌습니다.
 
-**v2 로 업그레이드한 뒤 한 번만 해 주세요:**
+- **v2 머지 후(2026-11-04)에도** 워크플로는 `active` 로 표시됐지만 스케줄이 하루 넘게 한 번도 돌지 않았습니다.
+  비활성 중지에서 풀린 워크플로의 스케줄이 다시 등록되지 않는 GitHub 동작으로 보입니다.
+  → v2.1 부터는 **봇 코드가 main 에 반영되면 즉시 한 번 실행**되고, 그 실행이 enable API 를 호출해 스케줄을 다시 등록합니다.
 
-1. GitHub → **Actions** → `GSES 공지사항 확인 및 Slack 알림` → **Enable workflow**
-   (자동 중지된 워크플로는 사람이 한 번 다시 켜야 합니다. 이후로는 봇이 스스로 타이머를 초기화합니다.)
-2. 같은 화면에서 **Run workflow** → `mode: ping` 으로 Slack 연결 확인
-3. 다음 정기 실행이 알림 없이 기준점을 잡고(`bot-state` 브랜치 생성), 그 이후 새 글부터 알림이 옵니다.
-   - 바로 확인하려면 `mode: test-post` 로 최신 글 1건을 미리 받아볼 수 있습니다 (state 변경 없음).
+**업그레이드 후 확인:**
+
+1. 머지되면 Actions 탭에 `push` 로 시작된 실행이 바로 생깁니다 → 초록색이면 `bot-state` 브랜치가 생기고 기준점이 잡힌 것입니다.
+   - 기준점 단계에서는 새 글 알림을 보내지 않지만, 최근 글의 **마감 정보는 읽어 두므로** 임박한 마감이 있으면 리마인더는 갑니다.
+2. **Run workflow** → `mode: ping` 으로 Slack 연결 확인 (게시판별 채널을 설정했다면 각 채널로 전송)
+3. 이후 30분마다 정기 실행됩니다. 봇의 스케줄이 또 멈추더라도 `Bot Watchdog` 워크플로가 매시간 확인해 직접 실행시킵니다.
+   둘 다 멈춘 것 같으면 Actions 화면의 **⋯ → Disable workflow → Enable workflow** 를 한 번 해 주세요.
 
 > 별도의 `Keepalive Workflow` 는 v2 에서 삭제되었습니다 (알림 워크플로가 스스로 타이머를 초기화). Actions 목록에 남아 있다면 무시하셔도 됩니다.
 
@@ -91,6 +103,15 @@ Secrets 는 **Secrets** 탭, 나머지는 **Variables** 탭에 등록합니다. 
 | `GSES_EXCLUDE_KEYWORDS` | Variable | — | 이 키워드가 들어간 글은 알림 제외 (예: `셔틀버스`) |
 | `GSES_NOTIFY_TITLE_CHANGES` | Variable | `true` | 제목 변경 알림 |
 | `GSES_MAX_POSTS_PER_RUN` | Variable | `20` | 게시판별 1회 최대 알림 수 (초과분은 요약) |
+| `GSES_REMINDER_DAYS` | Variable | `1` | 마감 며칠 전에 알릴지. `3,1,0` = D-3·D-1·당일, `off` = 끄기 |
+| `GSES_REMINDER_HOUR` | Variable | `9` | 리마인더를 보내기 시작할 시각 (KST) |
+| `GSES_DEADLINE_RECHECK_HOURS` | Variable | `24` | 마감이 남은 글을 몇 시간마다 다시 읽을지 (`0` = 끄기, 실행당 최대 5건) |
+| `GSES_EXPORTS` | Variable | `true` | 마감 캘린더(.ics)·새 글 피드(.xml) 공개 |
+| `SLACK_WEBHOOK_URL_<게시판>` | Secret | — | 게시판별 채널: `…_NOTICE`, `…_SEMINARS`, `…_ADMISSIONS`, `…_NEWS` |
+| `ANTHROPIC_API_KEY` | Secret | — | 설정하면 AI 2줄 요약 사용 ([아래](#ai-요약-선택) 참고) |
+| `GSES_AI_MODEL` | Variable | `claude-opus-5-5` | 요약에 쓸 Claude 모델 |
+| `GSES_AI_SUMMARY` | Variable | `true` | 키가 있어도 요약을 끄려면 `false` |
+| `GSES_HEARTBEAT_URL` | Secret | — | 생존 신호 URL ([아래](#생존-신호-dead-mans-switch) 참고) |
 | `GSES_FAILURE_ALERT_THRESHOLD` | Variable | `3` | 연속 실패 몇 회에 장애 알림을 보낼지 |
 
 키워드는 대소문자를 무시하고 **분류 + 제목**에서 찾습니다. 필터에 걸린 글도 '본 글'로 기록되어 다시 판정하지 않습니다.
@@ -100,14 +121,97 @@ Secrets 는 **Secrets** 탭, 나머지는 **Variables** 탭에 등록합니다. 
 
 | mode | 동작 |
 |---|---|
-| `run` | 정기 실행과 동일 |
+| `run` | 정기 실행과 동일 (새 글 + 마감 리마인더) |
 | `dry-run` | 무엇을 보낼지 Job Summary 로만 확인 (전송·저장 없음) |
 | `ping` | Slack 연결 테스트 + 감시 중인 게시판/필터/추적 글 수 표시 |
 | `test-post` | `board`(+`bbsidx`)의 글 1건을 실제 카드 모양으로 전송 (state 변경 없음) |
+| `digest` | 주간 브리핑을 지금 보내기 |
 | `init` | 알림 없이 현재 글을 모두 '본 글'로 기록 (기준점 재설정) |
 | `status` | state 요약 출력 |
 
 매 실행 결과는 워크플로 실행 화면의 **Summary** 에 표로 정리됩니다.
+
+## 마감 리마인더
+
+새 글(과 기준점 단계의 최근·고정 글)의 본문에서 마감을 찾아 `state.json` 에 기록하고, 정해진 날 아침에 알립니다.
+
+```
+⏰  내일 마감 · 2건
+┃ 내일 마감 · 11.27 (금) 17:00 — 논문 프로포절 신청서 제출
+┃ 📢 [환경관리학과] 2026-2 환경관리학과 석사논문 프로포절 공고 …               [열기]
+┃ ───────────────────────────────────────────
+┃ 내일 마감 · 11.27 (금) — 수강료 및 납부기간 · 2차(최종)
+┃ 📢 2026학년도 동계 계절수업 수강료 납부 및 환불 계획 안내                      [열기]
+```
+
+- **마감으로 보는 것**: 날짜 바로 뒤 `까지`/`마감`, 기간(`A ~ B`)의 끝, 같은 줄의 `제출·신청·접수·납부·모집·Deadline`.
+  표 형식 공지는 소제목(`가. 수강료 및 납부기간`)과 행 이름(`1차`)으로 라벨을 붙입니다.
+- **제외하는 것**: `일시`, `발표일`, `통제 일시`, `운영기간`, `설명회` 같은 행사 날짜, 지난 날짜.
+- **요일 검증**: 실제 공지의 `2026. 1. 4.(월)` 은 2027년의 오타(2026-01-04 는 일요일)여서 요일로 연도를 바로잡고,
+  `November 16 (Fri)` 처럼 어느 해와도 요일이 맞지 않는 날짜는 버립니다.
+- **한 번씩만**: 마감·단계(D-3, D-1…)마다 한 번만 보냅니다. 봇이 멈췄다 돌아오면 가장 가까운 단계 하나만 보냅니다.
+- 제목이 `…(연장)` 처럼 바뀌면 상세를 다시 읽어 마감도 새 날짜로 갱신합니다. 키워드 필터도 그대로 적용됩니다.
+
+## 마감 변경 감지
+
+실제 공지는 제목은 그대로 두고 본문 맨 위에 `★ 프로포절 신청서 제출일 11. 27.(금) 17:00 로 변경` 처럼 고치는 경우가 많습니다.
+마감이 남은 글은 하루 한 번(실행당 최대 5건, 마감 임박 순) 상세를 다시 읽어 비교합니다.
+
+```
+📅  마감 일정 변경 · 1건
+┃ 논문 프로포절 신청서 제출 · ~11.27 (금) 17:00~ → 12.01 (화) 17:00 · `D-26` · 📅 캘린더
+┃ 📢 [환경관리학과] 2026-2 환경관리학과 석사논문 프로포절 공고 …                  [열기]
+```
+
+- 같은 라벨의 날짜가 바뀌면 '변경', 새 라벨이면 '추가'. 사라지기만 한 마감은 알리지 않습니다.
+- 리마인더는 새 날짜를 따라갑니다 (옛 날짜로는 보내지 않음).
+- 봇의 추출 규칙이 개선돼 결과가 달라진 경우는 알림 없이 조용히 갱신합니다 (state 의 `rules` 버전).
+
+## 캘린더 구독 · RSS
+
+매 실행 후 `bot-state` 브랜치에 두 파일이 함께 커밋됩니다 (내용이 바뀔 때만).
+
+| 파일 | 구독 주소 |
+|---|---|
+| 마감 캘린더 | `https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/deadlines.ics` |
+| 새 글 피드 (Atom) | `https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml` |
+
+- **Google Calendar**: 왼쪽 *다른 캘린더 +* → *URL로 추가* → 위 `.ics` 주소. 또는 주간 브리핑의 **📅 마감 캘린더 구독** 버튼.
+- **Apple 캘린더**: *파일 → 새로운 캘린더 구독* → 같은 주소. 마감 하루 전 알림(VALARM)이 들어 있습니다.
+- 시각이 있는 마감은 30분 일정(마감 30분 전~마감), 날짜만 있는 마감은 종일 일정으로 들어갑니다.
+- 키워드 필터(`GSES_INCLUDE/EXCLUDE_KEYWORDS`)는 캘린더·피드에도 똑같이 적용됩니다.
+- 카드·리마인더의 `📅 캘린더` 링크는 그 마감 하나만 Google Calendar 에 바로 추가합니다.
+
+## 주간 브리핑
+
+매주 월요일 08:41 (KST) 에 앞으로 7일 안의 마감과 지난 7일 새 글을 한 메시지로 보냅니다.
+6일 안에 이미 보냈으면 건너뛰고, 수동 실행(`mode: digest`)은 언제든 보냅니다. 새 글이 없는 주에도 오므로 '봇이 살아 있다'는 신호도 됩니다.
+
+## AI 요약 (선택)
+
+[Anthropic Console](https://console.anthropic.com) 에서 API 키를 만들어 Secret `ANTHROPIC_API_KEY` 로 등록하면,
+새 글 카드의 본문 미리보기 자리에 Claude 가 만든 요약이 들어갑니다.
+
+```
+🤖 2026-2학기 환경관리학과 석사논문 프로포절 일정 안내로, 신청서 제출 기한이 11/27(금) 17:00로 변경됨.
+👥 환경관리학과 석사과정 · ✅ 11/27 17:00까지 프로포절 신청서를 이메일 또는 학과사무실에 제출
+```
+
+- 모델: 기본 `claude-opus-5-5`, 요약 작업이라 `effort: low` 로 호출합니다. `GSES_AI_MODEL` 로 바꿀 수 있습니다.
+- 비용: 글 1건에 대략 $0.02–0.04 (입력 수천 토큰 + 짧은 출력). 하루 새 글 5건이면 한 달 $3–6 수준입니다.
+  한 번 실행에 최대 10건까지만 요약합니다 (`GSES_AI_MAX_POSTS_PER_RUN`).
+- 구조화 출력(JSON 스키마)으로 받고, 안전 분류기가 거절하면 서버 측 fallback(`fallbacks: "default"`)이 다른 모델로 자동 재시도합니다.
+- 키가 틀리거나 API 장애가 나도 알림은 그대로 갑니다 (요약 대신 원문 미리보기). 마감 추출·리마인더는 AI 없이 동작합니다.
+- 공지 본문은 Anthropic API 로 전송됩니다. 공개 게시판 내용이지만, 원치 않으면 키를 등록하지 마세요.
+
+## 생존 신호 (dead man's switch)
+
+v1 처럼 GitHub 스케줄이 조용히 멈추면 봇 스스로는 알릴 방법이 없습니다. 외부 감시 서비스를 붙이면 신호가 끊겼을 때 메일을 받을 수 있습니다.
+
+1. [healthchecks.io](https://healthchecks.io) (무료) 에서 Check 를 만들고 Period `30 minutes`, Grace `2 hours` 정도로 설정
+2. Ping URL(`https://hc-ping.com/…`)을 Secret `GSES_HEARTBEAT_URL` 로 등록
+
+매 실행이 끝나면 성공 시 그 URL, 실패 시 `…/fail` 을 호출합니다. healthchecks.io 외에 GET 핑을 받는 서비스(Better Stack, Uptime Kuma push 등)도 쓸 수 있습니다.
 
 ## 로컬 실행
 
@@ -140,7 +244,8 @@ python -m gses_bot --help
 | `python -m gses_bot ping` | Slack 연결 테스트 |
 | `python -m gses_bot test-post --board seminars` | 최신 글 1건 테스트 전송 |
 | `python -m gses_bot preview --bbsidx 6298` | 메시지 JSON + [Block Kit Builder](https://app.slack.com/block-kit-builder) 미리보기 링크 |
-| `python -m gses_bot status` | state 요약 |
+| `python -m gses_bot digest --dry-run` | 주간 브리핑 미리보기 (JSON) |
+| `python -m gses_bot status` | state 요약 (추적 글 수, 다가오는 마감 수 등) |
 
 v1 명령(`python fetch_announcements.py --init/--dry-run/--ping/--send-on-first-run`, `TEST_MODE=true`)도 그대로 동작합니다.
 cron 으로 돌릴 때는 아래 예처럼 등록하세요 (경로는 환경에 맞게 수정).
@@ -165,10 +270,11 @@ cron 으로 돌릴 때는 아래 예처럼 등록하세요 (경로는 환경에 
 ┃ ─────────────────────────────────────────────
 ┃ 🔥 [환경관리학과] 2026-2 환경관리학과 석사논문 프로포절 공고 / Thesis …   [열기]
 ┃ 📌 상단 고정 · `학사 논문` · 🗓 2026.11.02 (월) · 👀 95 · 📎 2
-┃ ★ 프로포절 신청서 제출일 11. 27.(금) 17:00 로 변경 …
+┃ ⏰ D-25 · 11.27 (금) 17:00 — 논문 프로포절 신청서 제출  외 3건  · 📅 캘린더
+┃ 🤖 2026-2 환경관리학과 석사논문 프로포절 일정 안내 … (AI 요약, 없으면 본문 미리보기)
 ┃ 📎 [붙임1] (양식) 석사논문 프로포절.zip (92 KB) · [붙임2] … (42 KB) (원문에서 내려받기)
 ┃ [📋 공지사항 전체 보기]
-┃ 🤖 GSES Notice Bot v2.0.0 · 서울대학교 환경대학원 게시판 자동 알림
+┃ 🤖 GSES Notice Bot v2.2.0 · 서울대학교 환경대학원 게시판 자동 알림
 ```
 
 - 첨부파일은 이름과 크기만 표시합니다. 사이트가 다운로드 시 같은 사이트 Referer 를 요구해서, Slack 에서 직접 링크하면 404 가 나기 때문입니다.
@@ -182,8 +288,16 @@ cron 으로 돌릴 때는 아래 예처럼 등록하세요 (경로는 환경에 
 {
   "version": 2,
   "boards": { "notice": { "initialized_at": "2026-11-04T13:30:00+09:00" } },
-  "seen": { "6303": { "board": "notice", "title": "…", "category": "대학원 알림", "first_seen": "…" } },
-  "health": { "consecutive_failures": 0, "alert_sent": false, "last_error": null }
+  "seen": {
+    "6298": {
+      "board": "notice", "title": "…(목록 제목)", "full_title": "…", "category": "학사 논문",
+      "posted": "2026-11-02", "first_seen": "…",
+      "deadlines": [{ "at": "2026-11-27T17:00+09:00", "label": "논문 프로포절 신청서 제출", "has_time": true }],
+      "reminded": ["2026-11-27T17:00+09:00|1"]
+    }
+  },
+  "health": { "consecutive_failures": 0, "alert_sent": false, "last_error": null },
+  "digest": { "last_sent_at": "2026-11-09T08:41:00+09:00" }
 }
 ```
 
@@ -197,6 +311,9 @@ cron 으로 돌릴 때는 아래 예처럼 등록하세요 (경로는 환경에 
 | 증상 | 확인할 것 |
 |---|---|
 | 알림이 전혀 안 옴 | Actions 탭에서 워크플로가 **Enabled** 인지, 최근 실행이 있는지 확인 → `mode: ping` |
+| `active` 인데 정기 실행이 없음 | `Bot Watchdog` 실행 기록(Summary)에 마지막 봇 실행 시각이 나옵니다. 둘 다 멈췄다면 **⋯ → Disable → Enable** 또는 `Run workflow` 한 번 |
+| 캘린더에 안 보임 | Google Calendar 는 구독 캘린더를 몇 시간~하루 간격으로 새로 읽습니다. `.ics` 주소를 브라우저로 열어 최신인지 확인 |
+| 마감이 이상하게 잡힘 | `python -m gses_bot preview --bbsidx <번호>` 로 카드의 ⏰ 줄 확인. 표기 예시를 이슈로 남겨 주시면 규칙에 추가합니다 |
 | 첫 실행인데 아무것도 안 옴 | 정상입니다. 첫 실행은 기준점만 저장합니다. 미리 보려면 `mode: test-post` |
 | 🚨 장애 알림 | 실행 로그의 오류 확인. `구조를 찾을 수 없습니다` 는 사이트 개편 → `gses_bot/scraper.py` 셀렉터 수정 |
 | 같은 글이 두 번 옴 | `bot-state` 브랜치의 최근 커밋, 워크플로 동시 실행 여부 확인 (concurrency 로 직렬화됨) |
@@ -223,20 +340,25 @@ CI 는 Python 3.10–3.13 에서 테스트, Ruff, ShellCheck 를 실행합니다
 ```
 .
 ├── gses_bot/
-│   ├── cli.py          # 명령행 (run/init/ping/test-post/preview/status)
-│   ├── bot.py          # 오케스트레이션: 스캔 → 판정 → 필터 → 전송 → 저장 → 장애 감시
+│   ├── cli.py          # 명령행 (run/init/ping/test-post/preview/digest/status), 생존 신호
+│   ├── bot.py          # 오케스트레이션: 스캔 → 판정 → 필터 → 전송 → 리마인더 → 저장 → 장애 감시
 │   ├── scraper.py      # 목록/상세 페이지 파서, 페이지 스캔
+│   ├── deadlines.py    # 본문 마감 추출 (한/영 날짜, 기간, 요일 검증, 표 형식)
+│   ├── ai.py           # Claude API 요약 (선택)
+│   ├── exports.py      # 마감 캘린더(.ics) · 새 글 피드(Atom)
 │   ├── messages.py     # Slack Block Kit 메시지 빌더
 │   ├── slack.py        # Webhook/Bot Token 전송, 재시도·rate limit 처리
 │   ├── state.py        # state.json v2 (원자적 저장, v1 마이그레이션, 정리)
 │   ├── config.py       # 환경변수 설정
 │   ├── boards.py       # 게시판 정의
 │   └── report.py       # 실행 요약 (콘솔/Job Summary)
-├── scripts/state_branch.sh          # bot-state 브랜치 복원/저장
+├── scripts/state_branch.sh          # bot-state 브랜치 복원/저장 (+ 구독 파일 공개)
+├── scripts/watchdog.sh              # 봇이 멈췄으면 직접 실행
 ├── tests/                           # pytest + 실제 HTML 픽스처
 ├── fetch_announcements.py           # v1 호환 진입점
 └── .github/workflows/
-    ├── check_announcements.yml      # 30분마다 실행
+    ├── check_announcements.yml      # 30분마다 + 월요일 브리핑 + 배포 시 즉시 실행
+    ├── watchdog.yml                 # 매시간 봇 생존 확인 (스케줄 이중화)
     └── ci.yml                       # 테스트/린트
 ```
 

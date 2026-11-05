@@ -41,6 +41,21 @@ restore() {
   fi
 }
 
+EXPORT_FILES="deadlines.ics feed.xml"
+
+write_readme() {
+  local raw="https://raw.githubusercontent.com/${GITHUB_REPOSITORY:-<owner>/<repo>}/$BRANCH"
+  {
+    printf '# %s\n\n' "$BRANCH"
+    printf 'GSES Notice Bot 이 자동으로 관리하는 상태 브랜치입니다. 직접 수정하지 마세요.\n\n'
+    printf '| 파일 | 용도 |\n|---|---|\n'
+    printf '| [state.json](state.json) | 처리한 글·마감·리마인더 기록 (커밋 이력 = 처리 이력) |\n'
+    printf '| [deadlines.ics](deadlines.ics) | 공지 마감 캘린더 — 구독 주소: %s/deadlines.ics |\n' "$raw"
+    printf '| [feed.xml](feed.xml) | 새 글 Atom 피드 — 구독 주소: %s/feed.xml |\n\n' "$raw"
+    printf 'Google Calendar: 다른 캘린더 + → URL로 추가 → 위 deadlines.ics 주소 입력\n'
+  } > "$1"
+}
+
 WORKTREE=""
 cleanup() {
   if [ -n "$WORKTREE" ]; then
@@ -65,17 +80,19 @@ save() {
     git -C "$worktree" checkout --quiet --orphan "$BRANCH"
     git -C "$worktree" rm -r --quiet --cached --ignore-unmatch . >/dev/null
     find "$worktree" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-    cat > "$worktree/README.md" <<'EOF'
-# bot-state
-
-GSES Notice Bot 이 자동으로 관리하는 상태 브랜치입니다. 직접 수정하지 마세요.
-`state.json` 의 커밋 이력으로 언제 어떤 글을 처리했는지 확인할 수 있습니다.
-EOF
-    git -C "$worktree" add README.md
   fi
 
+  write_readme "$worktree/README.md"
   cp "$STATE_FILE" "$worktree/$FILE_IN_BRANCH"
-  git -C "$worktree" add "$FILE_IN_BRANCH"
+  git -C "$worktree" add README.md "$FILE_IN_BRANCH"
+  # 구독용 내보내기 파일 (봇이 state 옆에 생성)
+  local export_file
+  for export_file in $EXPORT_FILES; do
+    if [ -f "$(dirname "$STATE_FILE")/$export_file" ]; then
+      cp "$(dirname "$STATE_FILE")/$export_file" "$worktree/$export_file"
+      git -C "$worktree" add "$export_file"
+    fi
+  done
   if git -C "$worktree" diff --cached --quiet; then
     echo "✅ state 변경 없음 (커밋 생략)"
     return 0

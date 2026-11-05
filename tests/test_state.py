@@ -120,3 +120,36 @@ def test_health_failure_and_recovery():
     previous = state.record_success()
     assert previous.consecutive_failures == 2 and previous.alert_sent
     assert state.health.consecutive_failures == 0 and not state.health.alert_sent
+
+
+def test_deadlines_reminders_and_pruning(tmp_path):
+    from datetime import datetime
+
+    from gses_bot.deadlines import Deadline
+    from gses_bot.utils import KST
+
+    path = tmp_path / "state.json"
+    post = _post("7")
+    post.detail_loaded = True
+    post.full_title = "전체 제목"
+    post.deadlines = [
+        Deadline(datetime(2026, 11, 27, 17, 0, tzinfo=KST), "신청", True),
+        Deadline(datetime(2026, 11, 1, 23, 59, tzinfo=KST), "지난 마감", False),
+    ]
+    state = State()
+    state.remember(post, NOW)
+    state.mark_reminded("7", {"2026-11-27T17:00+09:00|1", "2026-11-01T23:59+09:00|1"})
+    state.digest["last_sent_at"] = "2026-11-02T08:41:00+09:00"
+    state.save(path, NOW)
+
+    loaded = State.load(path)
+    assert loaded.seen["7"]["full_title"] == "전체 제목"
+    assert [d.label for *_, d in loaded.deadlines()] == ["지난 마감", "신청"]
+    assert loaded.digest == {"last_sent_at": "2026-11-02T08:41:00+09:00"}
+    loaded.prune_deadlines(NOW)
+    assert [d.label for *_, d in loaded.deadlines()] == ["신청"]
+    assert loaded.reminded("7") == {"2026-11-27T17:00+09:00|1"}
+
+    post.deadlines = []
+    loaded.update_details(post)
+    assert "deadlines" not in loaded.seen["7"]

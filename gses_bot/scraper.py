@@ -218,7 +218,8 @@ def parse_detail(html: str, post: Post, base_url: str) -> Post:
             src = image["src"].strip()
             if src and not src.startswith("data:"):
                 post.image_url = urljoin(base_url + "/", src)
-        post.preview = make_preview(html_to_text(content))
+        post.body_text = html_to_text(content)
+        post.preview = make_preview(post.body_text)
 
     post.detail_loaded = True
     return post
