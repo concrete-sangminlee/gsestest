@@ -1,0 +1,586 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//GSES Notice Bot//gses.snu.ac.kr//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:서울대 환경대학원 공지 마감
+X-WR-TIMEZONE:Asia/Seoul
+X-WR-CALDESC:게시판 공지에서 자동 추출한 마감 일정 · https
+ ://gses.snu.ac.kr/news/notice/notice
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+BEGIN:VEVENT
+UID:gses-6294-20261104T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261104
+DTEND;VALUE=DATE:20261105
+SUMMARY:⏰ Submission of the Application Form for t 마감 — 2026-2 도
+ 시계획학과 석사논문 프로포절 공고/Notice on Dissertation Pr
+ oposal Presentation and Manuscript Submission in Dept. of Urban Planning
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사논문 프로
+ 포절 공고/Notice on Dissertation Proposal Presentation and Manuscript 
+ Submission in Dept. of Urban Planning\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6294
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6294
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ Submission of the Application Form for t 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6261-20261105T0900@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261105T083000Z
+DTEND:20261105T090000Z
+SUMMARY:⏰ Deadline 마감 — (Notice) Fall 2026 SNU K-STAR Visa Track
+DESCRIPTION:공지사항 · (Notice) Fall 2026 SNU K-STAR Visa Track\nhttps
+ ://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6261
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6261
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ Deadline 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6293-20261105T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261105
+DTEND;VALUE=DATE:20261106
+SUMMARY:⏰ 조사기간 마감 — 2026학년도 2학기「강의 중간 
+ 수강소감 조사」실시 계획 알림
+DESCRIPTION:공지사항 · 2026학년도 2학기「강의 중간 수강소
+ 감 조사」실시 계획 알림\nhttps://gses.snu.ac.kr/news/notice/noti
+ ce?md=v&bbsidx=6293
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6293
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 조사기간 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6291-20261111T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+SUMMARY:⏰ 모집기간 마감 — 2026학년도 Lab 단위 심리검사 
+ 진단 프로그램
+DESCRIPTION:공지사항 · 2026학년도 Lab 단위 심리검사 진단 
+ 프로그램\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6291
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6291
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 모집기간 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6292-20261113T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261113T073000Z
+DTEND:20261113T080000Z
+SUMMARY:⏰ 박사논문지도위원회 신청서와 수료 점검표 제
+ 출 마감 — [환경계획학과] 2026학년도 2학기 도시및지역
+ 계획학전공 박사논문지도위원회 공고
+DESCRIPTION:공지사항 · [환경계획학과] 2026학년도 2학기 도
+ 시및지역계획학전공 박사논문지도위원회 공고\nhttps://gs
+ es.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 박사논문지도위원회 신청서와 수료 점검표 
+ 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6294-20261118T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261118T073000Z
+DTEND:20261118T080000Z
+SUMMARY:⏰ 논문 프로포절 신청서 제출 마감 — 2026-2 도시
+ 계획학과 석사논문 프로포절 공고/Notice on Dissertation Propo
+ sal Presentation and Manuscript Submission in Dept. of Urban Planning
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사논문 프로
+ 포절 공고/Notice on Dissertation Proposal Presentation and Manuscript 
+ Submission in Dept. of Urban Planning\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6294
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6294
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 논문 프로포절 신청서 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6304-20261123T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261123
+DTEND;VALUE=DATE:20261124
+SUMMARY:⏰ 수강료 및 납부기간 · 1차 마감 — 2026학년도 동
+ 계 계절수업 수강료 납부 및 환불 계획 안내
+DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
+ 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
+ =v&bbsidx=6304
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 수강료 및 납부기간 · 1차 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6283-20261127T0600@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261127T053000Z
+DTEND:20261127T060000Z
+SUMMARY:⏰ 일반전형 마감 — 2027학년도 경영대학 수시모집
+  입학전형에 따른 건물 통제 안내
+DESCRIPTION:공지사항 · 2027학년도 경영대학 수시모집 입학
+ 전형에 따른 건물 통제 안내\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6283
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6283
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 일반전형 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6298-20261127T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261127T073000Z
+DTEND:20261127T080000Z
+SUMMARY:⏰ 논문 프로포절 신청서 제출 마감 — [환경관리
+ 학과] 2026-2 환경관리학과 석사논문 프로포절 공고 / Thesi
+ s Proposal (Master/Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Enviro
+ nmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx
+ =6298
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6298
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 논문 프로포절 신청서 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6304-20261127T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261127
+DTEND;VALUE=DATE:20261128
+SUMMARY:⏰ 수강료 및 납부기간 · 2차(최종) 마감 — 2026학
+ 년도 동계 계절수업 수강료 납부 및 환불 계획 안내
+DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
+ 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
+ =v&bbsidx=6304
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 수강료 및 납부기간 · 2차(최종) 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6303-20261129T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261129
+DTEND;VALUE=DATE:20261130
+SUMMARY:⏰ 공모 기간 마감 — 「SNU Commons 중앙도서관 융합 
+ 미디어 작품 공모전(제2회)」개최 안내
+DESCRIPTION:공지사항 · 「SNU Commons 중앙도서관 융합 미디어
+  작품 공모전(제2회)」개최 안내\nhttps://gses.snu.ac.kr/news/no
+ tice/notice?md=v&bbsidx=6303
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6303
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 공모 기간 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6297-20261202T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261202T073000Z
+DTEND:20261202T080000Z
+SUMMARY:⏰ ①논문원고 & ②유사도 검사지 제출 마감 — [환
+ 경관리학과] 2026-2 환경관리학과 석사논문 최종심사 공
+ 고 / Final Thesis Defense (Master/Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of E
+ nvironmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&b
+ bsidx=6297
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6297
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ ①논문원고 & ②유사도 검사지 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6260-20261202T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261202T232900Z
+DTEND:20261202T235900Z
+SUMMARY:⏰ 논문원고 및 유사도 검사지 제출 마감 — 2026-2 
+ 도시계획학과 석사학위논문 최종심사 공고
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사학위논문 
+ 최종심사 공고\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx
+ =6260
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6260
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 논문원고 및 유사도 검사지 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6283-20261204T0600@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261204T053000Z
+DTEND:20261204T060000Z
+SUMMARY:⏰ 지역균형전형 및 기회균형특별전형 마감 — 2027
+ 학년도 경영대학 수시모집 입학전형에 따른 건물 통제 
+ 안내
+DESCRIPTION:공지사항 · 2027학년도 경영대학 수시모집 입학
+ 전형에 따른 건물 통제 안내\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6283
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6283
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 지역균형전형 및 기회균형특별전형 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6297-20261204T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261204T073000Z
+DTEND:20261204T080000Z
+SUMMARY:⏰ 사유서 제출일 마감 — [환경관리학과] 2026-2 환
+ 경관리학과 석사논문 최종심사 공고 / Final Thesis Defense (M
+ aster/Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of E
+ nvironmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&b
+ bsidx=6297
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6297
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 사유서 제출일 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6298-20261204T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261204T073000Z
+DTEND:20261204T080000Z
+SUMMARY:⏰ 사유서 제출일 마감 — [환경관리학과] 2026-2 환
+ 경관리학과 석사논문 프로포절 공고 / Thesis Proposal (Master
+ /Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Enviro
+ nmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx
+ =6298
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6298
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 사유서 제출일 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6260-20261206T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261206T232900Z
+DTEND:20261206T235900Z
+SUMMARY:⏰ 발표자료 제출 마감 — 2026-2 도시계획학과 석사
+ 학위논문 최종심사 공고
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사학위논문 
+ 최종심사 공고\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx
+ =6260
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6260
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 발표자료 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6297-20261206T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261206T232900Z
+DTEND:20261206T235900Z
+SUMMARY:⏰ 발표자료 제출 마감 — [환경관리학과] 2026-2 환
+ 경관리학과 석사논문 최종심사 공고 / Final Thesis Defense (M
+ aster/Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of E
+ nvironmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&b
+ bsidx=6297
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6297
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 발표자료 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6298-20261209T0800@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261209T073000Z
+DTEND:20261209T080000Z
+SUMMARY:⏰ 프로포절 원고 제출 마감 — [환경관리학과] 2026
+ -2 환경관리학과 석사논문 프로포절 공고 / Thesis Proposal (
+ Master/Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Enviro
+ nmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx
+ =6298
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6298
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 프로포절 원고 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6292-20261209T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261209T232900Z
+DTEND:20261209T235900Z
+SUMMARY:⏰ 원고제출 마감 — [환경계획학과] 2026학년도 2학
+ 기 도시및지역계획학전공 박사논문지도위원회 공고
+DESCRIPTION:공지사항 · [환경계획학과] 2026학년도 2학기 도
+ 시및지역계획학전공 박사논문지도위원회 공고\nhttps://gs
+ es.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 원고제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6294-20261209T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261209T232900Z
+DTEND:20261209T235900Z
+SUMMARY:⏰ 원고제출 마감 — 2026-2 도시계획학과 석사논문 
+ 프로포절 공고/Notice on Dissertation Proposal Presentation and Manus
+ cript Submission in Dept. of Urban Planning
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사논문 프로
+ 포절 공고/Notice on Dissertation Proposal Presentation and Manuscript 
+ Submission in Dept. of Urban Planning\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6294
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6294
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 원고제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6292-20261213T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261213T232900Z
+DTEND:20261213T235900Z
+SUMMARY:⏰ 발표자료 제출 마감 — [환경계획학과] 2026학년
+ 도 2학기 도시및지역계획학전공 박사논문지도위원회 공
+ 고
+DESCRIPTION:공지사항 · [환경계획학과] 2026학년도 2학기 도
+ 시및지역계획학전공 박사논문지도위원회 공고\nhttps://gs
+ es.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 발표자료 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6294-20261213T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261213T232900Z
+DTEND:20261213T235900Z
+SUMMARY:⏰ 발표자료 제출 마감 — 2026-2 도시계획학과 석사
+ 논문 프로포절 공고/Notice on Dissertation Proposal Presentation an
+ d Manuscript Submission in Dept. of Urban Planning
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사논문 프로
+ 포절 공고/Notice on Dissertation Proposal Presentation and Manuscript 
+ Submission in Dept. of Urban Planning\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6294
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6294
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 발표자료 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6298-20261213T2359@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261213T232900Z
+DTEND:20261213T235900Z
+SUMMARY:⏰ 프로포절 발표자료 제출 마감 — [환경관리학과
+ ] 2026-2 환경관리학과 석사논문 프로포절 공고 / Thesis Prop
+ osal (Master/Dept. of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Enviro
+ nmental Management)\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx
+ =6298
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6298
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 프로포절 발표자료 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6285-20261216T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261216
+DTEND;VALUE=DATE:20261217
+SUMMARY:⏰ 교육협력동 지붕 설치공사 마감 — 흥캠퍼스 교
+ 육협력동 지붕 설치공사에 따른 차량 진출입 안내
+DESCRIPTION:공지사항 · 흥캠퍼스 교육협력동 지붕 설치공
+ 사에 따른 차량 진출입 안내\nhttps://gses.snu.ac.kr/news/notice/
+ notice?md=v&bbsidx=6285
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6285
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 교육협력동 지붕 설치공사 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6299-20261221T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261221
+DTEND;VALUE=DATE:20261222
+SUMMARY:⏰ (3~5분) 마감 — 2026학년도 2학기 셔틀버스 추가 
+ 증차 운행 안내
+DESCRIPTION:공지사항 · 2026학년도 2학기 셔틀버스 추가 증
+ 차 운행 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6
+ 299
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6299
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ (3~5분) 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6304-20261221T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261221
+DTEND;VALUE=DATE:20261222
+SUMMARY:⏰ 환불기간 및 환불액 마감 — 2026학년도 동계 계
+ 절수업 수강료 납부 및 환불 계획 안내
+DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
+ 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
+ =v&bbsidx=6304
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 환불기간 및 환불액 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6304-20270101T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20270101
+DTEND;VALUE=DATE:20270102
+SUMMARY:⏰ 환불기간 및 환불액 마감 — 2026학년도 동계 계
+ 절수업 수강료 납부 및 환불 계획 안내
+DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
+ 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
+ =v&bbsidx=6304
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 환불기간 및 환불액 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6304-20270107T1459@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20270107
+DTEND;VALUE=DATE:20270108
+SUMMARY:⏰ 환불기간 및 환불액 마감 — 2026학년도 동계 계
+ 절수업 수강료 납부 및 환불 계획 안내
+DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
+ 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
+ =v&bbsidx=6304
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 환불기간 및 환불액 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+END:VCALENDAR

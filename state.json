@@ -1,0 +1,1288 @@
+{
+  "version": 2,
+  "boards": {
+    "admissions": {
+      "initialized_at": "2026-11-05T18:28:45+09:00"
+    },
+    "news": {
+      "initialized_at": "2026-11-05T18:28:45+09:00"
+    },
+    "notice": {
+      "initialized_at": "2026-11-05T18:28:45+09:00"
+    },
+    "seminars": {
+      "initialized_at": "2026-11-05T18:28:45+09:00"
+    }
+  },
+  "seen": {
+    "6305": {
+      "board": "seminars",
+      "title": "[GSES 제259차 콜로키움] From prediction to possibility: rethinking the future of urban planning under di...",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-05",
+      "full_title": "[GSES 제259차 콜로키움] From prediction to possibility: rethinking the future of urban planning under disruptive technological change"
+    },
+    "6304": {
+      "board": "notice",
+      "title": "2026학년도 동계 계절수업 수강료 납부 및 환불 계획 안내",
+      "category": "학사 학사",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-05",
+      "deadlines": [
+        {
+          "at": "2026-11-23T23:59+09:00",
+          "label": "수강료 및 납부기간 · 1차",
+          "has_time": false
+        },
+        {
+          "at": "2026-11-27T23:59+09:00",
+          "label": "수강료 및 납부기간 · 2차(최종)",
+          "has_time": false
+        },
+        {
+          "at": "2026-12-21T23:59+09:00",
+          "label": "환불기간 및 환불액",
+          "has_time": false
+        },
+        {
+          "at": "2027-01-01T23:59+09:00",
+          "label": "환불기간 및 환불액",
+          "has_time": false
+        },
+        {
+          "at": "2027-01-07T23:59+09:00",
+          "label": "환불기간 및 환불액",
+          "has_time": false
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6303": {
+      "board": "notice",
+      "title": "「SNU Commons 중앙도서관 융합 미디어 작품 공모전(제2회)」개최 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-04",
+      "deadlines": [
+        {
+          "at": "2026-11-29T23:59+09:00",
+          "label": "공모 기간",
+          "has_time": false
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6302": {
+      "board": "notice",
+      "title": "2026년도 장애인식개선주간 운영 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-03"
+    },
+    "6301": {
+      "board": "notice",
+      "title": "2026년 11월 환경대학원 자료실 운영 시간표",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-02"
+    },
+    "6300": {
+      "board": "notice",
+      "title": "차세대 네트워크 구축 사업 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-02"
+    },
+    "6299": {
+      "board": "notice",
+      "title": "2026학년도 2학기 셔틀버스 추가 증차 운행 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-02",
+      "deadlines": [
+        {
+          "at": "2026-12-21T23:59+09:00",
+          "label": "(3~5분)",
+          "has_time": false
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6298": {
+      "board": "notice",
+      "title": "[환경관리학과] 2026-2 환경관리학과 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Environmental Management)",
+      "category": "학사 논문",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-02",
+      "deadlines": [
+        {
+          "at": "2026-11-27T17:00+09:00",
+          "label": "논문 프로포절 신청서 제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-04T17:00+09:00",
+          "label": "사유서 제출일",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-09T17:00+09:00",
+          "label": "프로포절 원고 제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-14T08:59+09:00",
+          "label": "프로포절 발표자료 제출",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6297": {
+      "board": "notice",
+      "title": "[환경관리학과] 2026-2 환경관리학과 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of Environmental Management...",
+      "category": "학사 논문",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-11-02",
+      "full_title": "[환경관리학과] 2026-2 환경관리학과 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of Environmental Management)",
+      "deadlines": [
+        {
+          "at": "2026-12-02T17:00+09:00",
+          "label": "①논문원고 & ②유사도 검사지 제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-04T17:00+09:00",
+          "label": "사유서 제출일",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-07T08:59+09:00",
+          "label": "발표자료 제출",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6296": {
+      "board": "notice",
+      "title": "2026년도 동절기 난방·환기시설 운영계획 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-29"
+    },
+    "6295": {
+      "board": "notice",
+      "title": "2026년 서울대학교 건강주간 행사 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-29"
+    },
+    "6294": {
+      "board": "notice",
+      "title": "2026-2 도시계획학과 석사논문 프로포절 공고/Notice on Dissertation Proposal Presentation and Manuscript Submission in...",
+      "category": "학사 논문",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-29",
+      "full_title": "2026-2 도시계획학과 석사논문 프로포절 공고/Notice on Dissertation Proposal Presentation and Manuscript Submission in Dept. of Urban Planning",
+      "deadlines": [
+        {
+          "at": "2026-11-04T23:59+09:00",
+          "label": "Submission of the Application Form for t",
+          "has_time": false
+        },
+        {
+          "at": "2026-11-18T17:00+09:00",
+          "label": "논문 프로포절 신청서 제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-10T08:59+09:00",
+          "label": "원고제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-14T08:59+09:00",
+          "label": "발표자료 제출",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6293": {
+      "board": "notice",
+      "title": "2026학년도 2학기「강의 중간 수강소감 조사」실시 계획 알림",
+      "category": "학사 수업",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-29",
+      "deadlines": [
+        {
+          "at": "2026-11-05T23:59+09:00",
+          "label": "조사기간",
+          "has_time": false
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00",
+      "reminded": [
+        "2026-11-05T23:59+09:00|1"
+      ]
+    },
+    "6292": {
+      "board": "notice",
+      "title": "[환경계획학과] 2026학년도 2학기 도시및지역계획학전공 박사논문지도위원회 공고",
+      "category": "학사 논문",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-29",
+      "deadlines": [
+        {
+          "at": "2026-11-13T17:00+09:00",
+          "label": "박사논문지도위원회 신청서와 수료 점검표 제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-10T08:59+09:00",
+          "label": "원고제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-14T08:59+09:00",
+          "label": "발표자료 제출",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6291": {
+      "board": "notice",
+      "title": "2026학년도 Lab 단위 심리검사 진단 프로그램",
+      "category": "학사 학생",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-28",
+      "deadlines": [
+        {
+          "at": "2026-11-11T23:59+09:00",
+          "label": "모집기간",
+          "has_time": false
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6290": {
+      "board": "seminars",
+      "title": "[서울대학교 협동과정 조경학 2026학년도 특강 시리즈 #06] 환경설계 연구 방법론",
+      "category": "대학원 특강",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-28"
+    },
+    "6289": {
+      "board": "seminars",
+      "title": "[환경대학원 제257차 콜로키움] 기후위기시대의 재난관리",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-28"
+    },
+    "6288": {
+      "board": "notice",
+      "title": "한국건설기술연구원 연구시설·장비 공동활용 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-27"
+    },
+    "6287": {
+      "board": "notice",
+      "title": "2027학년도 수의과대학 수시모집 전형에 따른 건물 통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-27"
+    },
+    "6286": {
+      "board": "notice",
+      "title": "2027학년도 사범대학 수시모집 입학 전형에 따른 건물 통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-26"
+    },
+    "6285": {
+      "board": "notice",
+      "title": "흥캠퍼스 교육협력동 지붕 설치공사에 따른 차량 진출입 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-26",
+      "deadlines": [
+        {
+          "at": "2026-12-16T23:59+09:00",
+          "label": "교육협력동 지붕 설치공사",
+          "has_time": false
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6284": {
+      "board": "notice",
+      "title": "2027학년도 사회과학대학 수시모집 입학 전형에 따른 건물 통제 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-26"
+    },
+    "6283": {
+      "board": "notice",
+      "title": "2027학년도 경영대학 수시모집 입학전형에 따른 건물 통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-26",
+      "deadlines": [
+        {
+          "at": "2026-11-27T15:00+09:00",
+          "label": "일반전형",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-04T15:00+09:00",
+          "label": "지역균형전형 및 기회균형특별전형",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6282": {
+      "board": "notice",
+      "title": "2026년 제6,7,8회 「중앙도서관 연구자 커리어 멘토링 특강」 개최 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-26"
+    },
+    "6281": {
+      "board": "seminars",
+      "title": "[환경대학원 BK21 콜로키움] Electricity Supply and Emissions",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-26"
+    },
+    "6280": {
+      "board": "notice",
+      "title": "2027학년도 약학대학 수시모집 입학 전형에 따른 건물 통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-23"
+    },
+    "6279": {
+      "board": "seminars",
+      "title": "[환경대학원 제256차 콜로키움] City Love, Heritage, and Peripherality",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-23"
+    },
+    "6278": {
+      "board": "notice",
+      "title": "관악캠퍼스 소방시설 작동점검 실시 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-22"
+    },
+    "6277": {
+      "board": "notice",
+      "title": "[10/31(토) 모교방문의 날] 환경관리학과 「커리어데이」 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-22",
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6263": {
+      "board": "notice",
+      "title": "2027년 제8기 관악 청년네트워크 신규위원 모집",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-21"
+    },
+    "6262": {
+      "board": "notice",
+      "title": "2026년 제5회「중앙도서관 연구자 커리어 멘토링 특강」개최 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-21"
+    },
+    "6261": {
+      "board": "notice",
+      "title": "(Notice) Fall 2026 SNU K-STAR Visa Track",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-20",
+      "deadlines": [
+        {
+          "at": "2026-11-05T18:00+09:00",
+          "label": "Deadline",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6260": {
+      "board": "notice",
+      "title": "2026-2 도시계획학과 석사학위논문 최종심사 공고",
+      "category": "학사 논문",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-20",
+      "deadlines": [
+        {
+          "at": "2026-12-03T08:59+09:00",
+          "label": "논문원고 및 유사도 검사지 제출",
+          "has_time": true
+        },
+        {
+          "at": "2026-12-07T08:59+09:00",
+          "label": "발표자료 제출",
+          "has_time": true
+        }
+      ],
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6259": {
+      "board": "notice",
+      "title": "국가미래전략원-국민경제자문회의 공동세미나「전력망 병목, 에너지 지정학 어떻게 극복할 것인가」홍보",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-19"
+    },
+    "6258": {
+      "board": "notice",
+      "title": "2027학년도 AI대학원 전기모집 입학 전형에 따른 건물 통제 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-19"
+    },
+    "6257": {
+      "board": "seminars",
+      "title": "[GSES 제255차 콜로키움] 인간이 만든 기후위기 AI가 대신 해결해 줄 수 있을까?",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-19"
+    },
+    "6256": {
+      "board": "notice",
+      "title": "잔디광장 지하주차장 운영 변경 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-19"
+    },
+    "6255": {
+      "board": "notice",
+      "title": "2026학년도 동계 계절수업 수강신청 안내",
+      "category": "학사 수업",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-19"
+    },
+    "6254": {
+      "board": "notice",
+      "title": "「2026 관악강감찬축제」 관련 교통통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-16",
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6253": {
+      "board": "notice",
+      "title": "개교기념일(10.15.) 셔틀버스 미운행 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-14"
+    },
+    "6252": {
+      "board": "admissions",
+      "title": "2027학년도 신입생 전기모집 면접 및 구술고사 일정 안내(10/21(수))",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-16"
+    },
+    "6251": {
+      "board": "seminars",
+      "title": "[환경대학원 제254차 콜로키움] Seconds to Decades: High-Frequency Analytics to Low-Frequency Urban Design throug...",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-12"
+    },
+    "6250": {
+      "board": "notice",
+      "title": "'「SNU Commons 행정관」 개관식' 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-12"
+    },
+    "6249": {
+      "board": "notice",
+      "title": "2027학년도 법학전문대학원 입학전형 관련 출입통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-12"
+    },
+    "6248": {
+      "board": "news",
+      "title": "[융복합계획연구실] 서울대학교 도시계획학과 Basic Research Lab (책임: 융복합연구실) 석·박사연구원 모집",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-12"
+    },
+    "6247": {
+      "board": "seminars",
+      "title": "2026 기후변화와 청정대기의 미래 국제워크숍(GUIDE-IAMs) 개최 (10.13.)",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-12"
+    },
+    "6246": {
+      "board": "notice",
+      "title": "「개교 80주년 KBS 열린음악회」개최 관련 교통 통제 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-08"
+    },
+    "6245": {
+      "board": "seminars",
+      "title": "[환경대학원 제253차 콜로키움] 지역계획(조경)과 관광의 접점에서 연구자의 길",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-08"
+    },
+    "6244": {
+      "board": "notice",
+      "title": "시험기간 중 야간 도서관 셔틀버스 증차 및 심야셔틀 운행 노선 변경 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-07"
+    },
+    "6243": {
+      "board": "notice",
+      "title": "2026년 OECD 인턴십 프로그램(Round 2) 참가자 모집 안내",
+      "category": "학사 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-06"
+    },
+    "6242": {
+      "board": "notice",
+      "title": "2026년 관악구 긴급구조종합훈련에 따른 소방헬기 운항 및 소음 발생 사전 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-01"
+    },
+    "6241": {
+      "board": "notice",
+      "title": "2027학년도 대학원 신입생 전기모집 사범대학 체육교육과 입학고사에 따른 건물 통제 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-01"
+    },
+    "6240": {
+      "board": "seminars",
+      "title": "[환경대학원 제252차 콜로키움] 기후민감(Climate sensitive) 도시설계: 지속가능한 회복력을 위한 시공간적 통합 전략",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-01"
+    },
+    "6239": {
+      "board": "news",
+      "title": "서강대학교 경제대학 SSK 박사후연구원 모집",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-30"
+    },
+    "6238": {
+      "board": "notice",
+      "title": "2026년 10월 환경대학원 자료실 운영시간표",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-30"
+    },
+    "6237": {
+      "board": "seminars",
+      "title": "[환경대학원 제251차 콜로키움] 격자단위 공간통계 국토지표의 이해와 국토 지역연구에서의 활용 방안",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6236": {
+      "board": "notice",
+      "title": "「개교 80주년 KBS 열린음악회」개최 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6235": {
+      "board": "notice",
+      "title": "2026년 독감(인플루엔자) 예방접종 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6234": {
+      "board": "notice",
+      "title": "서울연구원 학술지 「서울도시연구」 논문 모집 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6233": {
+      "board": "notice",
+      "title": "2026 서울대학교 예술주간 행사 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6232": {
+      "board": "notice",
+      "title": "「기상법」개정에 따른 기상기후데이터 출처 표시 의무 시행 안내 및 협조 요청",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6231": {
+      "board": "notice",
+      "title": "학생 정책평가단 사전 등록 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6230": {
+      "board": "notice",
+      "title": "제29대 총장 선출을 위한 정책평가 포스터 및 안내자료",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6229": {
+      "board": "notice",
+      "title": "2026년도 하절기 관악캠퍼스 냉방 종료 알림",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6228": {
+      "board": "notice",
+      "title": "아시아대학연맹 2026 AUA Academic Conference - on Advancing Health, Technology, and Community through Inclus...",
+      "category": "학사 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-28"
+    },
+    "6227": {
+      "board": "news",
+      "title": "서울대학교 환경대학원 박사후연구원(인공지능 도시서비스) 채용 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-23"
+    },
+    "6226": {
+      "board": "notice",
+      "title": "2026 글로벌 여성 리더십 장학금 안내",
+      "category": "학사 장학",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-23"
+    },
+    "6225": {
+      "board": "seminars",
+      "title": "[GSES 제250차 콜로키움] PhD Real Talk: 졸업논문 작성과 해외저널 투고",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-23"
+    },
+    "6224": {
+      "board": "notice",
+      "title": "2026년 하반기 BK21 4단계 대학원혁신사업 대학원생 국제공동연구 지원 사업 안내",
+      "category": "학사 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-18"
+    },
+    "6223": {
+      "board": "notice",
+      "title": "독일 유학 및 장학금 설명회 행사 안내(DAAD & Humboldt)",
+      "category": "학사 장학",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-18"
+    },
+    "6220": {
+      "board": "notice",
+      "title": "2026년 2학기 SNU Global EDGE Fellowship 프로그램 장학생 모집 안내(대상확대)",
+      "category": "학사 장학",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-10-22",
+      "rules": 2,
+      "checked_at": "2026-11-05T18:28:45+09:00"
+    },
+    "6219": {
+      "board": "seminars",
+      "title": "[환경대학원 제249차 콜로키움] Fine-Scale Climate Projections Reveal Spatial Heterogeneity",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-16"
+    },
+    "6213": {
+      "board": "notice",
+      "title": "2026학년도 2학기 학위논문 제출 및 심사 계획 안내",
+      "category": "학사 논문",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-12"
+    },
+    "6195": {
+      "board": "seminars",
+      "title": "[환경대학원 제247차 콜로키움] 서울 퀴어 주민의 도시 공간 경험과 갈등",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-02"
+    },
+    "6188": {
+      "board": "admissions",
+      "title": "2027학년도 전기 사회혁신전공 오픈하우스",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-08-31"
+    },
+    "6187": {
+      "board": "notice",
+      "title": "2026학년도 2학기 셔틀버스 증차 운행 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-08-28"
+    },
+    "6184": {
+      "board": "notice",
+      "title": "[신입생 필독] 2026학년도 2학기 대학원생 연구윤리 교육 실시 안내(연장)",
+      "category": "학사 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-10"
+    },
+    "6181": {
+      "board": "notice",
+      "title": "2026학년도 2학기 셔틀버스 운행 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-08-27"
+    },
+    "6178": {
+      "board": "seminars",
+      "title": "「기후테크 기후가치평가와 선금융 메커니즘」",
+      "category": "대학원 포럼",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-08-25"
+    },
+    "6172": {
+      "board": "seminars",
+      "title": "[환경대학원 제246차 세미나] Circular Cities in the Making: Urban Manufacturing and Public Space",
+      "category": "대학원 세미나",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-08-21"
+    },
+    "6165": {
+      "board": "admissions",
+      "title": "2027학년도 환경대학원 전기모집 안내 (2026.9.28.(월) 10:00 ~ 10.2.(금) 17:00)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-09-01"
+    },
+    "6157": {
+      "board": "news",
+      "title": "[KAIST] 문화기술대학원 아트앤테크놀로지센터 선임급위촉연구원 채용",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-08-12"
+    },
+    "6135": {
+      "board": "news",
+      "title": "환경대학원 박사후연구원(인구감소,도시쇠퇴,지방소멸 분야) 채용 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-07-30"
+    },
+    "6129": {
+      "board": "seminars",
+      "title": "[Beyond Population Decline] 환경대학원 국제학술심포지엄 개최 안내(8/4)]",
+      "category": "대학원 심포지엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-07-24"
+    },
+    "6097": {
+      "board": "seminars",
+      "title": "[한국공간환경학회 2026 여름방학 세미나] 누구의 공간인가: 공공공간을 둘러싼 비판적 도시연구",
+      "category": "대학원 세미나",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-30"
+    },
+    "6094": {
+      "board": "news",
+      "title": "융합전공 에너지저장장치 자원회수-순환경제 전공 설명회 개최(2026.07.10.)",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-24"
+    },
+    "6085": {
+      "board": "seminars",
+      "title": "[GSES 제244차 콜로키움] Publishing in Multidisciplinary Journals: An Editor’s Perspective",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-12"
+    },
+    "6084": {
+      "board": "seminars",
+      "title": "[GSES 제243차 콜로키움] Integrated Landscape Approaches to Energy Planning",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-12"
+    },
+    "6083": {
+      "board": "news",
+      "title": "국제기구 GSTC 교육프로그램 코디네이터 채용 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-12"
+    },
+    "6078": {
+      "board": "seminars",
+      "title": "[GSES 제242차 콜로키움] 미국의 재생에너지 현황 - 태양을 사랑하는 선배와의 대화",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-08"
+    },
+    "6076": {
+      "board": "seminars",
+      "title": "[GSES 제241차 콜로키움] - Urban Complexity Science: Challenges and Opportunities for Machine Learning",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-08"
+    },
+    "6075": {
+      "board": "seminars",
+      "title": "[GSES 제240차 콜로키움] - Reinforcement Learning-based adaptive planning of charging infrastructure",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-08"
+    },
+    "6067": {
+      "board": "seminars",
+      "title": "[6/12 워크숍 안내] 지리·도시계획 연구를 위한 응용 생성형 AI: 실습 중심 랩 워크숍",
+      "category": "대학원 특강",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-06-02"
+    },
+    "6060": {
+      "board": "seminars",
+      "title": "[환경대학원 제239차 콜로키움] 이커머스 확산과 상업용 부동산 임대료의 변화: 한국 상업용 부동산 시장의 증거 (6/4)",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-05-27"
+    },
+    "6057": {
+      "board": "seminars",
+      "title": "[환경대학원 제238차 콜로키움] Beyond Green Infrastructure: Spillover Effects of EV Charging Stations on Local R...",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-05-26"
+    },
+    "6055": {
+      "board": "seminars",
+      "title": "[환경계획연구소 글로컬도시연구센터 국제학술세미나] 개최 안내 (5/27)",
+      "category": "대학원 세미나",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-05-21"
+    },
+    "6039": {
+      "board": "seminars",
+      "title": "[Housing Affordability and Demographic Dynamics] 국제 학술 워크숍 개최 안내 (5/25~5/26)",
+      "category": "대학원 세미나",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-05-08"
+    },
+    "6023": {
+      "board": "seminars",
+      "title": "[협동과정 조경학 2026학년도 특강 시리즈 #03] From Landscape Painting to Landscape Garden to Landscape Architecture:...",
+      "category": "대학원 특강",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-05-04"
+    },
+    "6021": {
+      "board": "seminars",
+      "title": "[제 79회 지속가능 교통물류 콜로키움] 하이퍼튜브 시스템 연구현황과 계획",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-04-30"
+    },
+    "6008": {
+      "board": "admissions",
+      "title": "2026학년도 신입생 후기모집 면접 및 구술고사 일정 안내(4/29(수))",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-04-24"
+    },
+    "5989": {
+      "board": "admissions",
+      "title": "2026학년도 후기 사회혁신전공 오픈하우스",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-04-03"
+    },
+    "5967": {
+      "board": "admissions",
+      "title": "2026학년도 환경대학원 후기모집 안내 (2026.4.13.(월) 10:00 ~ 4.17.(금) 17:00)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-03-23"
+    },
+    "5953": {
+      "board": "news",
+      "title": "서울대학교 환경대학원 도시환경 미래전략과정 강의지원 학생 모집(~2026.03.11)",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-03-06"
+    },
+    "5928": {
+      "board": "news",
+      "title": "'2026년 대한민국 혁신창업상 공모전' 안내",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-02-23"
+    },
+    "5896": {
+      "board": "news",
+      "title": "2026-1 융합전공 에너지저장장치 자원회수-순환경제 신규 진입생 모집",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2026-01-14"
+    },
+    "5867": {
+      "board": "news",
+      "title": "서울대학교 기후테크센터 기후경제 및 기후경영 분야 연구원 채용 공고(~2026.01.09)",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-12-08"
+    },
+    "5851": {
+      "board": "news",
+      "title": "2025 서울시 도시공간정책 국제컨퍼런스: AI로 여는 도시계획 대전환",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-11-27"
+    },
+    "5849": {
+      "board": "news",
+      "title": "(2026학년도 신설) 융합전공 에너지저장장치 자원회수-순환경제 전공 설명회 개최(2025.12.05)",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-11-24"
+    },
+    "5827": {
+      "board": "news",
+      "title": "2025 대한민국 청년총회 청년 참여자 모집",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-11-06"
+    },
+    "5804": {
+      "board": "admissions",
+      "title": "2026학년도 신입생 전기모집 면접 및 구술고사 일정 안내(10/22(수))",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-10-14"
+    },
+    "5798": {
+      "board": "news",
+      "title": "2025 디지털치유정원 공간 모델 제안 및 콘텐츠 개발 공모전",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-10-01"
+    },
+    "5788": {
+      "board": "notice",
+      "title": "긴급상황 신고 메뉴 정비안내(마이스누)",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-09-29"
+    },
+    "5774": {
+      "board": "admissions",
+      "title": "2026학년도 전기 사회혁신전공 오픈하우스",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-09-15"
+    },
+    "5754": {
+      "board": "admissions",
+      "title": "2026학년도 환경대학원 전기모집 안내 (2025.9.22.(월) 10:00 ~ 9.26.(금) 17:00)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-09-04"
+    },
+    "5752": {
+      "board": "admissions",
+      "title": "2026학년도 전기 환경설계학과 석사 입시설명회",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-08-26"
+    },
+    "5707": {
+      "board": "news",
+      "title": "서울대학교 기후테크센터 '기후테크산업육성특별법 제정 연구' 참여 연구원 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-07-30"
+    },
+    "5673": {
+      "board": "news",
+      "title": "제4기 동아시아연구 장학프로그램 선발",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-06-20"
+    },
+    "5671": {
+      "board": "news",
+      "title": "2025학년도 한국고등교육재단 제51기 해외유학후보장학생 모집",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-06-18"
+    },
+    "5652": {
+      "board": "news",
+      "title": "2025 Patagonia Summer University 제 1기 교육생 모집",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-05-27"
+    },
+    "5638": {
+      "board": "news",
+      "title": "한국행정연구원 재난안전연구실 연구보조원 채용 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-05-19"
+    },
+    "5637": {
+      "board": "news",
+      "title": "중앙도서관 오픈액세스 출판 논문 게재료 지원",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-05-19"
+    },
+    "5617": {
+      "board": "news",
+      "title": "2025 COMPAS 국토도시데이터 분석 아이디어 공모",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-04-28"
+    },
+    "5616": {
+      "board": "admissions",
+      "title": "2025학년도 신입생 후기모집 면접 및 구술고사 일정 안내 (4.30.)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-04-25"
+    },
+    "5610": {
+      "board": "news",
+      "title": "서울대학교 환경대학원 4단계 BK21 대전환기 지속가능도시 혁신인재 양성단 박사후연구원 채용 연기 안내",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-04-17"
+    },
+    "5609": {
+      "board": "news",
+      "title": "한국 WWF Biodiversity Senior Officer 채용 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-04-17"
+    },
+    "5594": {
+      "board": "admissions",
+      "title": "도시사회혁신전공 2025 하반기 석・박사 모집 오픈하우스",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-03-31"
+    },
+    "5589": {
+      "board": "news",
+      "title": "환경대학원 교통학전공 교통안전·공학 연구실 연구보조원 채용 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-03-27"
+    },
+    "5584": {
+      "board": "admissions",
+      "title": "2025학년도 환경대학원 후기모집 안내 (2025.4.14.(월) 10:00~4.18.(금) 17:00)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-03-24"
+    },
+    "5571": {
+      "board": "news",
+      "title": "2025년도 YP(Young Professionals) 「그랜드 피스투어 장학생」 선발 공고",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-03-12"
+    },
+    "5544": {
+      "board": "news",
+      "title": "2025년도 한국연구재단 인문사회학술연구교수(B유형) 신규 공모 안내(정정)",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-02-13"
+    },
+    "5540": {
+      "board": "news",
+      "title": "2025년도 미래 신진연구자 지원사업(Ascending SNU Future Leader Fellowship) 신규과제 신청 안내",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-02-13"
+    },
+    "5506": {
+      "board": "news",
+      "title": "2025년도 아시아연구소 박사논문작성지원 사업 신청 안내",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2025-01-10"
+    },
+    "5470": {
+      "board": "news",
+      "title": "IPESK 차세대 공학연구자 추천 안내",
+      "category": "대학원 기타",
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2024-11-25"
+    },
+    "5401": {
+      "board": "admissions",
+      "title": "2025학년도 환경대학원 전기모집 안내 (2024.10.7.(월) 10:00 ~ 10.11.(금) 17:00까지)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2024-09-13"
+    },
+    "5260": {
+      "board": "admissions",
+      "title": "2024학년도 신입생 후기모집 면접 일정 안내",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2024-04-22"
+    },
+    "5228": {
+      "board": "admissions",
+      "title": "환경대학원 2024학년도 후기모집 안내 (2024.4.15.(월) 10:00 ~ 4.19.(금) 17:00)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2024-03-21"
+    },
+    "5070": {
+      "board": "admissions",
+      "title": "2024학년도 신입생 전기모집 면접 및 구술고사 안내(10.25.)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2023-10-19"
+    },
+    "5047": {
+      "board": "admissions",
+      "title": "2024학년도 환경대학원 전기모집 안내 (2023.10.2.(월)~10.6.(금) 17:00까지)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2023-09-15"
+    },
+    "4898": {
+      "board": "admissions",
+      "title": "2023 대학원 신입생 후기모집 면접일정(4.26.(수)) 안내",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2023-04-20"
+    },
+    "4886": {
+      "board": "admissions",
+      "title": "서울대학교 도시사회혁신전공 2023년도 후기 석사/박사 신입생 모집",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2023-04-07"
+    },
+    "4852": {
+      "board": "admissions",
+      "title": "2023학년도 환경대학원 후기모집 안내(4. 10.(월) 10:00 ~ 4. 14.(금) 17:00까지)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2023-03-13"
+    },
+    "4734": {
+      "board": "admissions",
+      "title": "2023학년도 환경대학원 전기 모집 합격자 발표 예정 (11.24 18:00 이후)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-11-24"
+    },
+    "4703": {
+      "board": "admissions",
+      "title": "23학년도 전기 면접시간 변경 안내(석사과정 환경계획학과 도시사회혁신 전공)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-10-20"
+    },
+    "4702": {
+      "board": "admissions",
+      "title": "2023학년도 전기 대학원 신입생 면접일정(10.26.(수)) 안내",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-10-19"
+    },
+    "4673": {
+      "board": "admissions",
+      "title": "2023학년도 환경대학원 전기 모집 안내 (10.04(화) 10:00 ~ 10.07(금) 17:00까지)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-09-15"
+    },
+    "4586": {
+      "board": "admissions",
+      "title": "대학원 입학 영어성적 조정 알림",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-05-27"
+    },
+    "4563": {
+      "board": "admissions",
+      "title": "2022 대학원 신입생 후기모집 면접일정(4.27.(수)) 안내",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-04-22"
+    },
+    "4533": {
+      "board": "admissions",
+      "title": "2022학년도 환경대학원 후기모집 안내(4. 11.(월) 10:00 ~ 4. 15.(금) 17:00까지)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2022-03-04"
+    },
+    "4464": {
+      "board": "admissions",
+      "title": "2022 대학원 신입생 전기모집 면접일정(10.27.(수)) 안내",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2021-10-22"
+    },
+    "4448": {
+      "board": "admissions",
+      "title": "2022학년도 환경대학원 전기모집 안내(10. 5.(화) 10:00 ~ 10. 8.(금) 17:00까지)",
+      "category": null,
+      "first_seen": "2026-11-05T18:28:45+09:00",
+      "posted": "2021-09-08"
+    }
+  },
+  "health": {
+    "consecutive_failures": 0,
+    "first_failure_at": null,
+    "last_failure_at": null,
+    "last_error": null,
+    "alert_sent": false
+  },
+  "digest": {},
+  "created_at": "2026-11-05T18:28:45+09:00",
+  "updated_at": "2026-11-05T18:28:45+09:00"
+}

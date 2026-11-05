@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko">
+  <title>서울대학교 환경대학원 게시판</title>
+  <subtitle>GSES Notice Bot 이 모은 새 글</subtitle>
+  <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
+  <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
+  <id>tag:gses-notice-bot,2026:feed</id>
+  <updated>2026-11-05T00:00:00+09:00</updated>
+  <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[세미나 및 강연] [GSES 제259차 콜로키움] From prediction to possibility: rethinking the future of urban planning under disruptive technological change</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6305"/>
+    <id>tag:gses-notice-bot,2026:post-6305</id>
+    <updated>2026-11-05T00:00:00+09:00</updated>
+    <published>2026-11-05T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026학년도 동계 계절수업 수강료 납부 및 환불 계획 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6304"/>
+    <id>tag:gses-notice-bot,2026:post-6304</id>
+    <updated>2026-11-05T00:00:00+09:00</updated>
+    <published>2026-11-05T00:00:00+09:00</published>
+    <category term="학사 학사"/>
+    <summary>공지사항 · 학사 학사</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 「SNU Commons 중앙도서관 융합 미디어 작품 공모전(제2회)」개최 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6303"/>
+    <id>tag:gses-notice-bot,2026:post-6303</id>
+    <updated>2026-11-04T00:00:00+09:00</updated>
+    <published>2026-11-04T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년도 장애인식개선주간 운영 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6302"/>
+    <id>tag:gses-notice-bot,2026:post-6302</id>
+    <updated>2026-11-03T00:00:00+09:00</updated>
+    <published>2026-11-03T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년 11월 환경대학원 자료실 운영 시간표</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6301"/>
+    <id>tag:gses-notice-bot,2026:post-6301</id>
+    <updated>2026-11-02T00:00:00+09:00</updated>
+    <published>2026-11-02T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 차세대 네트워크 구축 사업 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6300"/>
+    <id>tag:gses-notice-bot,2026:post-6300</id>
+    <updated>2026-11-02T00:00:00+09:00</updated>
+    <published>2026-11-02T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026학년도 2학기 셔틀버스 추가 증차 운행 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6299"/>
+    <id>tag:gses-notice-bot,2026:post-6299</id>
+    <updated>2026-11-02T00:00:00+09:00</updated>
+    <published>2026-11-02T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] [환경관리학과] 2026-2 환경관리학과 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Environmental Management)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6298"/>
+    <id>tag:gses-notice-bot,2026:post-6298</id>
+    <updated>2026-11-02T00:00:00+09:00</updated>
+    <published>2026-11-02T00:00:00+09:00</published>
+    <category term="학사 논문"/>
+    <summary>공지사항 · 학사 논문</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] [환경관리학과] 2026-2 환경관리학과 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of Environmental Management)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6297"/>
+    <id>tag:gses-notice-bot,2026:post-6297</id>
+    <updated>2026-11-02T00:00:00+09:00</updated>
+    <published>2026-11-02T00:00:00+09:00</published>
+    <category term="학사 논문"/>
+    <summary>공지사항 · 학사 논문</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년도 동절기 난방·환기시설 운영계획 알림</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6296"/>
+    <id>tag:gses-notice-bot,2026:post-6296</id>
+    <updated>2026-10-29T00:00:00+09:00</updated>
+    <published>2026-10-29T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년 서울대학교 건강주간 행사 알림</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6295"/>
+    <id>tag:gses-notice-bot,2026:post-6295</id>
+    <updated>2026-10-29T00:00:00+09:00</updated>
+    <published>2026-10-29T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026-2 도시계획학과 석사논문 프로포절 공고/Notice on Dissertation Proposal Presentation and Manuscript Submission in Dept. of Urban Planning</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6294"/>
+    <id>tag:gses-notice-bot,2026:post-6294</id>
+    <updated>2026-10-29T00:00:00+09:00</updated>
+    <published>2026-10-29T00:00:00+09:00</published>
+    <category term="학사 논문"/>
+    <summary>공지사항 · 학사 논문</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026학년도 2학기「강의 중간 수강소감 조사」실시 계획 알림</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6293"/>
+    <id>tag:gses-notice-bot,2026:post-6293</id>
+    <updated>2026-10-29T00:00:00+09:00</updated>
+    <published>2026-10-29T00:00:00+09:00</published>
+    <category term="학사 수업"/>
+    <summary>공지사항 · 학사 수업</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] [환경계획학과] 2026학년도 2학기 도시및지역계획학전공 박사논문지도위원회 공고</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6292"/>
+    <id>tag:gses-notice-bot,2026:post-6292</id>
+    <updated>2026-10-29T00:00:00+09:00</updated>
+    <published>2026-10-29T00:00:00+09:00</published>
+    <category term="학사 논문"/>
+    <summary>공지사항 · 학사 논문</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026학년도 Lab 단위 심리검사 진단 프로그램</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6291"/>
+    <id>tag:gses-notice-bot,2026:post-6291</id>
+    <updated>2026-10-28T00:00:00+09:00</updated>
+    <published>2026-10-28T00:00:00+09:00</published>
+    <category term="학사 학생"/>
+    <summary>공지사항 · 학사 학생</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [서울대학교 협동과정 조경학 2026학년도 특강 시리즈 #06] 환경설계 연구 방법론</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6290"/>
+    <id>tag:gses-notice-bot,2026:post-6290</id>
+    <updated>2026-10-28T00:00:00+09:00</updated>
+    <published>2026-10-28T00:00:00+09:00</published>
+    <category term="대학원 특강"/>
+    <summary>세미나 및 강연 · 대학원 특강</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 제257차 콜로키움] 기후위기시대의 재난관리</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6289"/>
+    <id>tag:gses-notice-bot,2026:post-6289</id>
+    <updated>2026-10-28T00:00:00+09:00</updated>
+    <published>2026-10-28T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 한국건설기술연구원 연구시설·장비 공동활용 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6288"/>
+    <id>tag:gses-notice-bot,2026:post-6288</id>
+    <updated>2026-10-27T00:00:00+09:00</updated>
+    <published>2026-10-27T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 수의과대학 수시모집 전형에 따른 건물 통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6287"/>
+    <id>tag:gses-notice-bot,2026:post-6287</id>
+    <updated>2026-10-27T00:00:00+09:00</updated>
+    <published>2026-10-27T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 사범대학 수시모집 입학 전형에 따른 건물 통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6286"/>
+    <id>tag:gses-notice-bot,2026:post-6286</id>
+    <updated>2026-10-26T00:00:00+09:00</updated>
+    <published>2026-10-26T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 흥캠퍼스 교육협력동 지붕 설치공사에 따른 차량 진출입 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6285"/>
+    <id>tag:gses-notice-bot,2026:post-6285</id>
+    <updated>2026-10-26T00:00:00+09:00</updated>
+    <published>2026-10-26T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 사회과학대학 수시모집 입학 전형에 따른 건물 통제 알림</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6284"/>
+    <id>tag:gses-notice-bot,2026:post-6284</id>
+    <updated>2026-10-26T00:00:00+09:00</updated>
+    <published>2026-10-26T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 경영대학 수시모집 입학전형에 따른 건물 통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6283"/>
+    <id>tag:gses-notice-bot,2026:post-6283</id>
+    <updated>2026-10-26T00:00:00+09:00</updated>
+    <published>2026-10-26T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년 제6,7,8회 「중앙도서관 연구자 커리어 멘토링 특강」 개최 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6282"/>
+    <id>tag:gses-notice-bot,2026:post-6282</id>
+    <updated>2026-10-26T00:00:00+09:00</updated>
+    <published>2026-10-26T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 BK21 콜로키움] Electricity Supply and Emissions</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6281"/>
+    <id>tag:gses-notice-bot,2026:post-6281</id>
+    <updated>2026-10-26T00:00:00+09:00</updated>
+    <published>2026-10-26T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 약학대학 수시모집 입학 전형에 따른 건물 통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6280"/>
+    <id>tag:gses-notice-bot,2026:post-6280</id>
+    <updated>2026-10-23T00:00:00+09:00</updated>
+    <published>2026-10-23T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 제256차 콜로키움] City Love, Heritage, and Peripherality</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6279"/>
+    <id>tag:gses-notice-bot,2026:post-6279</id>
+    <updated>2026-10-23T00:00:00+09:00</updated>
+    <published>2026-10-23T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 관악캠퍼스 소방시설 작동점검 실시 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6278"/>
+    <id>tag:gses-notice-bot,2026:post-6278</id>
+    <updated>2026-10-22T00:00:00+09:00</updated>
+    <published>2026-10-22T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] [10/31(토) 모교방문의 날] 환경관리학과 「커리어데이」 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6277"/>
+    <id>tag:gses-notice-bot,2026:post-6277</id>
+    <updated>2026-10-22T00:00:00+09:00</updated>
+    <published>2026-10-22T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년 2학기 SNU Global EDGE Fellowship 프로그램 장학생 모집 안내(대상확대)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6220"/>
+    <id>tag:gses-notice-bot,2026:post-6220</id>
+    <updated>2026-10-22T00:00:00+09:00</updated>
+    <published>2026-10-22T00:00:00+09:00</published>
+    <category term="학사 장학"/>
+    <summary>공지사항 · 학사 장학</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027년 제8기 관악 청년네트워크 신규위원 모집</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6263"/>
+    <id>tag:gses-notice-bot,2026:post-6263</id>
+    <updated>2026-10-21T00:00:00+09:00</updated>
+    <published>2026-10-21T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026년 제5회「중앙도서관 연구자 커리어 멘토링 특강」개최 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6262"/>
+    <id>tag:gses-notice-bot,2026:post-6262</id>
+    <updated>2026-10-21T00:00:00+09:00</updated>
+    <published>2026-10-21T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] (Notice) Fall 2026 SNU K-STAR Visa Track</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6261"/>
+    <id>tag:gses-notice-bot,2026:post-6261</id>
+    <updated>2026-10-20T00:00:00+09:00</updated>
+    <published>2026-10-20T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026-2 도시계획학과 석사학위논문 최종심사 공고</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6260"/>
+    <id>tag:gses-notice-bot,2026:post-6260</id>
+    <updated>2026-10-20T00:00:00+09:00</updated>
+    <published>2026-10-20T00:00:00+09:00</published>
+    <category term="학사 논문"/>
+    <summary>공지사항 · 학사 논문</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 국가미래전략원-국민경제자문회의 공동세미나「전력망 병목, 에너지 지정학 어떻게 극복할 것인가」홍보</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6259"/>
+    <id>tag:gses-notice-bot,2026:post-6259</id>
+    <updated>2026-10-19T00:00:00+09:00</updated>
+    <published>2026-10-19T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 AI대학원 전기모집 입학 전형에 따른 건물 통제 알림</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6258"/>
+    <id>tag:gses-notice-bot,2026:post-6258</id>
+    <updated>2026-10-19T00:00:00+09:00</updated>
+    <published>2026-10-19T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [GSES 제255차 콜로키움] 인간이 만든 기후위기 AI가 대신 해결해 줄 수 있을까?</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6257"/>
+    <id>tag:gses-notice-bot,2026:post-6257</id>
+    <updated>2026-10-19T00:00:00+09:00</updated>
+    <published>2026-10-19T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 잔디광장 지하주차장 운영 변경 알림</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6256"/>
+    <id>tag:gses-notice-bot,2026:post-6256</id>
+    <updated>2026-10-19T00:00:00+09:00</updated>
+    <published>2026-10-19T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2026학년도 동계 계절수업 수강신청 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6255"/>
+    <id>tag:gses-notice-bot,2026:post-6255</id>
+    <updated>2026-10-19T00:00:00+09:00</updated>
+    <published>2026-10-19T00:00:00+09:00</published>
+    <category term="학사 수업"/>
+    <summary>공지사항 · 학사 수업</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 「2026 관악강감찬축제」 관련 교통통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6254"/>
+    <id>tag:gses-notice-bot,2026:post-6254</id>
+    <updated>2026-10-16T00:00:00+09:00</updated>
+    <published>2026-10-16T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[입학안내] 2027학년도 신입생 전기모집 면접 및 구술고사 일정 안내(10/21(수))</title>
+    <link href="https://gses.snu.ac.kr/news/notice/admissions?md=v&amp;bbsidx=6252"/>
+    <id>tag:gses-notice-bot,2026:post-6252</id>
+    <updated>2026-10-16T00:00:00+09:00</updated>
+    <published>2026-10-16T00:00:00+09:00</published>
+    <summary>입학안내</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 개교기념일(10.15.) 셔틀버스 미운행 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6253"/>
+    <id>tag:gses-notice-bot,2026:post-6253</id>
+    <updated>2026-10-14T00:00:00+09:00</updated>
+    <published>2026-10-14T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 제254차 콜로키움] Seconds to Decades: High-Frequency Analytics to Low-Frequency Urban Design throug...</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6251"/>
+    <id>tag:gses-notice-bot,2026:post-6251</id>
+    <updated>2026-10-12T00:00:00+09:00</updated>
+    <published>2026-10-12T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] '「SNU Commons 행정관」 개관식' 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6250"/>
+    <id>tag:gses-notice-bot,2026:post-6250</id>
+    <updated>2026-10-12T00:00:00+09:00</updated>
+    <published>2026-10-12T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 2027학년도 법학전문대학원 입학전형 관련 출입통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6249"/>
+    <id>tag:gses-notice-bot,2026:post-6249</id>
+    <updated>2026-10-12T00:00:00+09:00</updated>
+    <published>2026-10-12T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[새소식] [융복합계획연구실] 서울대학교 도시계획학과 Basic Research Lab (책임: 융복합연구실) 석·박사연구원 모집</title>
+    <link href="https://gses.snu.ac.kr/news/notice/news?md=v&amp;bbsidx=6248"/>
+    <id>tag:gses-notice-bot,2026:post-6248</id>
+    <updated>2026-10-12T00:00:00+09:00</updated>
+    <published>2026-10-12T00:00:00+09:00</published>
+    <category term="대학원 기타"/>
+    <summary>새소식 · 대학원 기타</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] 2026 기후변화와 청정대기의 미래 국제워크숍(GUIDE-IAMs) 개최 (10.13.)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6247"/>
+    <id>tag:gses-notice-bot,2026:post-6247</id>
+    <updated>2026-10-12T00:00:00+09:00</updated>
+    <published>2026-10-12T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 「개교 80주년 KBS 열린음악회」개최 관련 교통 통제 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6246"/>
+    <id>tag:gses-notice-bot,2026:post-6246</id>
+    <updated>2026-10-08T00:00:00+09:00</updated>
+    <published>2026-10-08T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 제253차 콜로키움] 지역계획(조경)과 관광의 접점에서 연구자의 길</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6245"/>
+    <id>tag:gses-notice-bot,2026:post-6245</id>
+    <updated>2026-10-08T00:00:00+09:00</updated>
+    <published>2026-10-08T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 시험기간 중 야간 도서관 셔틀버스 증차 및 심야셔틀 운행 노선 변경 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6244"/>
+    <id>tag:gses-notice-bot,2026:post-6244</id>
+    <updated>2026-10-07T00:00:00+09:00</updated>
+    <published>2026-10-07T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+</feed>
