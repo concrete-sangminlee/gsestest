@@ -10,27 +10,6 @@ X-WR-CALDESC:게시판 공지에서 자동 추출한 마감 일정 · https
 REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
-UID:gses-6294-20261104T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20261104
-DTEND;VALUE=DATE:20261105
-SUMMARY:⏰ Submission of the Application Form for t 마감 — 2026-2 도
- 시계획학과 석사논문 프로포절 공고/Notice on Dissertation Pr
- oposal Presentation and Manuscript Submission in Dept. of Urban Planning
-DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사논문 프로
- 포절 공고/Notice on Dissertation Proposal Presentation and Manuscript 
- Submission in Dept. of Urban Planning\nhttps://gses.snu.ac.kr/news/notice/
- notice?md=v&bbsidx=6294
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6294
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ Submission of the Application Form for t 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 UID:gses-6261-20261105T0900@gses-notice-bot
 DTSTAMP:20261105T092845Z
 DTSTART:20261105T083000Z
