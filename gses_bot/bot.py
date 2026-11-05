@@ -9,15 +9,25 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any
+from urllib.parse import quote
 
 from gses_bot.ai import Summarizer
 from gses_bot.boards import BOARDS
 from gses_bot.config import Settings
-from gses_bot.deadlines import Deadline, extract_deadlines
+from gses_bot.deadlines import RULES_VERSION, Deadline, diff_deadlines, extract_deadlines
+from gses_bot.exports import (
+    FEED_NAME,
+    ICS_NAME,
+    CalendarItem,
+    build_atom,
+    build_ics,
+    write_if_changed,
+)
 from gses_bot.messages import (
     MAX_REMINDERS_PER_MESSAGE,
     Message,
     build_alert_message,
+    build_deadline_change_message,
     build_digest_message,
     build_ping_message,
     build_post_messages,
@@ -61,6 +71,11 @@ class RunReport:
     reminders: list[tuple[NoticeRef, Deadline]] = field(default_factory=list)
     baseline_enriched: int = 0
     ai_summaries: int = 0
+    rechecked: int = 0
+    deadline_changes: list[tuple[NoticeRef, Deadline | None, Deadline]] = field(
+        default_factory=list
+    )
+    exports_written: list[str] = field(default_factory=list)
 
 
 def strip_images(message: Message) -> Message:
@@ -247,9 +262,12 @@ class Bot:
                 self._send_title_changes(state, report, changes, now)
         for change in changes:
             if change.post.detail_loaded and state.is_seen(change.post.bbsidx):
-                state.update_details(change.post)
+                state.update_details(change.post, now)
 
         if report.slack_error is None and not force_init:  # init 은 어떤 알림도 보내지 않음
+            # 본문 수정으로 바뀐 마감을 먼저 반영해야 리마인더가 새 날짜로 갑니다.
+            self._recheck_deadlines(state, report, now, dry_run)
+        if report.slack_error is None and not force_init:
             self._send_reminders(state, report, now, dry_run)
 
         # v1 에서 넘어온 항목처럼 메타데이터가 빈 기존 글을 보충합니다 (기존 제목은 덮어쓰지 않음).
@@ -265,6 +283,7 @@ class Bot:
             log.info("🧹 오래된 state 항목 %d개 정리", pruned)
         if not dry_run:
             report.state_saved = state.save(settings.state_file, now)
+            self._write_exports(state, report)
         report.requests = self.scraper.request_count
         report.ai_summaries = sum(1 for post in report.sent + report.pending if post.ai)
         if report.slack_error:
@@ -311,6 +330,104 @@ class Bot:
             log.info(
                 "🔎 기준점 글 %d건의 상세 확인 (마감 있는 글 %d건)", report.baseline_enriched, found
             )
+
+    def _recheck_deadlines(
+        self, state: State, report: RunReport, now: datetime, dry_run: bool
+    ) -> None:
+        """마감이 다가오는 글은 하루 한 번 상세를 다시 읽어 본문 수정(마감 연장 등)을 잡습니다.
+
+        실제 공지도 '★ 프로포절 신청서 제출일 11. 27.(금) 17:00 로 변경' 처럼 제목은 그대로 두고
+        본문만 고치는 경우가 많습니다. 추출 규칙 버전이 바뀐 항목은 알림 없이 조용히 갱신합니다.
+        """
+        settings = self.settings
+        if not settings.fetch_details or settings.deadline_recheck_hours <= 0:
+            return
+        interval = timedelta(hours=settings.deadline_recheck_hours)
+        candidates = state.recheck_candidates(now, interval)[: settings.deadline_recheck_max]
+        updates: list[tuple[Post, list[tuple[Deadline | None, Deadline]], NoticeRef]] = []
+        for bbsidx, entry in candidates:
+            ref = self._ref(bbsidx, entry)
+            if ref is None:
+                continue
+            post = Post(
+                board=ref.board,
+                bbsidx=bbsidx,
+                title=entry.get("title") or ref.title,
+                url=ref.url,
+                category=entry.get("category"),
+                posted=ref.posted,
+            )
+            self.scraper.enrich(post)
+            if not post.detail_loaded:
+                continue  # 가져오지 못하면 다음 실행에서 다시 시도
+            report.rechecked += 1
+            self._extract_deadlines(post, now)
+            old = [d for raw in entry.get("deadlines") or [] if (d := Deadline.from_dict(raw))]
+            same_rules = entry.get("rules") == RULES_VERSION
+            diff = diff_deadlines(old, post.deadlines, now) if same_rules else []
+            if diff and not self._ref_matches_filters(ref):
+                diff = []
+            updates.append((post, diff, ref))
+        if report.rechecked:
+            log.info("🔁 마감 재확인 %d건", report.rechecked)
+
+        report.deadline_changes = [(ref, old, new) for _, diff, ref in updates for old, new in diff]
+        if report.deadline_changes:
+            message = build_deadline_change_message(report.deadline_changes, now)
+            for ref, old, new in report.deadline_changes:
+                log.info(
+                    "   📅 #%s %s: %s → %s",
+                    ref.bbsidx,
+                    new.label,
+                    old.at.strftime("%m.%d %H:%M") if old else "(추가)",
+                    new.at.strftime("%m.%d %H:%M"),
+                )
+            if dry_run:
+                report.payloads.append(message)
+            else:
+                try:
+                    self._deliver(message)
+                    report.messages_sent += 1
+                except SlackError as exc:
+                    report.slack_error = str(exc)
+                    log.error("❌ 마감 변경 알림 전송 실패: %s", exc)
+                    # 변경을 알리지 못한 글은 기록을 갱신하지 않아 다음 실행에서 다시 감지합니다.
+                    updates = [item for item in updates if not item[1]]
+        for post, _, _ in updates:
+            state.update_details(post, now)
+
+    def _write_exports(self, state: State, report: RunReport) -> None:
+        """구독용 마감 캘린더(.ics)와 새 글 피드(Atom)를 state 옆에 씁니다."""
+        settings = self.settings
+        if not settings.exports:
+            return
+        directory = settings.state_file.parent
+        items = []
+        for bbsidx, entry, deadline in state.deadlines():
+            ref = self._ref(bbsidx, entry)
+            if ref is None or not self._ref_matches_filters(ref):
+                continue
+            items.append(
+                CalendarItem(ref, deadline, _parse_time(entry.get("first_seen")) or deadline.at)
+            )
+        recent = []
+        for bbsidx, entry in state.seen.items():
+            ref = self._ref(bbsidx, entry)
+            if ref is not None and ref.posted and self._ref_matches_filters(ref):
+                recent.append((ref, _parse_time(entry.get("first_seen")) or _EPOCH))
+        recent.sort(key=lambda item: (item[0].posted, int(item[0].bbsidx)), reverse=True)
+        home = BOARDS[settings.boards[0]].list_url(settings.base_url)
+        feed_url = f"{settings.export_base_url}/{FEED_NAME}" if settings.export_base_url else None
+        outputs = {
+            ICS_NAME: build_ics(items, url=home),
+            FEED_NAME: build_atom(recent[: settings.feed_size], home=home, self_url=feed_url),
+        }
+        for name, content in outputs.items():
+            try:
+                if write_if_changed(directory / name, content):
+                    report.exports_written.append(name)
+            except OSError as exc:
+                log.warning("⚠️  %s 쓰기 실패: %s", name, exc)
 
     def _due_reminders(
         self, state: State, now: datetime
@@ -528,7 +645,13 @@ class Bot:
     def ping(self) -> int:
         """기본 채널과 게시판별 채널 모두에 연결 테스트를 보냅니다. 보낸 채널 수를 반환."""
         state = State.load(self.settings.state_file)
-        message = build_ping_message(self.settings, self.clock(), len(state.seen), state.updated_at)
+        message = build_ping_message(
+            self.settings,
+            self.clock(),
+            len(state.seen),
+            state.updated_at,
+            calendar_url=calendar_subscribe_url(self.settings),
+        )
         clients = [c for c in [self.slack, *self.routes.values()] if c is not None]
         unique = list({id(client): client for client in clients}.values())
         for client in unique:
@@ -578,6 +701,7 @@ class Bot:
             days=settings.digest_days,
             base_url=settings.base_url,
             boards=settings.boards,
+            calendar_url=calendar_subscribe_url(settings),
         )
         log.info("🗓  주간 브리핑: 마감 %d건 · 새 글 %d건", len(deadlines), len(new_posts))
         if not dry_run:
@@ -618,6 +742,27 @@ class Bot:
             "health": state.health.__dict__,
             "updated_at": state.updated_at,
         }
+
+
+_EPOCH = datetime(2026, 1, 1, tzinfo=KST)  # 결정적 출력을 위한 고정 기본값
+
+
+def calendar_subscribe_url(settings: Settings) -> str | None:
+    """Google Calendar 구독 링크 (webcal 주소를 cid 로 넘김)."""
+    if not settings.exports or not settings.export_base_url:
+        return None
+    ics = f"{settings.export_base_url}/{ICS_NAME}".replace("https://", "webcal://", 1)
+    return "https://calendar.google.com/calendar/render?cid=" + quote(ics, safe="")
+
+
+def _parse_time(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=KST)
 
 
 def payloads_json(payloads: Iterable[Message]) -> str:

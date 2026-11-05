@@ -101,6 +101,8 @@ jobs:
           GSES_MAX_POSTS_PER_RUN: ${{ vars.GSES_MAX_POSTS_PER_RUN }}
           GSES_REMINDER_DAYS: ${{ vars.GSES_REMINDER_DAYS }}
           GSES_REMINDER_HOUR: ${{ vars.GSES_REMINDER_HOUR }}
+          GSES_DEADLINE_RECHECK_HOURS: ${{ vars.GSES_DEADLINE_RECHECK_HOURS }}
+          GSES_EXPORTS: ${{ vars.GSES_EXPORTS }}
           # AI 요약 (선택)
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GSES_AI_SUMMARY: ${{ vars.GSES_AI_SUMMARY }}

@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
+from urllib.parse import urlencode
 
 from gses_bot.utils import KST, normalize_ws
 
@@ -345,3 +346,57 @@ def fmt_dday(days: int) -> str:
     if days == 1:
         return "내일 마감"
     return f"D-{days}"
+
+
+# 추출 규칙이 바뀌면 올립니다. 규칙 변경으로 달라진 마감은 '마감 변경' 알림 없이 조용히 갱신됩니다.
+RULES_VERSION = 2
+
+
+def diff_deadlines(
+    old: list[Deadline], new: list[Deadline], now: datetime
+) -> list[tuple[Deadline | None, Deadline]]:
+    """본문 수정으로 달라진 '다가오는' 마감: (이전, 새) — 새로 생긴 마감은 이전이 None.
+
+    같은 라벨의 마감 날짜가 바뀌면 이동(연장/단축)으로, 라벨이 다르면 추가로 봅니다.
+    사라지기만 한 마감은 알리지 않습니다 (글 정리일 가능성이 큼).
+    """
+    old_at = {deadline.at for deadline in old}
+    new_at = {deadline.at for deadline in new}
+    vanished = [deadline for deadline in old if deadline.at not in new_at]
+    changes: list[tuple[Deadline | None, Deadline]] = []
+    for deadline in new:
+        if deadline.at in old_at or deadline.at < now:
+            continue
+        previous = next((d for d in vanished if d.label and d.label == deadline.label), None)
+        if previous is not None:
+            vanished.remove(previous)
+        changes.append((previous, deadline))
+    return changes
+
+
+def calendar_window(deadline: Deadline) -> tuple[datetime, datetime] | tuple[date, date]:
+    """캘린더 일정 범위: 시각이 있으면 마감 30분 전~마감, 없으면 그날 종일."""
+    at = deadline.at.astimezone(KST)
+    if deadline.has_time:
+        return at - timedelta(minutes=30), at
+    return at.date(), at.date() + timedelta(days=1)
+
+
+def gcal_url(title: str, deadline: Deadline, link: str) -> str:
+    """Google Calendar '일정 추가' 링크."""
+    start, end = calendar_window(deadline)
+    if deadline.has_time:
+        dates = f"{start:%Y%m%dT%H%M%S}/{end:%Y%m%dT%H%M%S}"
+    else:
+        dates = f"{start:%Y%m%d}/{end:%Y%m%d}"
+    name = f"[마감] {deadline.label} — {title}" if deadline.label else f"[마감] {title}"
+    query = urlencode(
+        {
+            "action": "TEMPLATE",
+            "text": name[:200],
+            "dates": dates,
+            "details": f"원문: {link}",
+            "ctz": "Asia/Seoul",
+        }
+    )
+    return f"https://calendar.google.com/calendar/render?{query}"

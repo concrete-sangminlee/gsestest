@@ -10,6 +10,7 @@ from gses_bot.deadlines import Deadline
 from gses_bot.messages import (
     MAX_BLOCKS,
     build_alert_message,
+    build_deadline_change_message,
     build_digest_message,
     build_ping_message,
     build_post_messages,
@@ -235,3 +236,28 @@ def test_digest_message_limits():
     assert "외 25건" in text and "외 48건" in text
     empty = build_digest_message([], [], NOW, days=7, base_url=BASE, boards=("notice",))
     assert "마감되는 공지가 없어요" in json.dumps(empty, ensure_ascii=False)
+
+
+def test_deadline_change_message_limits():
+    changes = [
+        (_ref(i), _deadline(5) if i % 2 else None, _deadline(9, "라벨 " * 30)) for i in range(20)
+    ]
+    message = build_deadline_change_message(changes, NOW)
+    assert_slack_limits(message)
+    text = json.dumps(message, ensure_ascii=False)
+    assert "~11.05 (목) 17:00~ → *11.09 (월) 17:00*" in text
+    assert "🆕 *11.09 (월) 17:00* 추가" in text
+    assert "12건" in message["blocks"][0]["text"]["text"]
+
+
+def test_deadline_line_calendar_link():
+    line = deadline_line([_deadline(27)], NOW, title="공지", url=f"{BASE}/1")
+    assert "|📅 캘린더>" in line and "calendar.google.com" in line
+    assert "캘린더" not in deadline_line([_deadline(27)], NOW)
+
+
+def test_ping_includes_calendar_subscription():
+    message = build_ping_message(
+        Settings(), NOW, 1, None, calendar_url="https://calendar.google.com/x"
+    )
+    assert "마감 캘린더 구독하기" in json.dumps(message, ensure_ascii=False)

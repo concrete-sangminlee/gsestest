@@ -15,7 +15,7 @@ from typing import Any
 from gses_bot import __version__
 from gses_bot.boards import BOARDS, Board
 from gses_bot.config import Settings
-from gses_bot.deadlines import Deadline, fmt_dday, fmt_deadline, upcoming
+from gses_bot.deadlines import Deadline, fmt_dday, fmt_deadline, gcal_url, upcoming
 from gses_bot.models import NoticeRef, Post, TitleChange
 from gses_bot.state import Health
 from gses_bot.utils import KST, fmt_date, fmt_datetime, fmt_duration, slack_escape, truncate
@@ -115,8 +115,18 @@ def _meta_line(post: Post) -> str:
     return "  ·  ".join(parts)
 
 
-def deadline_line(deadlines: Sequence[Deadline], now: datetime) -> str | None:
-    """'⏰ *D-22* · 11.27 (금) 17:00 — 논문 프로포절 신청서 제출  외 3건'"""
+def calendar_link(title: str, deadline: Deadline, url: str) -> str:
+    return f"<{gcal_url(title, deadline, url)}|📅 캘린더>"
+
+
+def deadline_line(
+    deadlines: Sequence[Deadline],
+    now: datetime,
+    *,
+    title: str | None = None,
+    url: str | None = None,
+) -> str | None:
+    """'⏰ *D-22* · 11.27 (금) 17:00 — 논문 프로포절 신청서 제출  외 3건  · 📅 캘린더'"""
     pending = upcoming(list(deadlines), now)
     if not pending:
         return None
@@ -128,6 +138,8 @@ def deadline_line(deadlines: Sequence[Deadline], now: datetime) -> str | None:
         text += f" — {slack_escape(truncate(first.label, 40))}"
     if len(pending) > 1:
         text += f"  _외 {len(pending) - 1}건_"
+    if title and url:
+        text += f"  ·  {calendar_link(title, first, url)}"
     return text
 
 
@@ -141,7 +153,11 @@ def post_blocks(
     meta = _meta_line(post)
     if meta:
         text += f"\n{meta}"
-    due = deadline_line(post.deadlines, now) if now and post.deadlines else None
+    due = (
+        deadline_line(post.deadlines, now, title=post.display_title, url=post.url)
+        if now and post.deadlines
+        else None
+    )
     if due:
         text += f"\n{due}"
     blocks = [section(text, accessory=button("열기", post.url, f"open-{post.bbsidx}"))]
@@ -268,6 +284,9 @@ def build_title_change_message(changes: Sequence[TitleChange], now: datetime) ->
         )
         meta = _meta_line(post)
         card.append(context(f"{board.emoji} {board.name}" + (f"  ·  {meta}" if meta else "")))
+        due = deadline_line(post.deadlines, now, title=post.display_title, url=post.url)
+        if due:
+            card.append(context(due))  # 제목이 '(연장)' 처럼 바뀐 경우 새 마감을 바로 보여 줌
     card.append(_footer())
     first = changes[0].post.display_title if changes else ""
     return _message(f"✏️ 제목 변경 {len(changes)}건: {first}", blocks, COLOR_EDIT, card)
@@ -275,7 +294,12 @@ def build_title_change_message(changes: Sequence[TitleChange], now: datetime) ->
 
 # ---------------------------------------------------------------------- 운영 메시지
 def build_ping_message(
-    settings: Settings, now: datetime, seen_count: int, last_updated: str | None
+    settings: Settings,
+    now: datetime,
+    seen_count: int,
+    last_updated: str | None,
+    *,
+    calendar_url: str | None = None,
 ) -> Message:
     boards = ", ".join(f"{BOARDS[key].emoji} {BOARDS[key].name}" for key in settings.boards)
     blocks = [
@@ -302,6 +326,8 @@ def build_ping_message(
     ]
     if filters:
         card.insert(1, context("🔎 " + slack_escape("  |  ".join(filters))))
+    if calendar_url:
+        card.append(context(f"📅 <{calendar_url}|마감 캘린더 구독하기> (Google Calendar)"))
     card.append(context(f"🕐 {fmt_datetime(now)} KST  ·  🤖 {BOT_NAME} v{__version__}"))
     return _message(f"{BOT_NAME} 연결 테스트", blocks, COLOR_OK, card)
 
@@ -375,7 +401,8 @@ def build_reminder_message(
         fire = "🔥 " if ref.highlight else ""
         card.append(
             section(
-                f"*{fmt_dday(deadline.days_left(now))}* · *{fmt_deadline(deadline)}*{label}\n"
+                f"*{fmt_dday(deadline.days_left(now))}* · *{fmt_deadline(deadline)}*{label}"
+                f"  ·  {calendar_link(ref.title, deadline, ref.url)}\n"
                 f"{board.emoji} {fire}{link(ref.url, truncate(ref.title, 200))}",
                 accessory=button("열기", ref.url, f"remind-{ref.bbsidx}-{position}"),
             )
@@ -423,6 +450,7 @@ def build_digest_message(
     days: int,
     base_url: str,
     boards: Sequence[str],
+    calendar_url: str | None = None,
 ) -> Message:
     start = now.astimezone(KST).date()
     end = start + timedelta(days=days - 1)
@@ -473,10 +501,52 @@ def build_digest_message(
                     BOARDS[key].list_url(base_url),
                     f"digest-{key}",
                 )
-                for key in boards[:5]
-            ],
+                for key in boards[: 4 if calendar_url else 5]
+            ]
+            + (
+                [button("📅 마감 캘린더 구독", calendar_url, "digest-calendar")]
+                if calendar_url
+                else []
+            ),
         }
     )
     card.append(_footer())
     text = f"🗓 주간 브리핑: 마감 {len(deadlines)}건 · 새 글 {len(new_posts)}건"
     return _message(text, blocks, BOARDS["notice"].color, card)
+
+
+# ---------------------------------------------------------------------- 마감 변경
+MAX_DEADLINE_CHANGES = 12
+
+
+def build_deadline_change_message(
+    changes: Sequence[tuple[NoticeRef, Deadline | None, Deadline]], now: datetime
+) -> Message:
+    """본문 수정으로 마감이 바뀐 글: '11.27 (금) 17:00 → 12.04 (금) 17:00'."""
+    changes = list(changes)[:MAX_DEADLINE_CHANGES]
+    blocks = [
+        header(f"📅  마감 일정 변경 · {len(changes)}건"),
+        context(f"🏫 {BRAND}  ·  🕐 {fmt_datetime(now)} KST  ·  공지 본문이 수정되었어요"),
+    ]
+    card: list[Block] = []
+    for position, (ref, old, new) in enumerate(changes):
+        if position:
+            card.append(divider())
+        label = slack_escape(truncate(new.label, 40)) if new.label else "마감"
+        if old is None:
+            change = f"🆕 *{fmt_deadline(new)}* 추가"
+        else:
+            change = f"~{fmt_deadline(old)}~ → *{fmt_deadline(new)}*"
+        card.append(
+            section(
+                f"*{label}* · {change} · `{fmt_dday(new.days_left(now))}`"
+                f"  ·  {calendar_link(ref.title, new, ref.url)}\n"
+                f"{BOARDS[ref.board].emoji} {link(ref.url, truncate(ref.title, 200))}",
+                accessory=button("열기", ref.url, f"moved-{ref.bbsidx}-{position}"),
+            )
+        )
+    card.append(_footer())
+    ref, old, new = changes[0]
+    first = f"{new.label or ref.title} {fmt_deadline(new)}"
+    more = f" 외 {len(changes) - 1}건" if len(changes) > 1 else ""
+    return _message(f"📅 마감 일정 변경: {first}{more}", blocks, COLOR_EDIT, card)

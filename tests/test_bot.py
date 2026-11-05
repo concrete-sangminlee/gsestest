@@ -491,3 +491,113 @@ def test_digest_counts_recent_posts(settings, scraper):
 
 def test_digest_without_state_is_skipped(settings, scraper):
     assert bot_at(settings, scraper, at(11, 9), FakeSlack()).digest() is None
+
+
+# ---------------------------------------------------------------------- 마감 재확인 / 구독 파일
+DETAIL_6298 = f"{BASE}/news/notice/notice?md=v&bbsidx=6298"
+
+
+def move_proposal_deadline(session) -> None:
+    """실제 공지처럼 제목은 그대로 두고 본문의 마감만 11/27 → 12/1 로 수정."""
+    session.pages[DETAIL_6298] = session.pages[DETAIL_6298].replace("11. 27.(금)", "12. 1.(화)")
+
+
+def change_texts(slack: FakeSlack) -> list[str]:
+    return [m["text"] for m in slack.messages if m["text"].startswith("📅")]
+
+
+def test_body_edit_moves_deadline_and_reminders_follow(settings, scraper, session):
+    baseline(settings, scraper)
+    move_proposal_deadline(session)
+
+    soon = FakeSlack()
+    bot_at(settings, scraper, at(11, 5, 9, 0), soon).run()  # 24시간 안 → 재확인 안 함
+    assert change_texts(soon) == []
+
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 5, 14, 0), slack).run()
+    assert report.rechecked >= 1
+    assert [(r.bbsidx, o.at.day, n.at.day) for r, o, n in report.deadline_changes] == [
+        ("6298", 27, 1)
+    ]
+    (text,) = change_texts(slack)
+    assert text.startswith("📅 마감 일정 변경: 논문 프로포절 신청서 제출 12.01 (화) 17:00")
+    assert saved(settings)["seen"]["6298"]["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
+
+    again = FakeSlack()
+    bot_at(settings, scraper, at(11, 6, 15, 0), again).run()
+    assert change_texts(again) == []
+
+    # 리마인더는 새 날짜 기준: 11/26 에는 없음, 11/30 아침에 '내일 마감'
+    old_day, new_day = FakeSlack(), FakeSlack()
+    bot_at(settings, scraper, at(11, 26), old_day).run()
+    bot_at(settings, scraper, at(11, 30), new_day).run()
+    assert reminder_texts(old_day) == []
+    assert reminder_texts(new_day)[0].startswith("⏰ 내일 마감: 논문 프로포절 신청서 제출 (12.01")
+
+
+def test_rules_upgrade_updates_silently(settings, scraper, session):
+    baseline(settings, scraper)
+    state = State.load(settings.state_file)
+    state.seen["6298"]["rules"] = 1  # 예전 규칙으로 뽑은 마감
+    state.save(settings.state_file, NOW)
+    move_proposal_deadline(session)
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 5, 14, 0), slack).run()
+    assert change_texts(slack) == []
+    entry = saved(settings)["seen"]["6298"]
+    assert entry["rules"] == 2 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
+
+
+def test_deadline_change_failure_is_retried(settings, scraper, session):
+    baseline(settings, scraper)
+    move_proposal_deadline(session)
+    report = bot_at(settings, scraper, at(11, 5, 14, 0), FakeSlack(fail_on=1)).run()
+    assert report.exit_code == EXIT_FAILURE
+    assert saved(settings)["seen"]["6298"]["deadlines"][0]["at"] == "2026-11-27T17:00+09:00"
+    retry = FakeSlack()
+    bot_at(settings, scraper, at(11, 5, 14, 30), retry).run()
+    assert len(change_texts(retry)) == 1
+
+
+def test_recheck_can_be_disabled(settings, scraper, session):
+    baseline(settings, scraper)
+    move_proposal_deadline(session)
+    settings.deadline_recheck_hours = 0
+    report = bot_at(settings, scraper, at(11, 6), FakeSlack()).run()
+    assert report.rechecked == 0 and report.deadline_changes == []
+
+
+def test_exports_written_once_and_deterministic(settings, scraper):
+    report = make_bot(settings, scraper, FakeSlack()).run()
+    directory = settings.state_file.parent
+    assert sorted(report.exports_written) == ["deadlines.ics", "feed.xml"]
+    ics = (directory / "deadlines.ics").read_bytes()
+    assert b"UID:gses-6298-20261127T0800@gses-notice-bot" in ics
+    assert b"<id>tag:gses-notice-bot,2026:post-6303</id>" in (directory / "feed.xml").read_bytes()
+    again = make_bot(settings, scraper, FakeSlack()).run()
+    assert again.exports_written == []
+    settings.exports = False
+    (directory / "deadlines.ics").unlink()
+    make_bot(settings, scraper, FakeSlack()).run()
+    assert not (directory / "deadlines.ics").exists()
+
+
+def test_card_and_digest_have_calendar_links(settings, scraper):
+    baseline(settings, scraper, forget=["6298"])
+    settings.export_base_url = "https://raw.githubusercontent.com/o/r/bot-state"
+    slack = FakeSlack()
+    make_bot(settings, scraper, slack).run()
+    assert "calendar.google.com/calendar/render?action=TEMPLATE" in json.dumps(slack.messages[0])
+    digest = bot_at(settings, scraper, at(11, 23, 8, 41), FakeSlack()).digest()
+    buttons = [
+        e
+        for b in digest["attachments"][0]["blocks"]
+        if b["type"] == "actions"
+        for e in b["elements"]
+    ]
+    assert buttons[-1]["url"] == (
+        "https://calendar.google.com/calendar/render?cid="
+        "webcal%3A%2F%2Fraw.githubusercontent.com%2Fo%2Fr%2Fbot-state%2Fdeadlines.ics"
+    )
+    assert len(buttons) <= 5

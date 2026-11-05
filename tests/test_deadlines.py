@@ -8,9 +8,11 @@ import pytest
 
 from gses_bot.deadlines import (
     Deadline,
+    diff_deadlines,
     extract_deadlines,
     fmt_dday,
     fmt_deadline,
+    gcal_url,
     upcoming,
 )
 from gses_bot.utils import KST
@@ -156,3 +158,34 @@ def test_round_trip_and_days_left():
 @pytest.mark.parametrize(("days", "text"), [(0, "오늘 마감"), (1, "내일 마감"), (5, "D-5")])
 def test_fmt_dday(days, text):
     assert fmt_dday(days) == text
+
+
+def _d(month: int, day: int, label: str, hour: int = 17) -> Deadline:
+    return Deadline(datetime(2026, month, day, hour, 0, tzinfo=KST), label, True)
+
+
+def test_diff_detects_moves_and_additions_only():
+    now = datetime(2026, 11, 5, 9, 0, tzinfo=KST)
+    old = [_d(11, 27, "신청서 제출"), _d(12, 4, "사유서 제출"), _d(11, 1, "지난 마감")]
+    new = [_d(12, 1, "신청서 제출"), _d(12, 4, "사유서 제출"), _d(12, 9, "원고 제출")]
+    assert diff_deadlines(old, new, now) == [
+        (_d(11, 27, "신청서 제출"), _d(12, 1, "신청서 제출")),
+        (None, _d(12, 9, "원고 제출")),
+    ]
+    assert diff_deadlines(new, new, now) == []
+    assert diff_deadlines(old, [_d(12, 4, "사유서 제출")], now) == []  # 사라지기만 하면 알리지 않음
+    assert diff_deadlines([], [_d(11, 1, "지난 것")], now) == []
+
+
+def test_gcal_url_timed_and_all_day():
+    from urllib.parse import parse_qs, urlparse
+
+    timed = parse_qs(urlparse(gcal_url("공지", _d(11, 27, "신청"), "https://x/1")).query)
+    assert timed["dates"] == ["20261127T163000/20261127T170000"]
+    assert timed["ctz"] == ["Asia/Seoul"]
+    assert timed["text"] == ["[마감] 신청 — 공지"]
+    assert timed["details"] == ["원문: https://x/1"]
+    all_day = Deadline(datetime(2026, 11, 29, 23, 59, tzinfo=KST), "", False)
+    query = parse_qs(urlparse(gcal_url("공모전", all_day, "https://x/2")).query)
+    assert query["dates"] == ["20261129/20261130"]
+    assert query["text"] == ["[마감] 공모전"]

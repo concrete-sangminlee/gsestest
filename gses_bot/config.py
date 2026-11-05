@@ -118,6 +118,19 @@ def board_webhooks(env: Mapping[str, str]) -> dict[str, str]:
     return routes
 
 
+def export_base_url(env: Mapping[str, str]) -> str | None:
+    """구독 파일(.ics/.xml)의 공개 주소. Actions 에서는 bot-state 브랜치의 raw URL."""
+    explicit = _get(env, "GSES_EXPORT_BASE_URL")
+    if explicit:
+        return explicit.rstrip("/")
+    repo = _get(env, "GITHUB_REPOSITORY")
+    if repo:
+        return (
+            f"https://raw.githubusercontent.com/{repo}/{_get(env, 'STATE_BRANCH') or 'bot-state'}"
+        )
+    return None
+
+
 def normalize_mention(raw: str | None) -> str | None:
     """'channel' / 'here' / 'U0123ABC' / 'S0123ABC'(사용자 그룹) → Slack 멘션 문법."""
     if raw is None:
@@ -169,6 +182,11 @@ class Settings:
     baseline_detail_days: int = 21
     baseline_detail_max: int = 40
     digest_days: int = 7
+    deadline_recheck_hours: int = 24
+    deadline_recheck_max: int = 5
+    exports: bool = True
+    feed_size: int = 50
+    export_base_url: str | None = None
     # AI 요약 (Claude API)
     anthropic_api_key: str | None = None
     ai_summary: bool = True
@@ -212,6 +230,11 @@ class Settings:
             reminder_hour=_int(env, "GSES_REMINDER_HOUR", 9, 0, 23),
             baseline_detail_days=_int(env, "GSES_BASELINE_DETAIL_DAYS", 21, 0, 365),
             digest_days=_int(env, "GSES_DIGEST_DAYS", 7, 1, 31),
+            deadline_recheck_hours=_int(env, "GSES_DEADLINE_RECHECK_HOURS", 24, 0, 24 * 30),
+            deadline_recheck_max=_int(env, "GSES_DEADLINE_RECHECK_MAX", 5, 1, 50),
+            exports=_bool(env, "GSES_EXPORTS", True),
+            feed_size=_int(env, "GSES_FEED_SIZE", 50, 5, 500),
+            export_base_url=export_base_url(env),
             anthropic_api_key=_get(env, "ANTHROPIC_API_KEY"),
             ai_summary=_bool(env, "GSES_AI_SUMMARY", True),
             ai_model=_get(env, "GSES_AI_MODEL") or AI_DEFAULT_MODEL,

@@ -123,3 +123,19 @@ def test_reminder_ai_routing_and_heartbeat_settings():
 def test_invalid_reminder_days(raw):
     with pytest.raises(ConfigError, match="GSES_REMINDER_DAYS"):
         Settings.from_env({"GSES_REMINDER_DAYS": raw})
+
+
+def test_export_and_recheck_settings():
+    settings = Settings.from_env({"GITHUB_REPOSITORY": "o/r", "STATE_BRANCH": "bot-state"})
+    assert settings.export_base_url == "https://raw.githubusercontent.com/o/r/bot-state"
+    assert settings.deadline_recheck_hours == 24 and settings.exports
+    assert Settings.from_env({}).export_base_url is None
+    custom = Settings.from_env(
+        {
+            "GSES_EXPORT_BASE_URL": "https://cdn.example/x/",
+            "GSES_EXPORTS": "false",
+            "GSES_DEADLINE_RECHECK_HOURS": "0",
+        }
+    )
+    assert custom.export_base_url == "https://cdn.example/x"
+    assert not custom.exports and custom.deadline_recheck_hours == 0

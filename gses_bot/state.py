@@ -19,11 +19,11 @@ import json
 import os
 import tempfile
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from gses_bot.deadlines import Deadline
+from gses_bot.deadlines import RULES_VERSION, Deadline
 from gses_bot.models import Post
 
 STATE_VERSION = 2
@@ -208,10 +208,10 @@ class State:
         if post.posted and not entry.get("posted"):
             entry["posted"] = post.posted.isoformat()
         if post.detail_loaded:
-            self.update_details(post)
+            self.update_details(post, now)
 
-    def update_details(self, post: Post) -> None:
-        """상세 페이지에서 얻은 전체 제목·마감 정보를 기록 (제목 변경 시 마감도 갱신)."""
+    def update_details(self, post: Post, now: datetime | None = None) -> None:
+        """상세 페이지에서 얻은 전체 제목·마감 정보를 기록 (제목 변경·재확인 시 마감도 갱신)."""
         entry = self.seen.get(post.bbsidx)
         if entry is None:
             return
@@ -219,8 +219,32 @@ class State:
             entry["full_title"] = post.full_title
         if post.deadlines:
             entry["deadlines"] = [deadline.to_dict() for deadline in post.deadlines]
+            entry["rules"] = RULES_VERSION
+            if now is not None:
+                entry["checked_at"] = _iso(now)
         else:
-            entry.pop("deadlines", None)
+            for key in ("deadlines", "rules", "checked_at"):
+                entry.pop(key, None)
+
+    def recheck_candidates(self, now: datetime, interval: timedelta) -> list[tuple[str, dict]]:
+        """다가오는 마감이 있고 마지막 확인이 interval 보다 오래된 글 (마감 임박 순)."""
+        due: list[tuple[datetime, str, dict]] = []
+        for bbsidx, entry in self.seen.items():
+            upcoming = [
+                d
+                for raw in entry.get("deadlines") or []
+                if (d := Deadline.from_dict(raw)) and d.at >= now
+            ]
+            if not upcoming:
+                continue
+            checked = entry.get("checked_at")
+            try:
+                fresh = checked and now - datetime.fromisoformat(checked) < interval
+            except ValueError:
+                fresh = False
+            if not fresh:
+                due.append((min(d.at for d in upcoming), bbsidx, entry))
+        return [(bbsidx, entry) for _, bbsidx, entry in sorted(due, key=lambda item: item[0])]
 
     # ------------------------------------------------------------------ 마감 리마인더
     def deadlines(self) -> list[tuple[str, dict[str, Any], Deadline]]:

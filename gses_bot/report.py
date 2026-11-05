@@ -64,7 +64,24 @@ def summary_markdown(report: RunReport) -> str:
                 f"| {fmt_deadline(deadline)} | {_md_escape(deadline.label or '-')} | "
                 f"[{_md_escape(ref.title[:60])}]({ref.url}) |"
             )
+    if report.deadline_changes:
+        lines += [
+            "",
+            f"**📅 마감 일정 변경 {len(report.deadline_changes)}건**",
+            "",
+            "| 이전 | 변경 | 내용 | 글 |",
+            "|---|---|---|---|",
+        ]
+        for ref, old, new in report.deadline_changes:
+            lines.append(
+                f"| {fmt_deadline(old) if old else '(추가)'} | {fmt_deadline(new)} | "
+                f"{_md_escape(new.label or '-')} | [{_md_escape(ref.title[:60])}]({ref.url}) |"
+            )
     extras = []
+    if report.rechecked:
+        extras.append(f"마감 재확인 {report.rechecked}건")
+    if report.exports_written:
+        extras.append("갱신한 구독 파일: " + ", ".join(report.exports_written))
     if report.baseline_enriched:
         extras.append(f"기준점 상세 확인 {report.baseline_enriched}건")
     if report.ai_summaries:
