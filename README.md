@@ -26,7 +26,8 @@ GitHub Actions 에서 30분마다 실행되며, 서버 없이 무료로 운영�
 | 🚨 **장애 감시** | 연속 수집 실패 시 Slack 장애 알림 1회, 복구되면 복구 알림 |
 | 🗄️ **만료 없는 상태 저장** | `bot-state` 브랜치에 커밋 (Artifact 90일·Cache 7일 만료 문제 해결), 이력 추적 가능 |
 | 🔋 **자동 중지 방지** | 매 실행·배포마다 워크플로 재활성화 API 호출 → 60일 비활성 중지 방지 + 스케줄 재등록 |
-| 🐕 **Watchdog** | 별도 워크플로가 매시간 봇의 마지막 실행을 확인, 2시간 넘게 멈췄으면 직접 실행 (스케줄 이중화) |
+| ⏱ **외부 cron** (권장) | cron-job.org 등이 30분마다 GitHub API 로 봇을 실행 → GitHub 예약 실행이 버려져도 정시 동작 ([설정](#외부-cron-으로-실행-권장)) |
+| 🐕 **Watchdog** | 별도 워크플로가 매시간 봇의 마지막 실행을 확인, 60분 넘게 비었으면 직접 실행 + 최근 24시간 트리거별 실행 수 표시 |
 | 💓 **생존 신호** (선택) | healthchecks.io 등에 매 실행 신호 → 봇이 멈추면 외부 서비스가 메일로 알려 줌 |
 
 ## ⚠️ 2026-11 현황과 업그레이드 후 할 일
@@ -42,6 +43,11 @@ v1 봇은 **2026-05-08 이후 약 6개월간 멈춰 있었습니다.**
 - **v2 머지 후(2026-11-04)에도** 워크플로는 `active` 로 표시됐지만 스케줄이 하루 넘게 한 번도 돌지 않았습니다.
   비활성 중지에서 풀린 워크플로의 스케줄이 다시 등록되지 않는 GitHub 동작으로 보입니다.
   → v2.1 부터는 **봇 코드가 main 에 반영되면 즉시 한 번 실행**되고, 그 실행이 enable API 를 호출해 스케줄을 다시 등록합니다.
+
+- **v2.2 이후 실측 (11/05~11/09)**: 봇은 정상 동작했지만(19회 모두 성공, 놓친 글 없음) GitHub 예약 실행은
+  하루 48번 예정 중 **약 5번(≈10%)만** 실행돼 간격이 4~8시간까지 벌어졌습니다. 부하가 높으면 GitHub 가 예약 실행을
+  버리는 공식 동작이라 저장소 쪽에서 고칠 수 없고, 월요일 한 번뿐인 주간 브리핑 슬롯도 버려졌습니다(11/09).
+  → v2.3: 주간 브리핑은 그 주 아무 실행에서나 보내도록 바꾸고, **[외부 cron](#외부-cron-으로-실행-권장)** 설정을 추가했습니다.
 
 **업그레이드 후 확인:**
 
@@ -86,6 +92,60 @@ v1 봇은 **2026-05-08 이후 약 6개월간 멈춰 있었습니다.**
 
 > Webhook URL 은 절대 코드/README 에 커밋하지 마세요.
 
+## 외부 cron 으로 실행 (권장)
+
+GitHub 예약 실행은 부하가 높으면 버려집니다(이 저장소 실측 약 10%만 실행). 무료 외부 cron 서비스가 30분마다
+GitHub API 로 봇을 실행하게 하면 정시에 돕니다. 한 번만 설정하면 되고 5분 정도 걸립니다.
+GitHub 예약 실행과 Watchdog 은 그대로 두어 외부 cron 이 멈춰도 보조로 동작합니다 (동시 실행은 자동으로 직렬화).
+
+### 1) GitHub 토큰 만들기 (2분)
+
+1. <https://github.com/settings/personal-access-tokens/new> (Fine-grained token)
+2. **Token name**: `gses-notice-bot-cron` · **Expiration**: 1년 (만료 전에 같은 방법으로 새로 만들어 교체)
+3. **Repository access** → *Only select repositories* → `concrete-sangminlee/gsestest`
+4. **Permissions** → *Repository permissions* → **Actions** → `Read and write` (Metadata 는 자동으로 Read-only)
+5. **Generate token** → `github_pat_…` 복사 (이 화면을 닫으면 다시 볼 수 없습니다)
+
+이 토큰으로 할 수 있는 일은 **이 저장소의 워크플로 실행·취소·로그 관리뿐**입니다 (코드·Secret 접근 불가).
+노출됐다면 같은 화면에서 바로 *Revoke* 하세요. 만들고 나서 아래처럼 확인할 수 있습니다 (선택).
+
+```bash
+GSES_DISPATCH_TOKEN=github_pat_여기에_붙여넣기 scripts/trigger_bot.sh
+```
+
+`✅ … 실행을 요청했습니다 (HTTP 204)` 가 나오고 Actions 탭에 `workflow_dispatch` 실행이 생기면 성공입니다.
+
+### 2) cron-job.org 에 등록 (3분)
+
+<https://console.cron-job.org/signup> 에서 무료 가입 → **CREATE CRONJOB**
+
+| 항목 | 값 |
+|---|---|
+| Title | `GSES Notice Bot` |
+| URL | `https://api.github.com/repos/concrete-sangminlee/gsestest/actions/workflows/check_announcements.yml/dispatches` |
+| Execution schedule | *Every 30 minutes* |
+| ADVANCED → Request method | `POST` |
+| ADVANCED → Headers | 아래 4개 (Key / Value) |
+| ADVANCED → Request body | `{"ref":"main","inputs":{"mode":"run"}}` |
+| Notifications (선택) | *Notify me when execution fails* 켜기 → 토큰 만료 시 메일로 알 수 있음 |
+
+| Header key | Value |
+|---|---|
+| `Accept` | `application/vnd.github+json` |
+| `Authorization` | `Bearer github_pat_…` (1단계 토큰) |
+| `X-GitHub-Api-Version` | `2022-11-28` |
+| `Content-Type` | `application/json` |
+
+저장 후 **TEST RUN** → 응답 코드 **204** 면 끝입니다. (401 = 토큰 오류·만료, 403 = Actions 권한 없음, 404 = 저장소 선택 누락)
+
+### 3) 동작 확인
+
+- Actions 탭: 30분마다 `workflow_dispatch` 실행이 생깁니다 (실행자 = 토큰 주인).
+- `Bot Watchdog` 실행의 Summary: `최근 24시간 봇 실행: 외부 cron·수동 48 · GitHub 스케줄 5 …` 처럼 트리거별 횟수가 나옵니다.
+- 직접 운영하는 서버가 있다면 cron-job.org 대신 crontab 에 `*/30 * * * * GSES_DISPATCH_TOKEN=… /path/to/scripts/trigger_bot.sh` 도 됩니다.
+
+> 공개 저장소의 GitHub Actions 실행 시간은 무료입니다. 30분마다 1분 이내로 끝나며, 학교 사이트에는 실행당 4번만 요청합니다.
+
 ## 설정
 
 Secrets 는 **Secrets** 탭, 나머지는 **Variables** 탭에 등록합니다. 로컬에서는 `.env` 를 씁니다 (`cp env.example .env`).
@@ -105,6 +165,8 @@ Secrets 는 **Secrets** 탭, 나머지는 **Variables** 탭에 등록합니다. 
 | `GSES_MAX_POSTS_PER_RUN` | Variable | `20` | 게시판별 1회 최대 알림 수 (초과분은 요약) |
 | `GSES_REMINDER_DAYS` | Variable | `1` | 마감 며칠 전에 알릴지. `3,1,0` = D-3·D-1·당일, `off` = 끄기 |
 | `GSES_REMINDER_HOUR` | Variable | `9` | 리마인더를 보내기 시작할 시각 (KST) |
+| `GSES_DIGEST_WEEKDAY` | Variable | `mon` | 주간 브리핑 요일 (`mon`~`sun`, `off` = 자동 브리핑 끄기) |
+| `GSES_DIGEST_HOUR` | Variable | `8` | 주간 브리핑을 보내기 시작할 시각 (KST) |
 | `GSES_DEADLINE_RECHECK_HOURS` | Variable | `24` | 마감이 남은 글을 몇 시간마다 다시 읽을지 (`0` = 끄기, 실행당 최대 5건) |
 | `GSES_EXPORTS` | Variable | `true` | 마감 캘린더(.ics)·새 글 피드(.xml) 공개 |
 | `SLACK_WEBHOOK_URL_<게시판>` | Secret | — | 게시판별 채널: `…_NOTICE`, `…_SEMINARS`, `…_ADMISSIONS`, `…_NEWS` |
@@ -184,8 +246,9 @@ Secrets 는 **Secrets** 탭, 나머지는 **Variables** 탭에 등록합니다. 
 
 ## 주간 브리핑
 
-매주 월요일 08:41 (KST) 에 앞으로 7일 안의 마감과 지난 7일 새 글을 한 메시지로 보냅니다.
-6일 안에 이미 보냈으면 건너뛰고, 수동 실행(`mode: digest`)은 언제든 보냅니다. 새 글이 없는 주에도 오므로 '봇이 살아 있다'는 신호도 됩니다.
+매주 월요일 08:00 (KST) 이후 첫 실행에서 앞으로 7일 안의 마감과 지난 7일 새 글을 한 메시지로 보냅니다.
+특정 예약 시각 하나에 기대지 않아서 GitHub 가 예약 실행을 버려도 그 주 안에 갑니다 (기준 시각에서 2일이 지나면 다음 주로).
+수동 실행(`mode: digest`)은 언제든 보냅니다. 새 글이 없는 주에도 오므로 '봇이 살아 있다'는 신호도 됩니다.
 
 ## AI 요약 (선택)
 
@@ -274,7 +337,7 @@ cron 으로 돌릴 때는 아래 예처럼 등록하세요 (경로는 환경에 
 ┃ 🤖 2026-2 환경관리학과 석사논문 프로포절 일정 안내 … (AI 요약, 없으면 본문 미리보기)
 ┃ 📎 [붙임1] (양식) 석사논문 프로포절.zip (92 KB) · [붙임2] … (42 KB) (원문에서 내려받기)
 ┃ [📋 공지사항 전체 보기]
-┃ 🤖 GSES Notice Bot v2.2.0 · 서울대학교 환경대학원 게시판 자동 알림
+┃ 🤖 GSES Notice Bot v2.3.0 · 서울대학교 환경대학원 게시판 자동 알림
 ```
 
 - 첨부파일은 이름과 크기만 표시합니다. 사이트가 다운로드 시 같은 사이트 Referer 를 요구해서, Slack 에서 직접 링크하면 404 가 나기 때문입니다.
@@ -311,6 +374,8 @@ cron 으로 돌릴 때는 아래 예처럼 등록하세요 (경로는 환경에 
 | 증상 | 확인할 것 |
 |---|---|
 | 알림이 전혀 안 옴 | Actions 탭에서 워크플로가 **Enabled** 인지, 최근 실행이 있는지 확인 → `mode: ping` |
+| 실행 간격이 몇 시간씩 벌어짐 | GitHub 예약 실행이 버려지는 것입니다. [외부 cron](#외부-cron-으로-실행-권장) 을 설정하세요 |
+| 외부 cron 이 401/403 | 401: 토큰 만료·오타 → 새 토큰으로 헤더 교체 / 403: 토큰에 Actions `Read and write` 권한 추가 |
 | `active` 인데 정기 실행이 없음 | `Bot Watchdog` 실행 기록(Summary)에 마지막 봇 실행 시각이 나옵니다. 둘 다 멈췄다면 **⋯ → Disable → Enable** 또는 `Run workflow` 한 번 |
 | 캘린더에 안 보임 | Google Calendar 는 구독 캘린더를 몇 시간~하루 간격으로 새로 읽습니다. `.ics` 주소를 브라우저로 열어 최신인지 확인 |
 | 마감이 이상하게 잡힘 | `python -m gses_bot preview --bbsidx <번호>` 로 카드의 ⏰ 줄 확인. 표기 예시를 이슈로 남겨 주시면 규칙에 추가합니다 |
@@ -353,7 +418,8 @@ CI 는 Python 3.10–3.13 에서 테스트, Ruff, ShellCheck 를 실행합니다
 │   ├── boards.py       # 게시판 정의
 │   └── report.py       # 실행 요약 (콘솔/Job Summary)
 ├── scripts/state_branch.sh          # bot-state 브랜치 복원/저장 (+ 구독 파일 공개)
-├── scripts/watchdog.sh              # 봇이 멈췄으면 직접 실행
+├── scripts/watchdog.sh              # 봇이 멈췄으면 직접 실행 + 트리거별 실행 수
+├── scripts/trigger_bot.sh           # 외부 cron/토큰 확인용 workflow_dispatch 호출
 ├── tests/                           # pytest + 실제 HTML 픽스처
 ├── fetch_announcements.py           # v1 호환 진입점
 └── .github/workflows/

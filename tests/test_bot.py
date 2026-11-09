@@ -601,3 +601,67 @@ def test_card_and_digest_have_calendar_links(settings, scraper):
         "webcal%3A%2F%2Fraw.githubusercontent.com%2Fo%2Fr%2Fbot-state%2Fdeadlines.ics"
     )
     assert len(buttons) <= 5
+
+
+# ---------------------------------------------------------------------- 자동 주간 브리핑
+def digest_texts(slack: FakeSlack) -> list[str]:
+    return [m["text"] for m in slack.messages if m["text"].startswith("🗓")]
+
+
+def test_auto_digest_once_per_week_from_any_run(settings, scraper):
+    baseline(settings, scraper)  # 11/04 (수)
+    before = FakeSlack()
+    bot_at(settings, scraper, at(11, 9, 7, 30), before).run()  # 월 07:30 — 아직 브리핑 시각 전
+    assert digest_texts(before) == []
+
+    slack = FakeSlack()
+    report = bot_at(
+        settings, scraper, at(11, 9, 11, 0), slack
+    ).run()  # 월 11:00 (08:41 슬롯이 버려진 상황)
+    assert report.digest_sent and len(digest_texts(slack)) == 1
+    assert saved(settings)["digest"]["last_sent_at"].startswith("2026-11-09T11:00")
+
+    again = FakeSlack()
+    bot_at(settings, scraper, at(11, 10, 9, 0), again).run()  # 같은 주 → 다시 보내지 않음
+    assert digest_texts(again) == []
+    next_week = FakeSlack()
+    bot_at(settings, scraper, at(11, 16, 8, 30), next_week).run()
+    assert len(digest_texts(next_week)) == 1
+
+
+def test_auto_digest_skips_when_too_late_or_disabled(settings, scraper):
+    baseline(settings, scraper)
+    late = FakeSlack()
+    bot_at(settings, scraper, at(11, 12, 10, 0), late).run()  # 목요일: 월 08:00 에서 2일 넘음
+    assert digest_texts(late) == []
+    settings.digest_weekday = None
+    off = FakeSlack()
+    bot_at(settings, scraper, at(11, 9, 11, 0), off).run()
+    assert digest_texts(off) == []
+
+
+def test_auto_digest_dry_run_and_failure_retry(settings, scraper):
+    baseline(settings, scraper)
+    report = bot_at(settings, scraper, at(11, 9, 11, 0), FakeSlack()).run(dry_run=True)
+    assert any(p["text"].startswith("🗓") for p in report.payloads)
+    assert saved(settings).get("digest") == {}
+
+    class DigestFails(FakeSlack):
+        def post(self, payload):
+            if payload["text"].startswith("🗓"):
+                raise SlackError("boom", code="channel_not_found", status=404)
+            super().post(payload)
+
+    failed = bot_at(settings, scraper, at(11, 9, 11, 0), DigestFails()).run()
+    assert failed.exit_code == EXIT_FAILURE and not failed.digest_sent
+    retry = FakeSlack()
+    bot_at(settings, scraper, at(11, 9, 11, 30), retry).run()
+    assert len(digest_texts(retry)) == 1
+
+
+def test_manual_digest_skips_after_auto_digest(settings, scraper):
+    baseline(settings, scraper)
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 9, 8, 45), slack).run()
+    assert bot_at(settings, scraper, at(11, 9, 8, 46), slack).digest() is None
+    assert len(digest_texts(slack)) == 1

@@ -4,7 +4,9 @@ name: Bot Watchdog
 #
 # 2026-05 ~ 11월: 60일 비활성으로 스케줄이 자동 중지됐고, 다시 켜진 뒤에도 'active' 상태로
 # 스케줄이 돌지 않는 일이 있었습니다. 별도 워크플로(별도 스케줄 등록)가 매시간 봇의 마지막
-# 실행 시각을 보고, 너무 오래됐으면 workflow_dispatch 로 직접 실행시키고 다시 활성화합니다.
+# 실행 시각을 보고, 60분 넘게 비었으면 workflow_dispatch 로 직접 실행시키고 다시 활성화합니다.
+# 실측(11/05~09): 봇 cron 은 예정의 약 10%만 실행됐고 이 감시자가 빈틈을 메웠습니다.
+# 가장 확실한 방법은 외부 cron(README '외부 cron 으로 실행')입니다.
 # (GITHUB_TOKEN 으로 만든 이벤트 중 workflow_dispatch 는 새 실행을 만들 수 있습니다.)
 
 on:
@@ -33,6 +35,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BOT_WORKFLOW: check_announcements.yml
-          MAX_SILENCE_MINUTES: '120'
+          MAX_SILENCE_MINUTES: '60'
           WATCHDOG_REF: ${{ github.event.repository.default_branch || 'main' }}
         run: scripts/watchdog.sh

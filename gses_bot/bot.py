@@ -7,7 +7,7 @@ import json
 import logging
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from typing import Any
 from urllib.parse import quote
 
@@ -76,6 +76,7 @@ class RunReport:
         default_factory=list
     )
     exports_written: list[str] = field(default_factory=list)
+    digest_sent: bool = False
 
 
 def strip_images(message: Message) -> Message:
@@ -269,6 +270,8 @@ class Bot:
             self._recheck_deadlines(state, report, now, dry_run)
         if report.slack_error is None and not force_init:
             self._send_reminders(state, report, now, dry_run)
+        if report.slack_error is None and not force_init:
+            self._auto_digest(state, report, now, dry_run)
 
         # v1 에서 넘어온 항목처럼 메타데이터가 빈 기존 글을 보충합니다 (기존 제목은 덮어쓰지 않음).
         for posts in scanned.values():
@@ -658,24 +661,18 @@ class Bot:
             self._deliver(message, client)
         return len(unique)
 
-    def digest(self, *, dry_run: bool = False, force: bool = False) -> Message | None:
-        """주간 브리핑: 앞으로 N일 마감 + 지난 N일 새 글. 6일 안에 보냈으면 건너뜀(force 제외)."""
-        settings = self.settings
-        state = State.load(settings.state_file)
-        now = self.clock()
-        if not state.exists:
-            log.info("ℹ️  state 가 없어 주간 브리핑을 건너뜁니다 (첫 실행 전)")
+    def digest_slot(self, now: datetime) -> datetime | None:
+        """이번 주 브리핑 시각 (기본: 월요일 08:00 KST). 끄면 None."""
+        weekday = self.settings.digest_weekday
+        if weekday is None:
             return None
-        last = state.digest.get("last_sent_at")
-        if last and not force:
-            try:
-                if now - datetime.fromisoformat(last) < timedelta(
-                    days=max(settings.digest_days - 1, 1)
-                ):
-                    log.info("ℹ️  최근(%s)에 주간 브리핑을 보냈습니다 — 건너뜀", last)
-                    return None
-            except ValueError:
-                pass
+        local = now.astimezone(KST)
+        day = local.date() - timedelta(days=(local.weekday() - weekday) % 7)
+        slot = datetime.combine(day, time(self.settings.digest_hour, 0), tzinfo=KST)
+        return slot - timedelta(days=7) if slot > local else slot
+
+    def _build_digest(self, state: State, now: datetime) -> Message:
+        settings = self.settings
         horizon = now + timedelta(days=settings.digest_days)
         deadlines = []
         for bbsidx, entry, deadline in state.deadlines():
@@ -694,7 +691,8 @@ class Bot:
             key=lambda r: (r.posted, int(r.bbsidx)),
             reverse=True,
         )
-        message = build_digest_message(
+        log.info("🗓  주간 브리핑: 마감 %d건 · 새 글 %d건", len(deadlines), len(new_posts))
+        return build_digest_message(
             deadlines,
             new_posts,
             now,
@@ -703,7 +701,49 @@ class Bot:
             boards=settings.boards,
             calendar_url=calendar_subscribe_url(settings),
         )
-        log.info("🗓  주간 브리핑: 마감 %d건 · 새 글 %d건", len(deadlines), len(new_posts))
+
+    def _auto_digest(self, state: State, report: RunReport, now: datetime, dry_run: bool) -> None:
+        """이번 주 브리핑 시각이 지났는데 아직 안 보냈으면 이 실행에서 보냅니다.
+
+        GitHub 는 부하가 높으면 예약 실행을 버리기도 해서(실측 약 10%만 실행), 월요일 08:41 한 번에
+        기대면 브리핑이 통째로 빠집니다(2026-11-09 실제 발생). 그 주의 아무 실행이나 보내되,
+        시각에서 2일이 지나면 다음 주로 넘깁니다.
+        """
+        slot = self.digest_slot(now)
+        if slot is None or not state.boards or now - slot > timedelta(days=2):
+            return
+        last = _parse_time(state.digest.get("last_sent_at"))
+        if last is not None and last >= slot:
+            return
+        message = self._build_digest(state, now)
+        if dry_run:
+            report.payloads.append(message)
+            return
+        try:
+            self._deliver(message)
+        except SlackError as exc:
+            report.slack_error = str(exc)
+            log.error("❌ 주간 브리핑 전송 실패: %s", exc)
+            return
+        report.messages_sent += 1
+        report.digest_sent = True
+        state.digest["last_sent_at"] = now.isoformat(timespec="seconds")
+
+    def digest(self, *, dry_run: bool = False, force: bool = False) -> Message | None:
+        """주간 브리핑 수동 전송. 6일 안에 보냈으면 건너뜀(force 제외)."""
+        settings = self.settings
+        state = State.load(settings.state_file)
+        now = self.clock()
+        if not state.exists:
+            log.info("ℹ️  state 가 없어 주간 브리핑을 건너뜁니다 (첫 실행 전)")
+            return None
+        last = _parse_time(state.digest.get("last_sent_at"))
+        if last and not force and now - last < timedelta(days=max(settings.digest_days - 1, 1)):
+            log.info(
+                "ℹ️  최근(%s)에 주간 브리핑을 보냈습니다 — 건너뜀", state.digest["last_sent_at"]
+            )
+            return None
+        message = self._build_digest(state, now)
         if not dry_run:
             self._deliver(message)
             state.digest["last_sent_at"] = now.isoformat(timespec="seconds")
