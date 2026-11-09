@@ -78,6 +78,8 @@ def summary_markdown(report: RunReport) -> str:
                 f"{_md_escape(new.label or '-')} | [{_md_escape(ref.title[:60])}]({ref.url}) |"
             )
     extras = []
+    if report.digest_sent:
+        extras.append("주간 브리핑 전송")
     if report.rechecked:
         extras.append(f"마감 재확인 {report.rechecked}건")
     if report.exports_written:

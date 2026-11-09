@@ -139,3 +139,17 @@ def test_export_and_recheck_settings():
     )
     assert custom.export_base_url == "https://cdn.example/x"
     assert not custom.exports and custom.deadline_recheck_hours == 0
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [(None, 0), ("mon", 0), ("Friday", 4), ("금", 4), ("6", 6), ("off", None)],
+)
+def test_digest_weekday(raw, expected):
+    env = {} if raw is None else {"GSES_DIGEST_WEEKDAY": raw}
+    assert Settings.from_env(env).digest_weekday == expected
+
+
+def test_invalid_digest_weekday():
+    with pytest.raises(ConfigError, match="GSES_DIGEST_WEEKDAY"):
+        Settings.from_env({"GSES_DIGEST_WEEKDAY": "someday"})

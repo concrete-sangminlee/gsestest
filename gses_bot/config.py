@@ -108,6 +108,28 @@ def parse_days(raw: str | None, default: tuple[int, ...]) -> tuple[int, ...]:
     return tuple(days)
 
 
+_WEEKDAYS = {
+    "mon": 0, "월": 0, "tue": 1, "화": 1, "wed": 2, "수": 2, "thu": 3, "목": 3,
+    "fri": 4, "금": 4, "sat": 5, "토": 5, "sun": 6, "일": 6,
+}  # fmt: skip
+
+
+def parse_weekday(raw: str | None) -> int | None:
+    """주간 브리핑 요일: 'mon'/'월'/'0' (기본 월요일), 'off' 는 자동 브리핑 끔."""
+    if raw is None:
+        return 0
+    value = raw.strip().lower()
+    if value in {"off", "none", "false", "no"}:
+        return None
+    if value.isdigit() and 0 <= int(value) <= 6:
+        return int(value)
+    if value[:3] in _WEEKDAYS:
+        return _WEEKDAYS[value[:3]]
+    if value[:1] in _WEEKDAYS:
+        return _WEEKDAYS[value[:1]]
+    raise ConfigError(f"GSES_DIGEST_WEEKDAY 는 mon~sun(또는 0~6, off)이어야 합니다: {raw!r}")
+
+
 def board_webhooks(env: Mapping[str, str]) -> dict[str, str]:
     """SLACK_WEBHOOK_URL_SEMINARS 처럼 게시판별로 다른 채널로 보낼 Webhook."""
     routes = {}
@@ -182,6 +204,8 @@ class Settings:
     baseline_detail_days: int = 21
     baseline_detail_max: int = 40
     digest_days: int = 7
+    digest_weekday: int | None = 0  # 0=월요일, None=자동 브리핑 끔
+    digest_hour: int = 8
     deadline_recheck_hours: int = 24
     deadline_recheck_max: int = 5
     exports: bool = True
@@ -230,6 +254,8 @@ class Settings:
             reminder_hour=_int(env, "GSES_REMINDER_HOUR", 9, 0, 23),
             baseline_detail_days=_int(env, "GSES_BASELINE_DETAIL_DAYS", 21, 0, 365),
             digest_days=_int(env, "GSES_DIGEST_DAYS", 7, 1, 31),
+            digest_weekday=parse_weekday(_get(env, "GSES_DIGEST_WEEKDAY")),
+            digest_hour=_int(env, "GSES_DIGEST_HOUR", 8, 0, 23),
             deadline_recheck_hours=_int(env, "GSES_DEADLINE_RECHECK_HOURS", 24, 0, 24 * 30),
             deadline_recheck_max=_int(env, "GSES_DEADLINE_RECHECK_MAX", 5, 1, 50),
             exports=_bool(env, "GSES_EXPORTS", True),
