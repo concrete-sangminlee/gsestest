@@ -1267,7 +1267,9 @@
     "last_error": null,
     "alert_sent": false
   },
-  "digest": {},
+  "digest": {
+    "last_sent_at": "2026-11-09T11:14:33+09:00"
+  },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-09T08:05:54+09:00"
+  "updated_at": "2026-11-09T11:14:33+09:00"
 }
