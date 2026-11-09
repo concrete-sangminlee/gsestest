@@ -15,6 +15,13 @@
     }
   },
   "seen": {
+    "6306": {
+      "board": "notice",
+      "title": "「SNU Commons (특임)석좌교수 강연 시리즈」 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-09T17:08:59+09:00",
+      "posted": "2026-11-09"
+    },
     "6305": {
       "board": "seminars",
       "title": "[GSES 제259차 콜로키움] From prediction to possibility: rethinking the future of urban planning under disr...",
@@ -1271,5 +1278,5 @@
     "last_sent_at": "2026-11-09T11:14:33+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-09T11:14:33+09:00"
+  "updated_at": "2026-11-09T17:08:59+09:00"
 }
