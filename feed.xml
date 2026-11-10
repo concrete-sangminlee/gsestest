@@ -8,6 +8,15 @@
   <updated>2026-11-10T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
   <entry>
+    <title>[공지사항] 학내 무선랜(eduroam) 서비스 안정화 작업에 따른 이용 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6308"/>
+    <id>tag:gses-notice-bot,2026:post-6308</id>
+    <updated>2026-11-10T00:00:00+09:00</updated>
+    <published>2026-11-10T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
     <title>[세미나 및 강연] [환경대학원 제260차 콜로키움] 사라지는 마을, 어떻게 도시를 지킬까?</title>
     <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6307"/>
     <id>tag:gses-notice-bot,2026:post-6307</id>
@@ -446,14 +455,5 @@
     <published>2026-10-12T00:00:00+09:00</published>
     <category term="대학원 콜로키엄"/>
     <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 「개교 80주년 KBS 열린음악회」개최 관련 교통 통제 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6246"/>
-    <id>tag:gses-notice-bot,2026:post-6246</id>
-    <updated>2026-10-08T00:00:00+09:00</updated>
-    <published>2026-10-08T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
   </entry>
 </feed>
