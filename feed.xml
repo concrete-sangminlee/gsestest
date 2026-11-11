@@ -5,8 +5,17 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-10T00:00:00+09:00</updated>
+  <updated>2026-11-11T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[공지사항] (재)의정부문화관광재단_2026 문화도시 R&amp;D 지원사업 [경기북부 작은연구]</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6309"/>
+    <id>tag:gses-notice-bot,2026:post-6309</id>
+    <updated>2026-11-11T00:00:00+09:00</updated>
+    <published>2026-11-11T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
   <entry>
     <title>[공지사항] 학내 무선랜(eduroam) 서비스 안정화 작업에 따른 이용 안내</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6308"/>
@@ -446,14 +455,5 @@
     <published>2026-10-12T00:00:00+09:00</published>
     <category term="대학원 기타"/>
     <summary>새소식 · 대학원 기타</summary>
-  </entry>
-  <entry>
-    <title>[세미나 및 강연] 2026 기후변화와 청정대기의 미래 국제워크숍(GUIDE-IAMs) 개최 (10.13.)</title>
-    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6247"/>
-    <id>tag:gses-notice-bot,2026:post-6247</id>
-    <updated>2026-10-12T00:00:00+09:00</updated>
-    <published>2026-10-12T00:00:00+09:00</published>
-    <category term="대학원 콜로키엄"/>
-    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
   </entry>
 </feed>
