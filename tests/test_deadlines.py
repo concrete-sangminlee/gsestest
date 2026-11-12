@@ -189,3 +189,43 @@ def test_gcal_url_timed_and_all_day():
     query = parse_qs(urlparse(gcal_url("공모전", all_day, "https://x/2")).query)
     assert query["dates"] == ["20261129/20261130"]
     assert query["text"] == ["[마감] 공모전"]
+
+
+REF = date(2026, 10, 26)
+
+
+@pytest.mark.parametrize(
+    ("title", "body"),
+    [
+        (
+            "2027학년도 경영대학 수시모집 입학전형에 따른 건물 통제 안내",
+            "1. 통제일시\n가. 일반전형: 2026. 11. 26.(목) ~ 11. 27.(금) 15:00까지",
+        ),
+        (
+            "교육협력동 지붕 설치공사에 따른 차량 진출입 안내",
+            "공사 기간: 2026. 11. 2.(월) ~ 12. 16.(수)",
+        ),
+        (
+            "2026학년도 2학기 셔틀버스 추가 증차 운행 안내",
+            "운행: 2026. 11. 2.(월) ~ 12. 21.(월) (3~5분)",
+        ),
+        ("AUA Conference 참가 안내", "2. 기간: 2026. 12. 4. (금) ~ 12. 5.(토)"),
+        ("2026 가을 축제 안내", "1) 기간: 2026. 11. 16.(월) ~ 11. 18.(수) [3일간]"),
+    ],
+)
+def test_operating_and_event_periods_are_not_deadlines(title, body):
+    assert extract_deadlines(body, REF, title) == []
+
+
+def test_strong_word_survives_in_restricted_and_event_posts():
+    found = extract_deadlines(
+        "출입 신청: 2026. 11. 20.(금)까지", REF, "입학전형에 따른 건물 통제 안내"
+    )
+    assert [d.at.date() for d in found] == [date(2026, 11, 20)]
+    found = extract_deadlines("나. 제출기한: 2026. 10. 30.(금)", REF, "AUA Conference 참가 안내")
+    assert [d.at.date() for d in found] == [date(2026, 10, 30)]
+
+
+def test_time_range_uses_end_time():
+    found = extract_deadlines("접수: 2026. 11. 20.(금) 09:00 ~ 18:00까지", REF)
+    assert (found[0].at.hour, found[0].at.minute) == (18, 0)
