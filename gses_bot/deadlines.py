@@ -76,6 +76,16 @@ _EVENT_WORDS = re.compile(
     r"date\s*and\s*time|venue|location",
     re.I,
 )
+# 제목이 통제·운행·공사 안내인 글의 날짜는 대부분 '운영 기간'입니다 (실제 오탐: 건물 통제 #6283,
+# 지붕 공사 #6285, 셔틀 증차 #6299). 이런 글은 그 줄에 강한 마감 단어가 있을 때만 마감으로 봅니다.
+_NON_DEADLINE_TITLE = re.compile(r"통제|운행|증차|공사|점검|작업|훈련|단수|정전|휴관|운휴")
+# 며칠짜리 행사 글의 '기간: A ~ B' 는 행사 기간이지 마감이 아닙니다 (#6228, #6233, #6254).
+_EVENT_TITLE = re.compile(
+    r"행사|축제|주간|음악회|전시|페스티벌|학술대회|심포지엄|워크숍|포럼|conference|symposium|"
+    r"workshop|festival",
+    re.I,
+)
+_PERIOD_LABELS = {"기간", "일정", "일시", "행사기간", "운영기간", "개최기간"}
 # 소제목 표시 ('가.', '1.', '①', '■'). '○ ● ㅇ -' 는 목록 글머리라 소제목으로 보지 않습니다.
 _HEADING = re.compile(r"^\s*(?:[가나다라마바사아자차카타파하][.)]|\d{1,2}[.)]|[①-⑳]|[■□▶◆◇]\s)")
 _GENERIC_CELLS = {
@@ -178,6 +188,15 @@ def _find_hits(line: str) -> list[_Hit]:
         if not (1 <= month <= 12 and 1 <= day <= 31):
             continue
         hour, minute, used = _parse_time(line[end:])
+        if hour is not None:
+            # '10:00 ~ 16:00' 처럼 시간대가 오면 끝 시각이 마감입니다.
+            rest = line[end + used :]
+            sep = re.match(r"\s*[~\-–]\s*", rest)
+            if sep:
+                end_hour, end_minute, end_used = _parse_time(rest[sep.end() :])
+                if end_hour is not None and (end_hour, end_minute) > (hour, minute):
+                    hour, minute = end_hour, end_minute
+                    used += sep.end() + end_used
         hits.append(
             _Hit(
                 start=start,
@@ -241,6 +260,8 @@ def extract_deadlines(text: str, reference: date, title: str = "") -> list[Deadl
     """본문(+제목)에서 기준일 이후의 마감 목록을 날짜순으로 반환합니다."""
     found: dict[date, tuple[int, Deadline]] = {}
     lines = [title, *text.splitlines()] if title else text.splitlines()
+    restricted = bool(_NON_DEADLINE_TITLE.search(title))
+    event_post = bool(_EVENT_TITLE.search(title))
     heading = ""  # 가장 가까운 소제목 ('가. 수강료 및 납부기간')
     # 표의 행 라벨 후보: 날짜 줄 '바로 위'의 짧은 칸 ('1차').
     # 그 칸이 앞 행의 설명(날짜 줄 다음 칸)이면 엉뚱한 라벨이 붙으므로 쓰지 않습니다.
@@ -271,6 +292,13 @@ def extract_deadlines(text: str, reference: date, title: str = "") -> list[Deadl
             strong = bool(_STRONG_WORDS.search(heading))
             weak = bool(_WEAK_WORDS.search(heading))
             is_event = bool(_EVENT_WORDS.search(heading))
+        elif not strong and heading and _EVENT_WORDS.search(heading):
+            is_event = True  # '1. 통제일시' 아래의 '가. 일반전형: …까지' 는 행사 날짜
+        if restricted and not _STRONG_WORDS.search(line):
+            continue
+        line_label = _clean_label(line[: hits[0].start]).replace(" ", "")
+        if event_post and not strong and line_label in _PERIOD_LABELS:
+            continue
         context = " · ".join(filter(None, (heading, cell))) if bare_row else ""
         year_hint: int | None = None
         for index, hit in enumerate(hits):
@@ -288,7 +316,7 @@ def extract_deadlines(text: str, reference: date, title: str = "") -> list[Deadl
                 continue  # 기간의 시작일은 마감이 아님
 
             strength = 0
-            if _UNTIL.match(line[hit.end :]):
+            if _UNTIL.match(line[hit.end :]) and (strong or not is_event):
                 strength = 3  # '…까지', '…마감'
             elif (ends_range or tilde_before) and (strong or not is_event):
                 strength = 2  # 기간의 끝
@@ -349,7 +377,7 @@ def fmt_dday(days: int) -> str:
 
 
 # 추출 규칙이 바뀌면 올립니다. 규칙 변경으로 달라진 마감은 '마감 변경' 알림 없이 조용히 갱신됩니다.
-RULES_VERSION = 2
+RULES_VERSION = 3
 
 
 def diff_deadlines(

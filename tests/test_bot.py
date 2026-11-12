@@ -546,7 +546,7 @@ def test_rules_upgrade_updates_silently(settings, scraper, session):
     bot_at(settings, scraper, at(11, 5, 14, 0), slack).run()
     assert change_texts(slack) == []
     entry = saved(settings)["seen"]["6298"]
-    assert entry["rules"] == 2 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
+    assert entry["rules"] == 3 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
 
 
 def test_deadline_change_failure_is_retried(settings, scraper, session):
