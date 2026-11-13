@@ -128,25 +128,6 @@ TRIGGER:-P1D
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:gses-6283-20261127T0600@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART:20261127T053000Z
-DTEND:20261127T060000Z
-SUMMARY:⏰ 일반전형 마감 — 2027학년도 경영대학 수시모집
-  입학전형에 따른 건물 통제 안내
-DESCRIPTION:공지사항 · 2027학년도 경영대학 수시모집 입학
- 전형에 따른 건물 통제 안내\nhttps://gses.snu.ac.kr/news/notice/
- notice?md=v&bbsidx=6283
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6283
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 일반전형 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 UID:gses-6298-20261127T0800@gses-notice-bot
 DTSTAMP:20261105T092845Z
 DTSTART:20261127T073000Z
@@ -242,26 +223,6 @@ TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:⏰ 논문원고 및 유사도 검사지 제출 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:gses-6283-20261204T0600@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART:20261204T053000Z
-DTEND:20261204T060000Z
-SUMMARY:⏰ 지역균형전형 및 기회균형특별전형 마감 — 2027
- 학년도 경영대학 수시모집 입학전형에 따른 건물 통제 
- 안내
-DESCRIPTION:공지사항 · 2027학년도 경영대학 수시모집 입학
- 전형에 따른 건물 통제 안내\nhttps://gses.snu.ac.kr/news/notice/
- notice?md=v&bbsidx=6283
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6283
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 지역균형전형 및 기회균형특별전형 마감
 TRIGGER:-P1D
 END:VALARM
 END:VEVENT

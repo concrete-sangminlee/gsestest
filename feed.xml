@@ -5,8 +5,17 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-12T00:00:00+09:00</updated>
+  <updated>2026-11-13T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[공지사항] 2026년 국토모니터링 성과 활용 정책세미나 개최 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6312"/>
+    <id>tag:gses-notice-bot,2026:post-6312</id>
+    <updated>2026-11-13T00:00:00+09:00</updated>
+    <published>2026-11-13T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
   <entry>
     <title>[공지사항] 2026학년도 제2학기 등록금 분납 4차(최종) 수납계획 알림</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6311"/>
@@ -442,15 +451,6 @@
     <title>[공지사항] '「SNU Commons 행정관」 개관식' 안내</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6250"/>
     <id>tag:gses-notice-bot,2026:post-6250</id>
-    <updated>2026-10-12T00:00:00+09:00</updated>
-    <published>2026-10-12T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 2027학년도 법학전문대학원 입학전형 관련 출입통제 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6249"/>
-    <id>tag:gses-notice-bot,2026:post-6249</id>
     <updated>2026-10-12T00:00:00+09:00</updated>
     <published>2026-10-12T00:00:00+09:00</published>
     <category term="대학원 알림"/>
