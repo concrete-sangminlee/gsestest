@@ -10,25 +10,6 @@ X-WR-CALDESC:게시판 공지에서 자동 추출한 마감 일정 · https
 REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
-UID:gses-6293-20261112T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20261112
-DTEND;VALUE=DATE:20261113
-SUMMARY:⏰ 조사기간 마감 — 2026학년도 2학기「강의 중간 
- 수강소감 조사」실시 계획 알림(연장)
-DESCRIPTION:공지사항 · 2026학년도 2학기「강의 중간 수강소
- 감 조사」실시 계획 알림(연장)\nhttps://gses.snu.ac.kr/news/not
- ice/notice?md=v&bbsidx=6293
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6293
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 조사기간 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 UID:gses-6292-20261113T0800@gses-notice-bot
 DTSTAMP:20261105T092845Z
 DTSTART:20261113T073000Z
@@ -428,44 +409,6 @@ TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:⏰ 프로포절 발표자료 제출 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:gses-6285-20261216T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20261216
-DTEND;VALUE=DATE:20261217
-SUMMARY:⏰ 교육협력동 지붕 설치공사 마감 — 흥캠퍼스 교
- 육협력동 지붕 설치공사에 따른 차량 진출입 안내
-DESCRIPTION:공지사항 · 흥캠퍼스 교육협력동 지붕 설치공
- 사에 따른 차량 진출입 안내\nhttps://gses.snu.ac.kr/news/notice/
- notice?md=v&bbsidx=6285
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6285
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 교육협력동 지붕 설치공사 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:gses-6299-20261221T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20261221
-DTEND;VALUE=DATE:20261222
-SUMMARY:⏰ (3~5분) 마감 — 2026학년도 2학기 셔틀버스 추가 
- 증차 운행 안내
-DESCRIPTION:공지사항 · 2026학년도 2학기 셔틀버스 추가 증
- 차 운행 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6
- 299
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6299
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ (3~5분) 마감
 TRIGGER:-P1D
 END:VALARM
 END:VEVENT
