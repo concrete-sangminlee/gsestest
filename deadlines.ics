@@ -10,27 +10,6 @@ X-WR-CALDESC:게시판 공지에서 자동 추출한 마감 일정 · https
 REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
-UID:gses-6292-20261113T0800@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART:20261113T073000Z
-DTEND:20261113T080000Z
-SUMMARY:⏰ 박사논문지도위원회 신청서와 수료 점검표 제
- 출 마감 — [환경계획학과] 2026학년도 2학기 도시및지역
- 계획학전공 박사논문지도위원회 공고
-DESCRIPTION:공지사항 · [환경계획학과] 2026학년도 2학기 도
- 시및지역계획학전공 박사논문지도위원회 공고\nhttps://gs
- es.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6292
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 박사논문지도위원회 신청서와 수료 점검표 
- 제출 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 UID:gses-6294-20261118T0800@gses-notice-bot
 DTSTAMP:20261105T092845Z
 DTSTART:20261118T073000Z
