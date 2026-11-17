@@ -5,8 +5,17 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-16T00:00:00+09:00</updated>
+  <updated>2026-11-17T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[공지사항] 「2026 SNU 그랜드퀘스트 챌린지 콜로퀴엄」 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6315"/>
+    <id>tag:gses-notice-bot,2026:post-6315</id>
+    <updated>2026-11-17T00:00:00+09:00</updated>
+    <published>2026-11-17T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
   <entry>
     <title>[세미나 및 강연] [환경대학원 제263차 콜로키움] LLMs as Urban Simulators: A Preliminary Exploration</title>
     <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6314"/>
@@ -446,14 +455,5 @@
     <updated>2026-10-16T00:00:00+09:00</updated>
     <published>2026-10-16T00:00:00+09:00</published>
     <summary>입학안내</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 개교기념일(10.15.) 셔틀버스 미운행 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6253"/>
-    <id>tag:gses-notice-bot,2026:post-6253</id>
-    <updated>2026-10-14T00:00:00+09:00</updated>
-    <published>2026-10-14T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
   </entry>
 </feed>
