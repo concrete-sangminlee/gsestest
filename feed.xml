@@ -8,6 +8,33 @@
   <updated>2026-11-17T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
   <entry>
+    <title>[세미나 및 강연] [환경대학원 제265차 콜로키움] 정주지 흡수원 탄소공간지도 구축-다시기 항공영상·딥러닝 기반 탄소흡수량 산정</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6318"/>
+    <id>tag:gses-notice-bot,2026:post-6318</id>
+    <updated>2026-11-17T00:00:00+09:00</updated>
+    <published>2026-11-17T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [학술] "2차 공공기관 지방이전의 성공적 추진 방향과 과제" 심포지엄 개최 안내 (11/20, 금)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6317"/>
+    <id>tag:gses-notice-bot,2026:post-6317</id>
+    <updated>2026-11-17T00:00:00+09:00</updated>
+    <published>2026-11-17T00:00:00+09:00</published>
+    <category term="대학원 심포지엄"/>
+    <summary>세미나 및 강연 · 대학원 심포지엄</summary>
+  </entry>
+  <entry>
+    <title>[새소식] 사단법인 플랜 1.5 정책활동가 2026년도 하반기 채용공고</title>
+    <link href="https://gses.snu.ac.kr/news/notice/news?md=v&amp;bbsidx=6316"/>
+    <id>tag:gses-notice-bot,2026:post-6316</id>
+    <updated>2026-11-17T00:00:00+09:00</updated>
+    <published>2026-11-17T00:00:00+09:00</published>
+    <category term="대학원 기타"/>
+    <summary>새소식 · 대학원 기타</summary>
+  </entry>
+  <entry>
     <title>[공지사항] 「2026 SNU 그랜드퀘스트 챌린지 콜로퀴엄」 안내</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6315"/>
     <id>tag:gses-notice-bot,2026:post-6315</id>
@@ -429,31 +456,5 @@
     <published>2026-10-19T00:00:00+09:00</published>
     <category term="대학원 알림"/>
     <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 2026학년도 동계 계절수업 수강신청 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6255"/>
-    <id>tag:gses-notice-bot,2026:post-6255</id>
-    <updated>2026-10-19T00:00:00+09:00</updated>
-    <published>2026-10-19T00:00:00+09:00</published>
-    <category term="학사 수업"/>
-    <summary>공지사항 · 학사 수업</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 「2026 관악강감찬축제」 관련 교통통제 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6254"/>
-    <id>tag:gses-notice-bot,2026:post-6254</id>
-    <updated>2026-10-16T00:00:00+09:00</updated>
-    <published>2026-10-16T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[입학안내] 2027학년도 신입생 전기모집 면접 및 구술고사 일정 안내(10/21(수))</title>
-    <link href="https://gses.snu.ac.kr/news/notice/admissions?md=v&amp;bbsidx=6252"/>
-    <id>tag:gses-notice-bot,2026:post-6252</id>
-    <updated>2026-10-16T00:00:00+09:00</updated>
-    <published>2026-10-16T00:00:00+09:00</published>
-    <summary>입학안내</summary>
   </entry>
 </feed>
