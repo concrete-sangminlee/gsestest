@@ -24,7 +24,7 @@
     },
     "6320": {
       "board": "seminars",
-      "title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transitio...",
+      "title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transition ...",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-19T12:41:30+09:00",
       "posted": "2026-11-19",
@@ -65,7 +65,7 @@
         }
       ],
       "rules": 3,
-      "checked_at": "2026-11-18T23:18:50+09:00"
+      "checked_at": "2026-11-20T02:18:03+09:00"
     },
     "6315": {
       "board": "notice",
@@ -1349,5 +1349,5 @@
     "last_sent_at": "2026-11-16T09:19:56+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-19T22:33:22+09:00"
+  "updated_at": "2026-11-20T02:18:03+09:00"
 }
