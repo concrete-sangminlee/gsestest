@@ -15,6 +15,21 @@
     }
   },
   "seen": {
+    "6320": {
+      "board": "seminars",
+      "title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transitio...",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-19T12:41:30+09:00",
+      "posted": "2026-11-19",
+      "full_title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transition in Germany and North America"
+    },
+    "6319": {
+      "board": "seminars",
+      "title": "[환경계획연구소] \"보호지역 지속가능관광의 세계적 도약: 첨단기술과 환경계획의 접목\" 공동세미나 개최(11/26, 목)",
+      "category": "대학원 세미나",
+      "first_seen": "2026-11-19T12:41:30+09:00",
+      "posted": "2026-11-19"
+    },
     "6318": {
       "board": "seminars",
       "title": "[환경대학원 제265차 콜로키움] 정주지 흡수원 탄소공간지도 구축-다시기 항공영상·딥러닝 기반 탄소흡수량 산정",
@@ -104,7 +119,7 @@
         }
       ],
       "rules": 3,
-      "checked_at": "2026-11-18T10:15:55+09:00"
+      "checked_at": "2026-11-19T12:41:30+09:00"
     },
     "6308": {
       "board": "notice",
@@ -1335,5 +1350,5 @@
     "last_sent_at": "2026-11-16T09:19:56+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-19T09:15:20+09:00"
+  "updated_at": "2026-11-19T12:41:30+09:00"
 }

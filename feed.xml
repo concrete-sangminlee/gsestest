@@ -5,8 +5,26 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-17T00:00:00+09:00</updated>
+  <updated>2026-11-19T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transition in Germany and North America</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6320"/>
+    <id>tag:gses-notice-bot,2026:post-6320</id>
+    <updated>2026-11-19T00:00:00+09:00</updated>
+    <published>2026-11-19T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[세미나 및 강연] [환경계획연구소] "보호지역 지속가능관광의 세계적 도약: 첨단기술과 환경계획의 접목" 공동세미나 개최(11/26, 목)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6319"/>
+    <id>tag:gses-notice-bot,2026:post-6319</id>
+    <updated>2026-11-19T00:00:00+09:00</updated>
+    <published>2026-11-19T00:00:00+09:00</published>
+    <category term="대학원 세미나"/>
+    <summary>세미나 및 강연 · 대학원 세미나</summary>
+  </entry>
   <entry>
     <title>[세미나 및 강연] [환경대학원 제265차 콜로키움] 정주지 흡수원 탄소공간지도 구축-다시기 항공영상·딥러닝 기반 탄소흡수량 산정</title>
     <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6318"/>
@@ -434,24 +452,6 @@
     <title>[공지사항] 2027학년도 AI대학원 전기모집 입학 전형에 따른 건물 통제 알림</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6258"/>
     <id>tag:gses-notice-bot,2026:post-6258</id>
-    <updated>2026-10-19T00:00:00+09:00</updated>
-    <published>2026-10-19T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[세미나 및 강연] [GSES 제255차 콜로키움] 인간이 만든 기후위기 AI가 대신 해결해 줄 수 있을까?</title>
-    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6257"/>
-    <id>tag:gses-notice-bot,2026:post-6257</id>
-    <updated>2026-10-19T00:00:00+09:00</updated>
-    <published>2026-10-19T00:00:00+09:00</published>
-    <category term="대학원 콜로키엄"/>
-    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 잔디광장 지하주차장 운영 변경 알림</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6256"/>
-    <id>tag:gses-notice-bot,2026:post-6256</id>
     <updated>2026-10-19T00:00:00+09:00</updated>
     <published>2026-10-19T00:00:00+09:00</published>
     <category term="대학원 알림"/>
