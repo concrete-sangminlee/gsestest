@@ -191,7 +191,7 @@
         }
       ],
       "rules": 3,
-      "checked_at": "2026-11-18T18:02:41+09:00"
+      "checked_at": "2026-11-19T22:33:22+09:00"
     },
     "6303": {
       "board": "notice",
@@ -318,11 +318,6 @@
       "full_title": "2026-2 도시계획학과 석사논문 프로포절 공고/Notice on Dissertation Proposal Presentation and Manuscript Submission in Dept. of Urban Planning",
       "deadlines": [
         {
-          "at": "2026-11-18T17:00+09:00",
-          "label": "논문 프로포절 신청서 제출",
-          "has_time": true
-        },
-        {
           "at": "2026-12-10T08:59+09:00",
           "label": "원고제출",
           "has_time": true
@@ -334,10 +329,7 @@
         }
       ],
       "rules": 3,
-      "checked_at": "2026-11-18T18:02:41+09:00",
-      "reminded": [
-        "2026-11-18T17:00+09:00|1"
-      ]
+      "checked_at": "2026-11-19T22:33:22+09:00"
     },
     "6293": {
       "board": "notice",
@@ -367,7 +359,7 @@
         }
       ],
       "rules": 3,
-      "checked_at": "2026-11-18T18:02:41+09:00"
+      "checked_at": "2026-11-19T22:33:22+09:00"
     },
     "6291": {
       "board": "notice",
@@ -1357,5 +1349,5 @@
     "last_sent_at": "2026-11-16T09:19:56+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-19T16:51:03+09:00"
+  "updated_at": "2026-11-19T22:33:22+09:00"
 }
