@@ -15,6 +15,13 @@
     }
   },
   "seen": {
+    "6321": {
+      "board": "notice",
+      "title": "「2026년 경기도 농촌재생 콘퍼런스」 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-19T16:51:03+09:00",
+      "posted": "2026-11-19"
+    },
     "6320": {
       "board": "seminars",
       "title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transitio...",
@@ -1350,5 +1357,5 @@
     "last_sent_at": "2026-11-16T09:19:56+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-19T12:41:30+09:00"
+  "updated_at": "2026-11-19T16:51:03+09:00"
 }
