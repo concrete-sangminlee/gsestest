@@ -464,4 +464,40 @@ DESCRIPTION:⏰ 환불기간 및 환불액 마감
 TRIGGER:-P1D
 END:VALARM
 END:VEVENT
+BEGIN:VEVENT
+UID:gses-6323-20270205T0700@gses-notice-bot
+DTSTAMP:20261120T070003Z
+DTSTART:20270205T063000Z
+DTEND:20270205T070000Z
+SUMMARY:⏰ 등록기간 마감 — 2027학년도 대학원 전기모집 
+ 합격자 안내사항
+DESCRIPTION:공지사항 · 2027학년도 대학원 전기모집 합격자 
+ 안내사항\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6323
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6323
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 등록기간 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-6323-20270225T1459@gses-notice-bot
+DTSTAMP:20261120T070003Z
+DTSTART;VALUE=DATE:20270225
+DTEND;VALUE=DATE:20270226
+SUMMARY:⏰ 서류 제출 마감 — 2027학년도 대학원 전기모집 
+ 합격자 안내사항
+DESCRIPTION:공지사항 · 2027학년도 대학원 전기모집 합격자 
+ 안내사항\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6323
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6323
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 서류 제출 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
 END:VCALENDAR

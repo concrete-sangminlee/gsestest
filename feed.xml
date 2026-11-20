@@ -8,6 +8,15 @@
   <updated>2026-11-20T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
   <entry>
+    <title>[공지사항] 2027학년도 대학원 전기모집 합격자 안내사항</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6323"/>
+    <id>tag:gses-notice-bot,2026:post-6323</id>
+    <updated>2026-11-20T00:00:00+09:00</updated>
+    <published>2026-11-20T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
     <title>[공지사항] 2026년 동계 교통학전공 인턴연구원 모집 공고</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6322"/>
     <id>tag:gses-notice-bot,2026:post-6322</id>
@@ -447,14 +456,5 @@
     <published>2026-10-20T00:00:00+09:00</published>
     <category term="대학원 알림"/>
     <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 2026-2 도시계획학과 석사학위논문 최종심사 공고</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6260"/>
-    <id>tag:gses-notice-bot,2026:post-6260</id>
-    <updated>2026-10-20T00:00:00+09:00</updated>
-    <published>2026-10-20T00:00:00+09:00</published>
-    <category term="학사 논문"/>
-    <summary>공지사항 · 학사 논문</summary>
   </entry>
 </feed>
