@@ -5,8 +5,17 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-19T00:00:00+09:00</updated>
+  <updated>2026-11-20T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[공지사항] 2026년 동계 교통학전공 인턴연구원 모집 공고</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6322"/>
+    <id>tag:gses-notice-bot,2026:post-6322</id>
+    <updated>2026-11-20T00:00:00+09:00</updated>
+    <published>2026-11-20T00:00:00+09:00</published>
+    <category term="대학원 취업"/>
+    <summary>공지사항 · 대학원 취업</summary>
+  </entry>
   <entry>
     <title>[공지사항] 「2026년 경기도 농촌재생 콘퍼런스」 안내</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6321"/>
@@ -447,14 +456,5 @@
     <published>2026-10-20T00:00:00+09:00</published>
     <category term="학사 논문"/>
     <summary>공지사항 · 학사 논문</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 국가미래전략원-국민경제자문회의 공동세미나「전력망 병목, 에너지 지정학 어떻게 극복할 것인가」홍보</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6259"/>
-    <id>tag:gses-notice-bot,2026:post-6259</id>
-    <updated>2026-10-19T00:00:00+09:00</updated>
-    <published>2026-10-19T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
   </entry>
 </feed>
