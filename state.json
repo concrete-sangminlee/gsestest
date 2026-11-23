@@ -15,6 +15,36 @@
     }
   },
   "seen": {
+    "6326": {
+      "board": "notice",
+      "title": "2027학년도 학자금 지원구간 산정체계 개편 안내",
+      "category": "학사 장학",
+      "first_seen": "2026-11-23T18:43:16+09:00",
+      "posted": "2026-11-23"
+    },
+    "6325": {
+      "board": "notice",
+      "title": "2027학년도 1학기 교내장학금 신청 안내",
+      "category": "학사 장학",
+      "first_seen": "2026-11-23T18:43:16+09:00",
+      "posted": "2026-11-23",
+      "deadlines": [
+        {
+          "at": "2026-12-11T18:00+09:00",
+          "label": "신청기간",
+          "has_time": true
+        }
+      ],
+      "rules": 3,
+      "checked_at": "2026-11-23T18:43:16+09:00"
+    },
+    "6324": {
+      "board": "seminars",
+      "title": "[환경대학원 제267차 콜로키움] UAV-Based Intelligent Inspection in Transportation",
+      "category": "대학원 콜로키엄",
+      "first_seen": "2026-11-23T18:43:16+09:00",
+      "posted": "2026-11-23"
+    },
     "6323": {
       "board": "notice",
       "title": "2027학년도 대학원 전기모집 합격자 안내사항",
@@ -1389,5 +1419,5 @@
     "last_sent_at": "2026-11-23T10:34:20+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-23T10:34:20+09:00"
+  "updated_at": "2026-11-23T18:43:16+09:00"
 }
