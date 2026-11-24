@@ -5,8 +5,35 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-23T00:00:00+09:00</updated>
+  <updated>2026-11-24T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[세미나 및 강연] [환경대학원 제268차 콜로키움] Who Holds the Keys? AI, Power and Blind Spots in Property Markets</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6330"/>
+    <id>tag:gses-notice-bot,2026:post-6330</id>
+    <updated>2026-11-24T00:00:00+09:00</updated>
+    <published>2026-11-24T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] 『탄소중립관』공간 이용 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6329"/>
+    <id>tag:gses-notice-bot,2026:post-6329</id>
+    <updated>2026-11-24T00:00:00+09:00</updated>
+    <published>2026-11-24T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
+  <entry>
+    <title>[공지사항] SNU AI Innovation Day x 제2회 서울대학교 생성형 AI 경진대회 공동개최 안내</title>
+    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6328"/>
+    <id>tag:gses-notice-bot,2026:post-6328</id>
+    <updated>2026-11-24T00:00:00+09:00</updated>
+    <published>2026-11-24T00:00:00+09:00</published>
+    <category term="대학원 알림"/>
+    <summary>공지사항 · 대학원 알림</summary>
+  </entry>
   <entry>
     <title>[공지사항] 2027학년도 학자금 지원구간 산정체계 개편 안내</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6326"/>
@@ -429,32 +456,5 @@
     <published>2026-10-23T00:00:00+09:00</published>
     <category term="대학원 콜로키엄"/>
     <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 관악캠퍼스 소방시설 작동점검 실시 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6278"/>
-    <id>tag:gses-notice-bot,2026:post-6278</id>
-    <updated>2026-10-22T00:00:00+09:00</updated>
-    <published>2026-10-22T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] [10/31(토) 모교방문의 날] 환경관리학과 「커리어데이」 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6277"/>
-    <id>tag:gses-notice-bot,2026:post-6277</id>
-    <updated>2026-10-22T00:00:00+09:00</updated>
-    <published>2026-10-22T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 2026년 2학기 SNU Global EDGE Fellowship 프로그램 장학생 모집 안내(대상확대)</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6220"/>
-    <id>tag:gses-notice-bot,2026:post-6220</id>
-    <updated>2026-10-22T00:00:00+09:00</updated>
-    <published>2026-10-22T00:00:00+09:00</published>
-    <category term="학사 장학"/>
-    <summary>공지사항 · 학사 장학</summary>
   </entry>
 </feed>
