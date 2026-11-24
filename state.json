@@ -15,6 +15,13 @@
     }
   },
   "seen": {
+    "6331": {
+      "board": "notice",
+      "title": "세계 토양의 날 기념행사 안내",
+      "category": "대학원 알림",
+      "first_seen": "2026-11-24T14:55:23+09:00",
+      "posted": "2026-11-24"
+    },
     "6330": {
       "board": "seminars",
       "title": "[환경대학원 제268차 콜로키움] Who Holds the Keys? AI, Power and Blind Spots in Property Markets",
@@ -1446,5 +1453,5 @@
     "last_sent_at": "2026-11-23T10:34:20+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-24T11:23:09+09:00"
+  "updated_at": "2026-11-24T14:55:23+09:00"
 }
