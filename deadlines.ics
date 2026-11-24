@@ -10,25 +10,6 @@ X-WR-CALDESC:게시판 공지에서 자동 추출한 마감 일정 · https
 REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
-UID:gses-6304-20261123T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20261123
-DTEND;VALUE=DATE:20261124
-SUMMARY:⏰ 수강료 및 납부기간 · 1차 마감 — 2026학년도 동
- 계 계절수업 수강료 납부 및 환불 계획 안내
-DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
- 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
- =v&bbsidx=6304
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 수강료 및 납부기간 · 1차 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
 UID:gses-6311-20261125T0800@gses-notice-bot
 DTSTAMP:20261112T105516Z
 DTSTART:20261125T073000Z
