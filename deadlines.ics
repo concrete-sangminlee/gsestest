@@ -128,6 +128,25 @@ TRIGGER:-P1D
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:gses-6327-20261202T1459@gses-notice-bot
+DTSTAMP:20261126T010532Z
+DTSTART;VALUE=DATE:20261202
+DTEND;VALUE=DATE:20261203
+SUMMARY:⏰ 제출기한 마감 — 2027년 우수 대학원생 융복합 
+ 자율연구 지원 신청 안내
+DESCRIPTION:공지사항 · 2027년 우수 대학원생 융복합 자율연
+ 구 지원 신청 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md=v&b
+ bsidx=6327
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6327
+CATEGORIES:공지사항
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:⏰ 제출기한 마감
+TRIGGER:-P1D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
 UID:gses-6260-20261202T2359@gses-notice-bot
 DTSTAMP:20261105T092845Z
 DTSTART:20261202T232900Z
@@ -403,63 +422,6 @@ TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:⏰ 서류 제출 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:gses-6304-20261221T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20261221
-DTEND;VALUE=DATE:20261222
-SUMMARY:⏰ 환불기간 및 환불액 마감 — 2026학년도 동계 계
- 절수업 수강료 납부 및 환불 계획 안내
-DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
- 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
- =v&bbsidx=6304
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 환불기간 및 환불액 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:gses-6304-20270101T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20270101
-DTEND;VALUE=DATE:20270102
-SUMMARY:⏰ 환불기간 및 환불액 마감 — 2026학년도 동계 계
- 절수업 수강료 납부 및 환불 계획 안내
-DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
- 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
- =v&bbsidx=6304
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 환불기간 및 환불액 마감
-TRIGGER:-P1D
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:gses-6304-20270107T1459@gses-notice-bot
-DTSTAMP:20261105T092845Z
-DTSTART;VALUE=DATE:20270107
-DTEND;VALUE=DATE:20270108
-SUMMARY:⏰ 환불기간 및 환불액 마감 — 2026학년도 동계 계
- 절수업 수강료 납부 및 환불 계획 안내
-DESCRIPTION:공지사항 · 2026학년도 동계 계절수업 수강료 납
- 부 및 환불 계획 안내\nhttps://gses.snu.ac.kr/news/notice/notice?md
- =v&bbsidx=6304
-URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6304
-CATEGORIES:공지사항
-TRANSP:TRANSPARENT
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:⏰ 환불기간 및 환불액 마감
 TRIGGER:-P1D
 END:VALARM
 END:VEVENT
