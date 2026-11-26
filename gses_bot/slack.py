@@ -18,6 +18,43 @@ BLOCK_ERRORS = frozenset(
 )
 
 
+# 다시 시도해도 낫지 않는 오류 → 사람이 할 일 (Slack 문서의 incoming webhook 오류 코드)
+_HINTS = (
+    (
+        ("no_service", "invalid_token", "no_team", "team_disabled", "invalid_auth"),
+        "웹훅이 삭제되었거나 비활성화되었습니다. Slack 앱 설정에서 Incoming Webhook 을 새로 만들고 "
+        "저장소 Settings → Secrets 의 SLACK_WEBHOOK_URL 을 교체하세요.",
+    ),
+    (
+        ("channel_is_archived",),
+        "알림 채널이 보관(archive)되었습니다. 채널을 복원하거나 다른 채널로 웹훅을 새로 만드세요.",
+    ),
+    (
+        ("channel_not_found", "not_in_channel"),
+        "알림 채널을 찾을 수 없습니다(삭제·이름 변경). "
+        "웹훅을 새로 만들거나 SLACK_CHANNEL 을 확인하세요.",
+    ),
+    (
+        ("action_prohibited", "posting_to_general_channel_denied", "restricted_action"),
+        "워크스페이스 정책으로 이 채널에 게시할 수 없습니다. Slack 관리자에게 권한을 요청하세요.",
+    ),
+    (
+        ("invalid_payload", "invalid_blocks", "invalid_attachments"),
+        "Slack 이 메시지 형식을 거부했습니다. 봇의 버그일 수 있으니 오류 내용과 함께 알려 주세요.",
+    ),
+)
+
+
+def slack_hint(error: object) -> str | None:
+    """Slack 오류 → 사람이 해야 할 조치 (없으면 None: 일시적 오류일 가능성)."""
+    text = str(error).lower()
+    code = getattr(error, "code", None)
+    for codes, hint in _HINTS:
+        if code in codes or any(item in text for item in codes):
+            return hint
+    return None
+
+
 class SlackError(RuntimeError):
     def __init__(self, message: str, code: str | None = None, status: int | None = None) -> None:
         super().__init__(message)

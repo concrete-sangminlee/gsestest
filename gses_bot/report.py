@@ -122,3 +122,58 @@ def write_step_summary(markdown: str) -> None:
             handle.write(markdown)
     except OSError as exc:  # pragma: no cover - 요약 실패가 실행을 막으면 안 됨
         log.debug("Job summary 기록 실패: %s", exc)
+
+
+def status_markdown(status: dict) -> str:
+    """`status` 명령의 Job summary: 사람이 바로 읽을 수 있는 점검표."""
+    health = status.get("health") or {}
+    digest = status.get("digest") or {}
+    lines = [
+        f"## 📊 GSES Notice Bot v{status.get('version')} 상태",
+        "",
+        f"- 추적 중인 글 {status.get('seen', 0)}건 · 마지막 저장 {status.get('updated_at') or '-'}"
+        + (
+            f" ({status['minutes_since_update']}분 전)"
+            if status.get("minutes_since_update") is not None
+            else ""
+        ),
+        f"- 주간 브리핑: 마지막 {digest.get('last_sent_at') or '-'}"
+        f" · 다음 {digest.get('next_slot') or '-'}",
+        f"- 연속 수집 실패 {health.get('consecutive_failures', 0)}회"
+        + (
+            f" · 마지막 오류: {_md_escape(str(health.get('last_error')))}"
+            if health.get("last_error")
+            else ""
+        ),
+    ]
+    if status.get("event_backfill_pending"):
+        lines.append(f"- 행사 일시 보충 대기 {status['event_backfill_pending']}건")
+    if status.get("next_deadlines"):
+        lines += [
+            "",
+            f"**⏰ 다가오는 마감 {status['upcoming_deadlines']}건**",
+            "",
+            "| 마감 | 내용 | 글 |",
+            "|---|---|---|",
+        ]
+        for item in status["next_deadlines"]:
+            lines.append(
+                f"| {item['at'][5:16].replace('T', ' ')} | {_md_escape(item['label'] or '-')} | "
+                f"#{item['bbsidx']} {_md_escape(item['title'][:50])} |"
+            )
+    if status.get("next_events"):
+        lines += [
+            "",
+            f"**🕒 다가오는 행사 {status['upcoming_events']}건**",
+            "",
+            "| 일시 | 장소 | 글 |",
+            "|---|---|---|",
+        ]
+        for item in status["next_events"]:
+            mark = "❌ 취소 " if item.get("cancelled") else ""
+            when = item["start"][5:16].replace("T", " ")
+            lines.append(
+                f"| {mark}{when} | {_md_escape(item['place'] or '-')} | "
+                f"#{item['bbsidx']} {_md_escape(item['title'][:50])} |"
+            )
+    return "\n".join(lines) + "\n"

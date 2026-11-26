@@ -105,3 +105,31 @@ def test_bot_token_api_error():
 def test_requires_destination():
     with pytest.raises(ValueError):
         SlackClient()
+
+
+@pytest.mark.parametrize(
+    ("error", "expected"),
+    [
+        (
+            SlackError("Slack webhook 오류 HTTP 404: no_service", code="no_service"),
+            "SLACK_WEBHOOK_URL",
+        ),
+        (SlackError("Slack webhook 오류 HTTP 410: channel_is_archived"), "보관"),
+        (
+            SlackError("Slack API 오류: channel_not_found", code="channel_not_found"),
+            "채널을 찾을 수",
+        ),
+        (SlackError("Slack webhook 오류 HTTP 403: action_prohibited"), "관리자"),
+        (SlackError("Slack webhook 오류 HTTP 400: invalid_blocks"), "형식"),
+        (SlackError("Slack 서버 오류 HTTP 503", status=503), None),
+        ("Slack 연결 실패: ConnectionError", None),
+    ],
+)
+def test_slack_hint(error, expected):
+    from gses_bot.slack import slack_hint
+
+    hint = slack_hint(error)
+    if expected is None:
+        assert hint is None
+    else:
+        assert expected in hint

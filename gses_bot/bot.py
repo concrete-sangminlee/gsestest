@@ -11,6 +11,7 @@ from datetime import datetime, time, timedelta
 from typing import Any
 from urllib.parse import quote
 
+from gses_bot import __version__
 from gses_bot.ai import Summarizer
 from gses_bot.boards import BOARDS
 from gses_bot.config import Settings
@@ -934,18 +935,64 @@ class Bot:
         return post, message
 
     def status(self) -> dict[str, Any]:
+        """운영 점검용 요약: 최근 저장 시각, 다가오는 마감·행사, 다음 브리핑, 장애 상태."""
         state = State.load(self.settings.state_file)
+        now = self.clock()
+        updated = _parse_time(state.updated_at)
+
+        def title(entry: dict[str, Any]) -> str:
+            return str(entry.get("full_title") or entry.get("title") or "")[:80]
+
+        deadlines = [
+            {
+                "at": deadline.to_dict()["at"],
+                "label": deadline.label,
+                "bbsidx": bbsidx,
+                "title": title(entry),
+            }
+            for bbsidx, entry, deadline in state.deadlines()
+            if deadline.at >= now
+        ]
+        events = [
+            {
+                "start": event.to_dict()["start"],
+                "place": event.place,
+                "cancelled": event.cancelled,
+                "bbsidx": bbsidx,
+                "title": title(entry),
+            }
+            for bbsidx, entry, event in state.events()
+            if event.finish >= now
+        ]
+        slot = self.digest_slot(now)
+        next_slot = slot + timedelta(days=7) if slot is not None else None
+        last_digest = _parse_time(state.digest.get("last_sent_at"))
+        if slot is not None and (last_digest is None or last_digest < slot):
+            next_slot = slot  # 이번 주 브리핑이 아직 안 나감 → 다음 실행에서 보냄
         return {
+            "version": __version__,
             "state_file": str(self.settings.state_file),
             "exists": state.exists,
             "file_version": state.migrated_from or (2 if state.exists else None),
             "boards_initialized": state.boards,
             "boards_configured": list(self.settings.boards),
             "seen": len(state.seen),
-            "upcoming_deadlines": sum(1 for *_, d in state.deadlines() if d.at >= self.clock()),
-            "digest": state.digest,
-            "health": state.health.__dict__,
             "updated_at": state.updated_at,
+            "minutes_since_update": int((now - updated).total_seconds() // 60) if updated else None,
+            "upcoming_deadlines": len(deadlines),
+            "next_deadlines": deadlines[:8],
+            "upcoming_events": len(events),
+            "next_events": events[:8],
+            "digest": {
+                **state.digest,
+                "next_slot": next_slot.isoformat(timespec="minutes") if next_slot else None,
+            },
+            "event_backfill_pending": sum(
+                1
+                for bbsidx, entry in state.recheck_candidates(now, timedelta(0))
+                if "event_rules" not in entry
+            ),
+            "health": state.health.__dict__,
         }
 
 

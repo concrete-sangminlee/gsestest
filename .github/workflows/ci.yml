@@ -30,6 +30,13 @@ jobs:
           ruff format --check .
       - name: ShellCheck
         run: shellcheck scripts/*.sh
+      # 워크플로 문법·표현식·run 블록(shellcheck 연동) 검사. 운영 워크플로가 깨진 채 머지되지 않게.
+      - name: actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+        run: |
+          bash <(curl -sSfL --retry 3 "https://raw.githubusercontent.com/rhysd/actionlint/v${ACTIONLINT_VERSION}/scripts/download-actionlint.bash") "$ACTIONLINT_VERSION"
+          ./actionlint -color
 
   test:
     name: Test (Python ${{ matrix.python }})

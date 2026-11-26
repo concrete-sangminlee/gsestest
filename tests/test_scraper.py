@@ -215,3 +215,13 @@ def test_preview_skips_first_line_that_repeats_title():
         f"{sentence}\n둘째 줄", "「기후테크 기후가치평가와 선금융 메커니즘」"
     ).startswith("서울대학교")
     assert make_preview(title, title) == title  # 본문이 제목 한 줄뿐이면 그대로
+
+
+def test_empty_first_page_is_a_scrape_failure(settings, session):
+    """1쪽이 비면 '새 글 없음'이 아니라 수집 실패 (점검 페이지·구조 변경이 조용히 지나가지 않게)."""
+    from gses_bot.scraper import ScrapeError, Scraper
+
+    session.pages[f"{BASE}/news/notice/notice"] = fixture("empty_page.html")
+    scraper = Scraper(settings, session=session, sleep=lambda _: None)
+    with pytest.raises(ScrapeError, match="1쪽에 글이 없습니다"):
+        scraper.scan_board("notice", lambda _id: False)

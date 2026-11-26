@@ -283,6 +283,10 @@ class Scraper:
         collected: dict[str, Post] = {}
         for page in range(1, limit + 1):
             posts = self.list_page(board, page)
+            if page == 1 and not posts:
+                # 실제 게시판은 몇 년치 글이 있으므로 1쪽이 비면 점검 페이지·구조 변경입니다.
+                # '새 글 없음'으로 넘기지 않고 수집 실패로 세어 장애 알림까지 이어지게 합니다.
+                raise ScrapeError(f"[{board.key}] 게시판 1쪽에 글이 없습니다 (점검·개편 의심)")
             regular = [post for post in posts if not post.pinned]
             for post in posts:
                 collected.setdefault(post.bbsidx, post)

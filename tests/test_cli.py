@@ -140,3 +140,63 @@ def test_run_with_digest_flag_is_passed_to_bot(monkeypatch, tmp_path):
     monkeypatch.setenv("GSES_STATE_FILE", str(tmp_path / "state.json"))
     assert cli.main(["run", "--dry-run", "--with-digest", "-q"]) == 0
     assert seen == {"dry_run": True, "force_digest": True}
+
+
+def test_status_reports_upcoming_items_and_writes_summary(tmp_path, monkeypatch, capsys):
+    from gses_bot import cli
+
+    state = tmp_path / "state.json"
+    state.write_text(
+        json.dumps(
+            {
+                "version": 2,
+                "boards": {"seminars": {"initialized_at": "2026-11-01T10:00:00+09:00"}},
+                "seen": {
+                    "6290": {
+                        "board": "seminars",
+                        "title": "제260차 콜로키움",
+                        "posted": "2026-11-20",
+                        "deadlines": [
+                            {"at": "2099-12-01T17:00+09:00", "label": "신청", "has_time": True}
+                        ],
+                        "events": [
+                            {
+                                "start": "2099-12-02T15:00+09:00",
+                                "all_day": False,
+                                "place": "82동 113호",
+                            }
+                        ],
+                        "event_rules": 1,
+                    }
+                },
+                "digest": {},
+                "updated_at": "2026-11-26T10:00:00+09:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    summary = tmp_path / "summary.md"
+    monkeypatch.setenv("GSES_STATE_FILE", str(state))
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    assert cli.main(["status"]) == 0
+    status = json.loads(capsys.readouterr().out)
+    assert status["upcoming_deadlines"] == 1 and status["upcoming_events"] == 1
+    assert status["next_events"][0]["place"] == "82동 113호"
+    assert status["digest"]["next_slot"]
+    text = summary.read_text(encoding="utf-8")
+    assert "다가오는 마감 1건" in text and "다가오는 행사 1건" in text and "82동 113호" in text
+
+
+def test_permanent_slack_error_logs_a_fix(tmp_path, monkeypatch, capsys):
+    from gses_bot import cli
+    from gses_bot.bot import RunReport
+
+    def fake_run(self, **_):
+        return RunReport(slack_error="Slack webhook 오류 HTTP 404: no_service", exit_code=1)
+
+    monkeypatch.setattr(cli.Bot, "run", fake_run)
+    monkeypatch.setenv("SLACK_WEBHOOK_URL", "https://hooks.slack.test/T/B/X")
+    monkeypatch.setenv("GSES_STATE_FILE", str(tmp_path / "state.json"))
+    monkeypatch.setattr(cli, "send_heartbeat", lambda *a, **k: None)
+    assert cli.main(["run"]) == 1
+    assert "💡" in capsys.readouterr().out  # 사람이 할 조치를 로그에 남김 (Actions 에선 오류 주석)
