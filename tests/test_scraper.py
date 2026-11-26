@@ -201,3 +201,17 @@ class TestEnrich:
 
     def test_latest_post_prefers_newest_date(self, scraper):
         assert scraper.latest_post("notice").bbsidx == "6303"
+
+
+def test_preview_skips_first_line_that_repeats_title():
+    from gses_bot.scraper import make_preview
+
+    title = "[환경대학원 제260차 콜로키움] 사라지는 마을, 어떻게 도시를 지킬까?"
+    body = f"{title}\nㅇ 일시: 2026년 11월 16일(월) 오전 10:00~12:50\nㅇ 장소: 82동 113호"
+    assert make_preview(body, title).startswith("ㅇ 일시:")
+    # 제목을 품은 긴 문장은 정보가 있으므로 유지
+    sentence = "서울대학교 기후테크센터는 사회적가치연구원과 함께 「기후테크 기후가치평가와 선금융 메커니즘」 세미나를 개최합니다"
+    assert make_preview(
+        f"{sentence}\n둘째 줄", "「기후테크 기후가치평가와 선금융 메커니즘」"
+    ).startswith("서울대학교")
+    assert make_preview(title, title) == title  # 본문이 제목 한 줄뿐이면 그대로

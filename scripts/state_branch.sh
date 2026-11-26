@@ -16,14 +16,37 @@ REMOTE="${STATE_REMOTE:-origin}"
 STATE_FILE="${GSES_STATE_FILE:-.state/state.json}"
 FILE_IN_BRANCH="state.json"
 
+RETRY_DELAY="${STATE_RETRY_DELAY:-3}"
+
+# 일시적인 네트워크 오류에 대비해 최대 3번 시도합니다 (3초, 6초 간격).
+retry() {
+  local attempt=1
+  until "$@"; do
+    if [ "$attempt" -ge 3 ]; then
+      return 1
+    fi
+    echo "::warning::'$*' 실패 → $((RETRY_DELAY * attempt))초 뒤 다시 시도합니다 ($attempt/2)" >&2
+    sleep $((RETRY_DELAY * attempt))
+    attempt=$((attempt + 1))
+  done
+}
+
 remote_has_branch() {
-  local rc=0
-  git ls-remote --exit-code --heads "$REMOTE" "$BRANCH" >/dev/null || rc=$?
-  case "$rc" in
-    0) return 0 ;;
-    2) return 1 ;;
-    *) echo "::error::원격 저장소에 접속할 수 없습니다 (git ls-remote exit $rc)" >&2; exit 1 ;;
-  esac
+  local rc attempt
+  for attempt in 1 2 3; do
+    rc=0
+    git ls-remote --exit-code --heads "$REMOTE" "$BRANCH" >/dev/null || rc=$?
+    case "$rc" in
+      0) return 0 ;;
+      2) return 1 ;;
+    esac
+    if [ "$attempt" -lt 3 ]; then
+      echo "::warning::git ls-remote 실패 (exit $rc) → 다시 시도합니다 ($attempt/2)" >&2
+      sleep $((RETRY_DELAY * attempt))
+    fi
+  done
+  echo "::error::원격 저장소에 접속할 수 없습니다 (git ls-remote exit $rc)" >&2
+  exit 1
 }
 
 restore() {
@@ -32,7 +55,7 @@ restore() {
     echo "ℹ️  '$BRANCH' 브랜치가 아직 없습니다 → 첫 실행은 알림 없이 기준점만 잡습니다."
     return 0
   fi
-  git fetch --quiet --depth=1 "$REMOTE" "$BRANCH"
+  retry git fetch --quiet --depth=1 "$REMOTE" "$BRANCH"
   if git cat-file -e "FETCH_HEAD:$FILE_IN_BRANCH" 2>/dev/null; then
     git show "FETCH_HEAD:$FILE_IN_BRANCH" > "$STATE_FILE"
     echo "✅ state 복원: $BRANCH@$(git rev-parse --short FETCH_HEAD) → $STATE_FILE"
@@ -73,7 +96,7 @@ save() {
   local worktree="$WORKTREE"
 
   if remote_has_branch; then
-    git fetch --quiet --depth=1 "$REMOTE" "$BRANCH"
+    retry git fetch --quiet --depth=1 "$REMOTE" "$BRANCH"
     git worktree add --quiet --detach "$worktree" FETCH_HEAD
   else
     git worktree add --quiet --detach "$worktree"
@@ -104,8 +127,15 @@ save() {
     -c user.name="github-actions[bot]" \
     -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
     commit --quiet -m "chore(state): ${seen} posts tracked · $(date -u +%Y-%m-%dT%H:%MZ)"
-  git -C "$worktree" push --quiet "$REMOTE" "HEAD:refs/heads/$BRANCH"
-  echo "✅ state 저장: $BRANCH@$(git -C "$worktree" rev-parse --short HEAD)"
+  # 커밋은 저장소 객체에 들어 있으므로 원래 체크아웃에서 push 합니다. actions/checkout v6+ 는
+  # 인증 정보를 includeIf 로 연결하는데, 그 설정이 임시 worktree 에도 적용된다고 가정하지 않기 위함.
+  local commit
+  commit="$(git -C "$worktree" rev-parse HEAD)"
+  if ! retry git push --quiet "$REMOTE" "$commit:refs/heads/$BRANCH"; then
+    echo "::error::state 를 $BRANCH 브랜치에 저장하지 못했습니다 — 다음 실행에서 같은 알림이 다시 갈 수 있습니다" >&2
+    exit 1
+  fi
+  echo "✅ state 저장: $BRANCH@$(git rev-parse --short "$commit")"
 }
 
 case "${1:-}" in

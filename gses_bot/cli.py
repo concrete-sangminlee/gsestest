@@ -105,6 +105,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--json", action="store_true", help="Slack 메시지 JSON 출력")
     parser.add_argument("--force", action="store_true", help="digest: 최근에 보냈어도 다시 전송")
+    parser.add_argument(
+        "--with-digest",
+        action="store_true",
+        help="run: 이번 실행에서 주간 브리핑도 보냄 (시각과 무관, 한 번만)",
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="디버그 로그")
     parser.add_argument("-q", "--quiet", action="store_true", help="경고 이상만 출력")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -211,7 +216,13 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     try:
         if command in {"run", "init"}:
-            code = _run(bot, dry_run=dry_run, force_init=command == "init", show_json=args.json)
+            code = _run(
+                bot,
+                dry_run=dry_run,
+                force_init=command == "init",
+                force_digest=args.with_digest,
+                show_json=args.json,
+            )
             if not dry_run:
                 send_heartbeat(settings.heartbeat_url, code == EXIT_OK)
             return code
@@ -246,8 +257,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     raise AssertionError(f"unhandled command {command}")  # pragma: no cover
 
 
-def _run(bot: Bot, *, dry_run: bool, force_init: bool, show_json: bool) -> int:
-    report = bot.run(dry_run=dry_run, force_init=force_init)
+def _run(
+    bot: Bot, *, dry_run: bool, force_init: bool, show_json: bool, force_digest: bool = False
+) -> int:
+    report = bot.run(dry_run=dry_run, force_init=force_init, force_digest=force_digest)
     if dry_run:
         log.info("🔍 Dry-run: Slack 전송과 state 저장을 하지 않았습니다.")
         if show_json and report.payloads:

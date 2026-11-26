@@ -23,7 +23,9 @@ fi
 
 body="$(mktemp)"
 trap 'rm -f "$body"' EXIT
+# 응답이 없는 경우 cron 작업이 쌓이지 않도록 시간 제한을 둡니다 (연결 10초, 전체 30초, 연결 오류는 2번 재시도).
 code="$(curl -sS -o "$body" -w '%{http_code}' -X POST \
+  --connect-timeout 10 --max-time 30 --retry 2 --retry-connrefused \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer ${TOKEN}" \
   -H "X-GitHub-Api-Version: 2022-11-28" \

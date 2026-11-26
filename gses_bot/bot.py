@@ -112,6 +112,8 @@ class Bot:
         self.summarizer = summarizer
         self.clock = clock
         self._ai_budget = settings.ai_max_posts_per_run
+        self._state_boards: dict[str, dict[str, Any]] = {}
+        self._covered: list[tuple[str, set[str]]] = []
 
     def _client_for(self, board: str) -> SlackClient | None:
         """게시판별 채널 라우팅 (SLACK_WEBHOOK_URL_<BOARD>), 없으면 기본 채널."""
@@ -190,7 +192,9 @@ class Bot:
         )
 
     # ------------------------------------------------------------------ 정기 실행
-    def run(self, *, dry_run: bool = False, force_init: bool = False) -> RunReport:
+    def run(
+        self, *, dry_run: bool = False, force_init: bool = False, force_digest: bool = False
+    ) -> RunReport:
         settings = self.settings
         state = State.load(settings.state_file)
         now = self.clock()
@@ -271,7 +275,7 @@ class Bot:
         if report.slack_error is None and not force_init:
             self._send_reminders(state, report, now, dry_run)
         if report.slack_error is None and not force_init:
-            self._auto_digest(state, report, now, dry_run)
+            self._auto_digest(state, report, now, dry_run, force=force_digest)
 
         # v1 에서 넘어온 항목처럼 메타데이터가 빈 기존 글을 보충합니다 (기존 제목은 덮어쓰지 않음).
         for posts in scanned.values():
@@ -432,6 +436,18 @@ class Bot:
             except OSError as exc:
                 log.warning("⚠️  %s 쓰기 실패: %s", name, exc)
 
+    def _announced_after(self, entry: dict[str, Any], moment: datetime) -> bool:
+        """이 글이 moment 이후에 '새 글'로 알려졌는가 (카드에 D-day 가 이미 있었음).
+
+        기준점으로 조용히 기록된 글은 게시판 기준점 시각과 first_seen 이 같으므로 제외됩니다.
+        """
+        first_seen = _parse_time(entry.get("first_seen"))
+        if first_seen is None or first_seen < moment:
+            return False
+        board = self._state_boards.get(entry.get("board") or "", {})
+        initialized = _parse_time(board.get("initialized_at"))
+        return initialized is not None and first_seen > initialized
+
     def _due_reminders(
         self, state: State, now: datetime
     ) -> list[tuple[NoticeRef, Deadline, set[str]]]:
@@ -446,6 +462,8 @@ class Bot:
         hour = self.settings.reminder_hour
         morning = now.astimezone(KST).replace(hour=hour, minute=0, second=0, microsecond=0)
         due: list[tuple[NoticeRef, Deadline, set[str]]] = []
+        self._state_boards = state.boards
+        self._covered = []
         for bbsidx, entry, deadline in state.deadlines():
             if deadline.at < now:
                 continue
@@ -460,16 +478,27 @@ class Bot:
                 continue
             if days == step and now < morning and deadline.at > morning:
                 continue  # 당일 아침 시간까지 기다림
+            keys = {f"{at}|{k}" for k in offsets if k >= step}
+            slot = datetime.combine(
+                deadline.at.astimezone(KST).date() - timedelta(days=step), time(hour), tzinfo=KST
+            )
+            if self._announced_after(entry, min(slot, deadline.at)):
+                # 리마인더 시각 이후에 올라온 글: 방금 보낸 새 글 카드가 리마인더 역할을 했습니다.
+                self._covered.append((bbsidx, keys))
+                continue
             ref = self._ref(bbsidx, entry)
             if ref is None or not self._ref_matches_filters(ref):
                 continue
-            due.append((ref, deadline, {f"{at}|{k}" for k in offsets if k >= step}))
+            due.append((ref, deadline, keys))
         return due
 
     def _send_reminders(
         self, state: State, report: RunReport, now: datetime, dry_run: bool
     ) -> None:
         due = self._due_reminders(state, now)[:MAX_REMINDERS_PER_MESSAGE]
+        if not dry_run:
+            for bbsidx, keys in self._covered:
+                state.mark_reminded(bbsidx, keys)
         if not due:
             return
         report.reminders = [(ref, deadline) for ref, deadline, _ in due]
@@ -702,19 +731,27 @@ class Bot:
             calendar_url=calendar_subscribe_url(settings),
         )
 
-    def _auto_digest(self, state: State, report: RunReport, now: datetime, dry_run: bool) -> None:
+    def _auto_digest(
+        self, state: State, report: RunReport, now: datetime, dry_run: bool, *, force: bool = False
+    ) -> None:
         """이번 주 브리핑 시각이 지났는데 아직 안 보냈으면 이 실행에서 보냅니다.
 
         GitHub 는 부하가 높으면 예약 실행을 버리기도 해서(실측 약 10%만 실행), 월요일 08:41 한 번에
         기대면 브리핑이 통째로 빠집니다(2026-11-09 실제 발생). 그 주의 아무 실행이나 보내되,
         시각에서 2일이 지나면 다음 주로 넘깁니다.
+
+        force: 수동 실행(workflow_dispatch mode=digest)에서 시각과 관계없이 지금 보냅니다.
+        새 글 확인과 같은 실행에서 한 번만 보내므로 '자동 + 수동' 이중 발송이 생기지 않습니다.
         """
-        slot = self.digest_slot(now)
-        if slot is None or not state.boards or now - slot > timedelta(days=2):
+        if not state.boards:
             return
-        last = _parse_time(state.digest.get("last_sent_at"))
-        if last is not None and last >= slot:
-            return
+        if not force:
+            slot = self.digest_slot(now)
+            if slot is None or now - slot > timedelta(days=2):
+                return
+            last = _parse_time(state.digest.get("last_sent_at"))
+            if last is not None and last >= slot:
+                return
         message = self._build_digest(state, now)
         if dry_run:
             report.payloads.append(message)

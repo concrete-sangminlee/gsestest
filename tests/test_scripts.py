@@ -78,6 +78,9 @@ def test_trigger_bot_statuses(tmp_path, status, code, message):
     )
     assert "Authorization: Bearer github_pat_test" in args
     assert '{"ref":"main","inputs":{"mode":"run"}}' in args
+    # 응답 없는 API 때문에 cron 작업이 멈추지 않도록 시간 제한이 있어야 합니다.
+    assert args[args.index("--max-time") + 1] == "30"
+    assert args[args.index("--connect-timeout") + 1] == "10"
 
 
 def test_trigger_bot_requires_token(tmp_path):
@@ -126,3 +129,83 @@ def test_watchdog_dispatch_decision(tmp_path, minutes_ago, dispatched):
     text = summary.read_text(encoding="utf-8")
     assert "최근 24시간 봇 실행: GitHub 스케줄 3 · 외부 cron·수동 40" in text
     assert ("직접 실행" in text) is dispatched
+
+
+# ---------------------------------------------------------------------- state_branch.sh
+def git(*args: str, cwd: Path) -> str:
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "t",
+        "GIT_AUTHOR_EMAIL": "t@example.com",
+        "GIT_COMMITTER_NAME": "t",
+        "GIT_COMMITTER_EMAIL": "t@example.com",
+    }
+    result = subprocess.run(
+        ["git", *args], cwd=cwd, capture_output=True, text=True, env=env, check=True
+    )
+    return result.stdout.strip()
+
+
+@pytest.fixture
+def state_repo(tmp_path: Path) -> tuple[Path, Path]:
+    remote = tmp_path / "remote.git"
+    work = tmp_path / "work"
+    git("init", "--quiet", "--bare", str(remote), cwd=tmp_path)
+    git("init", "--quiet", str(work), cwd=tmp_path)
+    (work / "README.md").write_text("main\n", encoding="utf-8")
+    git("add", "README.md", cwd=work)
+    git("commit", "--quiet", "-m", "init", cwd=work)
+    git("remote", "add", "origin", str(remote), cwd=work)
+    return work, remote
+
+
+def state_branch(work: Path, command: str, **env: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["bash", str(ROOT / "scripts" / "state_branch.sh"), command],
+        capture_output=True,
+        text=True,
+        cwd=work,
+        env={
+            **os.environ,
+            "GSES_STATE_FILE": str(work / ".state" / "state.json"),
+            "STATE_RETRY_DELAY": "0",
+            "GITHUB_REPOSITORY": "o/r",
+            **env,
+        },
+        check=False,
+    )
+
+
+def test_state_branch_round_trip(state_repo):
+    work, remote = state_repo
+    first = state_branch(work, "restore")
+    assert first.returncode == 0 and "아직 없습니다" in first.stdout
+
+    state_file = work / ".state" / "state.json"
+    state_file.write_text('{"version": 2, "seen": {"1": {}}}\n', encoding="utf-8")
+    (work / ".state" / "deadlines.ics").write_text("BEGIN:VCALENDAR\r\n", encoding="utf-8")
+    saved = state_branch(work, "save")
+    assert saved.returncode == 0, saved.stderr
+    assert "state 저장" in saved.stdout
+    files = git("ls-tree", "--name-only", "bot-state", cwd=remote).split()
+    assert files == ["README.md", "deadlines.ics", "state.json"]
+    assert "1 posts tracked" in git("log", "-1", "--format=%s", "bot-state", cwd=remote)
+
+    unchanged = state_branch(work, "save")
+    assert unchanged.returncode == 0 and "변경 없음" in unchanged.stdout
+    assert git("rev-list", "--count", "bot-state", cwd=remote) == "1"
+
+    state_file.unlink()
+    restored = state_branch(work, "restore")
+    assert restored.returncode == 0 and "state 복원" in restored.stdout
+    assert '"1"' in state_file.read_text(encoding="utf-8")
+
+
+def test_state_branch_fails_instead_of_resetting_when_remote_is_unreachable(state_repo):
+    work, _ = state_repo
+    git("remote", "set-url", "origin", str(work.parent / "missing.git"), cwd=work)
+    result = state_branch(work, "restore")
+    assert result.returncode == 1
+    assert "접속할 수 없습니다" in result.stderr
+    assert result.stderr.count("다시 시도합니다") == 2
+    assert not (work / ".state" / "state.json").exists()
