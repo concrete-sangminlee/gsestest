@@ -24,9 +24,9 @@ from gses_bot.ai import Summarizer
 from gses_bot.boards import BOARDS
 from gses_bot.bot import EXIT_CONFIG, EXIT_FAILURE, EXIT_OK, EXIT_STATE, Bot, payloads_json
 from gses_bot.config import ConfigError, Settings, parse_boards
-from gses_bot.report import summary_markdown, write_step_summary
+from gses_bot.report import status_markdown, summary_markdown, write_step_summary
 from gses_bot.scraper import ScrapeError
-from gses_bot.slack import SlackClient, SlackError
+from gses_bot.slack import SlackClient, SlackError, slack_hint
 from gses_bot.state import StateError
 
 log = logging.getLogger("gses_bot")
@@ -242,7 +242,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 bot, args, dry_run=dry_run, show_json=args.json or command == "preview"
             )
         if command == "status":
-            print(json.dumps(bot.status(), ensure_ascii=False, indent=2))
+            status = bot.status()
+            print(json.dumps(status, ensure_ascii=False, indent=2))
+            write_step_summary(status_markdown(status))
             return EXIT_OK
     except StateError as exc:
         log.error("❌ state 오류: %s", exc)
@@ -250,6 +252,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_STATE
     except SlackError as exc:
         log.error("❌ Slack 전송 실패: %s", exc)
+        if hint := slack_hint(exc):
+            log.error("💡 %s", hint)
         return EXIT_FAILURE
     except ScrapeError as exc:
         log.error("❌ 게시판 수집 실패: %s", exc)
@@ -261,6 +265,8 @@ def _run(
     bot: Bot, *, dry_run: bool, force_init: bool, show_json: bool, force_digest: bool = False
 ) -> int:
     report = bot.run(dry_run=dry_run, force_init=force_init, force_digest=force_digest)
+    if report.slack_error and (hint := slack_hint(report.slack_error)):
+        log.error("💡 %s", hint)
     if dry_run:
         log.info("🔍 Dry-run: Slack 전송과 state 저장을 하지 않았습니다.")
         if show_json and report.payloads:
