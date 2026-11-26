@@ -200,7 +200,7 @@ class Settings:
     send_on_first_run: bool = False
     # 마감 리마인더 / 주간 브리핑
     reminder_days: tuple[int, ...] = (1,)
-    reminder_hour: int = 9
+    reminder_hour: int = 8
     baseline_detail_days: int = 21
     baseline_detail_max: int = 40
     digest_days: int = 7
@@ -251,7 +251,7 @@ class Settings:
             max_state_entries=_int(env, "GSES_MAX_STATE_ENTRIES", 3000, 100, 100_000),
             board_webhooks=board_webhooks(env),
             reminder_days=parse_days(_get(env, "GSES_REMINDER_DAYS"), (1,)),
-            reminder_hour=_int(env, "GSES_REMINDER_HOUR", 9, 0, 23),
+            reminder_hour=_int(env, "GSES_REMINDER_HOUR", 8, 0, 23),
             baseline_detail_days=_int(env, "GSES_BASELINE_DETAIL_DAYS", 21, 0, 365),
             digest_days=_int(env, "GSES_DIGEST_DAYS", 7, 1, 31),
             digest_weekday=parse_weekday(_get(env, "GSES_DIGEST_WEEKDAY")),

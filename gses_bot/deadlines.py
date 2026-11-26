@@ -85,6 +85,10 @@ _EVENT_TITLE = re.compile(
     r"workshop|festival",
     re.I,
 )
+# 환불·반환 일정표는 '이 날짜까지 취소하면 얼마를 돌려받는지' 안내라 마감 알림 대상이 아닙니다
+# (#6304 '다. 환불기간 및 환불액' 아래 3개 구간). '환불 신청 …까지' 처럼 강한 단어가 있으면 유지.
+_INFO_WORDS = re.compile(r"환불|반환")
+_URL = re.compile(r"https?://\S+")
 _PERIOD_LABELS = {"기간", "일정", "일시", "행사기간", "운영기간", "개최기간"}
 # 소제목 표시 ('가.', '1.', '①', '■'). '○ ● ㅇ -' 는 목록 글머리라 소제목으로 보지 않습니다.
 _HEADING = re.compile(r"^\s*(?:[가나다라마바사아자차카타파하][.)]|\d{1,2}[.)]|[①-⑳]|[■□▶◆◇]\s)")
@@ -242,7 +246,8 @@ def _resolve_year(hit: _Hit, reference: date, hint_year: int | None) -> date | N
 
 
 def _clean_label(text: str) -> str:
-    text = re.sub(r"[\s:：\-–~～(]+$", "", text)
+    text = _URL.sub("", text)  # '신청 ｜ https://forms.gle/…' → '신청'
+    text = re.sub(r"[\s:：\-–~～(|｜]+$", "", text)
     return normalize_ws(_LABEL_PREFIX.sub("", text).strip(" :：-"))
 
 
@@ -295,6 +300,11 @@ def extract_deadlines(text: str, reference: date, title: str = "") -> list[Deadl
         elif not strong and heading and _EVENT_WORDS.search(heading):
             is_event = True  # '1. 통제일시' 아래의 '가. 일반전형: …까지' 는 행사 날짜
         if restricted and not _STRONG_WORDS.search(line):
+            continue
+        informational = _INFO_WORDS.search(line) or (
+            bare_row and heading and _INFO_WORDS.search(heading)
+        )
+        if informational and not _STRONG_WORDS.search(line):
             continue
         line_label = _clean_label(line[: hits[0].start]).replace(" ", "")
         if event_post and not strong and line_label in _PERIOD_LABELS:
@@ -377,7 +387,7 @@ def fmt_dday(days: int) -> str:
 
 
 # 추출 규칙이 바뀌면 올립니다. 규칙 변경으로 달라진 마감은 '마감 변경' 알림 없이 조용히 갱신됩니다.
-RULES_VERSION = 3
+RULES_VERSION = 4
 
 
 def diff_deadlines(

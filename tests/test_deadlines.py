@@ -135,8 +135,6 @@ def test_table_rows_use_section_heading_and_row_cell():
     assert found == [
         ("11.23 (월)", "수강료 및 납부기간 · 1차"),
         ("11.27 (금)", "수강료 및 납부기간 · 2차(최종)"),
-        ("12.21 (월)", "환불기간 및 환불액"),
-        ("01.01 (금)", "환불기간 및 환불액"),
     ]
 
 
@@ -229,3 +227,18 @@ def test_strong_word_survives_in_restricted_and_event_posts():
 def test_time_range_uses_end_time():
     found = extract_deadlines("접수: 2026. 11. 20.(금) 09:00 ~ 18:00까지", REF)
     assert (found[0].at.hour, found[0].at.minute) == (18, 0)
+
+
+def test_refund_schedule_is_not_a_deadline_unless_applying():
+    """환불 일정표(이 날짜까지 취소하면 얼마 환불)는 알림 대상이 아님 (#6304)."""
+    rows = "다. 환불기간 및 환불액\n2026. 12. 11.(금) ~ 2026. 12. 21.(월)\n수강료 전액 환불"
+    assert extract_deadlines(rows, date(2026, 11, 5)) == []
+    apply = extract_deadlines("환불 신청: 2026. 12. 4.(금)까지", date(2026, 11, 5))
+    assert [d.at.date() for d in apply] == [date(2026, 12, 4)]
+
+
+def test_label_drops_urls():
+    found = extract_deadlines(
+        "신청 ｜ https://forms.gle/AbC (2026년 8월 31일 (월) 16:00 까지)", date(2026, 8, 20)
+    )
+    assert [d.label for d in found] == ["신청"]

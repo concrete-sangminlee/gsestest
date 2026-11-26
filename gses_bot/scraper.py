@@ -156,12 +156,25 @@ def html_to_text(element: Tag) -> str:
     return "\n".join(line for line in lines if line and not _DECORATION_LINE.match(line))
 
 
-def make_preview(text: str) -> str | None:
+def _same_text(line: str, title: str) -> bool:
+    """본문 첫 줄이 제목을 되풀이하는지 (기호·공백 무시, 한쪽이 다른 쪽을 포함)."""
+    a, b = (re.sub(r"[\W_]+", "", value).lower() for value in (line, title))
+    if len(a) < 8 or len(b) < 8:
+        return False
+    # 줄이 제목의 일부이거나, 제목을 담되 거의 같은 길이일 때만 (제목을 품은 긴 문장은 유지)
+    return a in b or (b in a and len(a) <= len(b) * 1.3 + 5)
+
+
+def make_preview(text: str, title: str = "") -> str | None:
     if not text:
         return None
-    lines = text.splitlines()[:PREVIEW_LINES]
+    all_lines = text.splitlines()
+    # 세미나 글은 본문 첫 줄이 제목과 같은 경우가 많습니다 (실측 60건 중 31건) → 건너뜀.
+    while title and len(all_lines) > 1 and _same_text(all_lines[0], title):
+        all_lines = all_lines[1:]
+    lines = all_lines[:PREVIEW_LINES]
     preview = "\n".join(lines)
-    clipped = len(lines) < len(text.splitlines())
+    clipped = len(lines) < len(all_lines)
     if len(preview) > PREVIEW_CHARS:
         return truncate(preview, PREVIEW_CHARS)
     return preview + ("…" if clipped else "")
@@ -219,7 +232,7 @@ def parse_detail(html: str, post: Post, base_url: str) -> Post:
             if src and not src.startswith("data:"):
                 post.image_url = urljoin(base_url + "/", src)
         post.body_text = html_to_text(content)
-        post.preview = make_preview(post.body_text)
+        post.preview = make_preview(post.body_text, post.full_title or post.title)
 
     post.detail_loaded = True
     return post

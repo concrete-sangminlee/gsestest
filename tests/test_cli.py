@@ -123,3 +123,20 @@ def test_run_pings_heartbeat(monkeypatch, tmp_path):
     monkeypatch.setenv("GSES_HEARTBEAT_URL", "https://hc-ping.com/abc")
     assert cli.main(["init", "--boards", "notice"]) == 0
     assert calls == ["https://hc-ping.com/abc"]
+
+
+def test_run_with_digest_flag_is_passed_to_bot(monkeypatch, tmp_path):
+    from gses_bot import cli
+
+    seen = {}
+
+    def fake_run(self, *, dry_run=False, force_init=False, force_digest=False):
+        seen.update(dry_run=dry_run, force_digest=force_digest)
+        from gses_bot.bot import RunReport
+
+        return RunReport(dry_run=dry_run)
+
+    monkeypatch.setattr(cli.Bot, "run", fake_run)
+    monkeypatch.setenv("GSES_STATE_FILE", str(tmp_path / "state.json"))
+    assert cli.main(["run", "--dry-run", "--with-digest", "-q"]) == 0
+    assert seen == {"dry_run": True, "force_digest": True}

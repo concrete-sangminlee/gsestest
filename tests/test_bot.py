@@ -346,8 +346,8 @@ def test_baseline_records_deadlines_of_recent_posts(settings, scraper):
 def test_reminder_sent_once_on_the_morning_before(settings, scraper):
     baseline(settings, scraper)
     early = FakeSlack()
-    bot_at(settings, scraper, at(11, 26, 8, 30), early).run()
-    assert reminder_texts(early) == []  # 아침 9시 전에는 대기
+    bot_at(settings, scraper, at(11, 26, 7, 50), early).run()
+    assert reminder_texts(early) == []  # 아침 8시 전에는 대기
 
     slack = FakeSlack()
     report = bot_at(settings, scraper, at(11, 26, 9, 10), slack).run()
@@ -546,7 +546,7 @@ def test_rules_upgrade_updates_silently(settings, scraper, session):
     bot_at(settings, scraper, at(11, 5, 14, 0), slack).run()
     assert change_texts(slack) == []
     entry = saved(settings)["seen"]["6298"]
-    assert entry["rules"] == 3 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
+    assert entry["rules"] == 4 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
 
 
 def test_deadline_change_failure_is_retried(settings, scraper, session):
@@ -665,3 +665,49 @@ def test_manual_digest_skips_after_auto_digest(settings, scraper):
     bot_at(settings, scraper, at(11, 9, 8, 45), slack).run()
     assert bot_at(settings, scraper, at(11, 9, 8, 46), slack).digest() is None
     assert len(digest_texts(slack)) == 1
+
+
+def test_manual_digest_mode_sends_exactly_one(settings, scraper):
+    """workflow_dispatch mode=digest = run --with-digest: 자동 브리핑과 겹쳐도 한 번만."""
+    baseline(settings, scraper)
+    monday = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 9, 9, 10), monday).run(force_digest=True)
+    assert report.digest_sent and len(digest_texts(monday)) == 1
+
+    thursday = FakeSlack()  # 슬롯에서 2일 넘게 지나도 수동 요청이면 보냄
+    bot_at(settings, scraper, at(11, 12, 10, 0), thursday).run(force_digest=True)
+    assert len(digest_texts(thursday)) == 1
+    after = FakeSlack()
+    bot_at(settings, scraper, at(11, 12, 13, 0), after).run()
+    assert digest_texts(after) == []
+
+
+# ---------------------------------------------------------------------- 새 글 카드 = 리마인더
+def test_new_post_card_replaces_reminder_due_now(settings, scraper):
+    """리마인더 시각 이후에 올라온 글은 카드에 이미 '내일 마감'이 있으므로 리마인더를 또 보내지 않음."""
+    baseline(settings, scraper, forget=["6298"])
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 26, 10, 0), slack).run()
+    assert "6298" in sent_ids(slack)
+    assert report.reminders == [] and reminder_texts(slack) == []
+    assert saved(settings)["seen"]["6298"]["reminded"] == ["2026-11-27T17:00+09:00|1"]
+
+    next_day = FakeSlack()
+    bot_at(settings, scraper, at(11, 27, 9, 10), next_day).run()
+    assert reminder_texts(next_day) == []
+
+
+def test_post_seen_before_reminder_time_still_gets_reminder(settings, scraper):
+    baseline(settings, scraper, forget=["6298"])
+    bot_at(settings, scraper, at(11, 26, 7, 0), FakeSlack()).run()  # 새 글 알림 (리마인더 시각 전)
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 26, 8, 10), slack).run()
+    (text,) = reminder_texts(slack)
+    assert text.startswith("⏰ 내일 마감: 논문 프로포절 신청서 제출")
+
+
+def test_baseline_posts_are_not_treated_as_announced(settings, scraper):
+    """기준점으로 조용히 기록된 글은 카드를 받은 적이 없으므로 리마인더를 보냅니다."""
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 26, 10, 0), slack).run()  # 첫 실행 = 기준점
+    assert len(reminder_texts(slack)) == 1

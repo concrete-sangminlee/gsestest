@@ -1,6 +1,7 @@
-requests>=2.31.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.0
-python-dotenv>=1.0.0
+# 상한: 다음 메이저 버전에서 깨지는 변경이 들어와도 운영이 갑자기 멈추지 않도록.
+requests>=2.31.0,<3
+beautifulsoup4>=4.12.0,<5
+lxml>=4.9.0,<7
+python-dotenv>=1.0.0,<2
 # AI 요약(선택, ANTHROPIC_API_KEY 가 있을 때만 사용)
-anthropic>=2.5.0
+anthropic>=2.5.0,<3
