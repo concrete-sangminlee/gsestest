@@ -15,11 +15,15 @@ from gses_bot.ai import Summarizer
 from gses_bot.boards import BOARDS
 from gses_bot.config import Settings
 from gses_bot.deadlines import RULES_VERSION, Deadline, diff_deadlines, extract_deadlines
+from gses_bot.events import EVENT_RULES_VERSION, Event, days_until, diff_events, extract_events
 from gses_bot.exports import (
+    EVENTS_ICS_NAME,
     FEED_NAME,
     ICS_NAME,
     CalendarItem,
+    EventItem,
     build_atom,
+    build_events_ics,
     build_ics,
     write_if_changed,
 )
@@ -29,6 +33,8 @@ from gses_bot.messages import (
     build_alert_message,
     build_deadline_change_message,
     build_digest_message,
+    build_event_change_message,
+    build_event_reminder_message,
     build_ping_message,
     build_post_messages,
     build_recovery_message,
@@ -77,6 +83,8 @@ class RunReport:
     )
     exports_written: list[str] = field(default_factory=list)
     digest_sent: bool = False
+    event_reminders: list[tuple[NoticeRef, Event]] = field(default_factory=list)
+    event_changes: list[tuple[NoticeRef, Event, Event]] = field(default_factory=list)
 
 
 def strip_images(message: Message) -> Message:
@@ -143,8 +151,14 @@ class Bot:
         )
 
     def _extract_deadlines(self, post: Post, now: datetime) -> None:
+        """행사 일시를 먼저 뽑고, 그 줄은 빼고 마감을 뽑습니다 (한 줄이 둘 다 되지 않게)."""
         reference = post.posted or now.astimezone(KST).date()
-        post.deadlines = extract_deadlines(post.body_text or "", reference, post.display_title)
+        body, title = post.body_text or "", post.display_title
+        consumed: set[str] = set()
+        post.events = []
+        if self.settings.events and body:
+            post.events, consumed = extract_events(body, reference, title, post.board)
+        post.deadlines = extract_deadlines(body, reference, title, skip_lines=consumed)
 
     def _prepare(self, post: Post, now: datetime, *, use_ai: bool = True) -> Post:
         """상세 정보 → 마감 추출 → (선택) AI 요약 → 강조 키워드."""
@@ -275,6 +289,8 @@ class Bot:
         if report.slack_error is None and not force_init:
             self._send_reminders(state, report, now, dry_run)
         if report.slack_error is None and not force_init:
+            self._send_event_reminders(state, report, now, dry_run)
+        if report.slack_error is None and not force_init:
             self._auto_digest(state, report, now, dry_run, force=force_digest)
 
         # v1 에서 넘어온 항목처럼 메타데이터가 빈 기존 글을 보충합니다 (기존 제목은 덮어쓰지 않음).
@@ -352,6 +368,7 @@ class Bot:
         interval = timedelta(hours=settings.deadline_recheck_hours)
         candidates = state.recheck_candidates(now, interval)[: settings.deadline_recheck_max]
         updates: list[tuple[Post, list[tuple[Deadline | None, Deadline]], NoticeRef]] = []
+        event_changes: list[tuple[NoticeRef, Event, Event]] = []
         for bbsidx, entry in candidates:
             ref = self._ref(bbsidx, entry)
             if ref is None:
@@ -366,7 +383,10 @@ class Bot:
             )
             self.scraper.enrich(post)
             if not post.detail_loaded:
-                continue  # 가져오지 못하면 다음 실행에서 다시 시도
+                if not entry.get("deadlines") and not entry.get("events"):
+                    # 행사 정보 보충 대상(삭제된 글 등)은 매 실행 다시 시도하지 않도록 확인 표시만
+                    entry["event_rules"] = EVENT_RULES_VERSION
+                continue  # 마감·행사가 있는 글은 다음 실행에서 다시 시도
             report.rechecked += 1
             self._extract_deadlines(post, now)
             old = [d for raw in entry.get("deadlines") or [] if (d := Deadline.from_dict(raw))]
@@ -374,6 +394,9 @@ class Bot:
             diff = diff_deadlines(old, post.deadlines, now) if same_rules else []
             if diff and not self._ref_matches_filters(ref):
                 diff = []
+            if entry.get("event_rules") == EVENT_RULES_VERSION and self._ref_matches_filters(ref):
+                old_events = [e for raw in entry.get("events") or [] if (e := Event.from_dict(raw))]
+                event_changes += [(ref, a, b) for a, b in diff_events(old_events, post.events, now)]
             updates.append((post, diff, ref))
         if report.rechecked:
             log.info("🔁 마감 재확인 %d건", report.rechecked)
@@ -400,6 +423,23 @@ class Bot:
                     log.error("❌ 마감 변경 알림 전송 실패: %s", exc)
                     # 변경을 알리지 못한 글은 기록을 갱신하지 않아 다음 실행에서 다시 감지합니다.
                     updates = [item for item in updates if not item[1]]
+        report.event_changes = event_changes
+        if event_changes and report.slack_error is None:
+            message = build_event_change_message(event_changes, now)
+            for ref, _, new_event in event_changes:
+                note = " (취소)" if new_event.cancelled else ""
+                log.info("   🕒 #%s 행사 변경%s", ref.bbsidx, note)
+            if dry_run:
+                report.payloads.append(message)
+            else:
+                try:
+                    self._deliver(message)
+                    report.messages_sent += 1
+                except SlackError as exc:
+                    report.slack_error = str(exc)
+                    log.error("❌ 행사 변경 알림 전송 실패: %s", exc)
+                    changed = {ref.bbsidx for ref, _, _ in event_changes}
+                    updates = [item for item in updates if item[0].bbsidx not in changed]
         for post, _, _ in updates:
             state.update_details(post, now)
 
@@ -429,6 +469,15 @@ class Bot:
             ICS_NAME: build_ics(items, url=home),
             FEED_NAME: build_atom(recent[: settings.feed_size], home=home, self_url=feed_url),
         }
+        if settings.events:
+            event_items = []
+            for bbsidx, entry, event in state.events():
+                ref = self._ref(bbsidx, entry)
+                if ref is None or not self._ref_matches_filters(ref):
+                    continue
+                stamp = _parse_time(entry.get("first_seen")) or event.start
+                event_items.append(EventItem(ref, event, stamp))
+            outputs[EVENTS_ICS_NAME] = build_events_ics(event_items, url=home)
         for name, content in outputs.items():
             try:
                 if write_if_changed(directory / name, content):
@@ -523,6 +572,72 @@ class Bot:
         report.messages_sent += 1
         for ref, _, keys in due:
             state.mark_reminded(ref.bbsidx, keys)
+
+    def _due_event_reminders(
+        self, state: State, now: datetime
+    ) -> tuple[list[tuple[NoticeRef, Event, set[str]]], list[tuple[str, set[str]]]]:
+        """행사 전날(기본) 아침 리마인더. 시작한 뒤에는 보내지 않고, 취소된 행사는 제외합니다."""
+        offsets = sorted(self.settings.event_reminder_days)
+        if not offsets or not self.settings.events:
+            return [], []
+        hour = self.settings.reminder_hour
+        self._state_boards = state.boards
+        due: list[tuple[NoticeRef, Event, set[str]]] = []
+        covered: list[tuple[str, set[str]]] = []
+        for bbsidx, entry, event in state.events():
+            if event.cancelled or event.start <= now:
+                continue
+            days = days_until(event, now)
+            applicable = [k for k in offsets if days <= k]
+            if not applicable:
+                continue
+            step = applicable[0]
+            start = event.start.isoformat(timespec="minutes")
+            if any(f"{start}|{k}" in state.event_reminded(bbsidx) for k in offsets if k <= step):
+                continue
+            slot = datetime.combine(
+                event.start.astimezone(KST).date() - timedelta(days=step), time(hour), tzinfo=KST
+            )
+            slot = min(slot, event.start - timedelta(hours=1))
+            if now < slot:
+                continue  # 그날 아침 시간까지 기다림
+            keys = {f"{start}|{k}" for k in offsets if k >= step}
+            if self._announced_after(entry, slot):
+                covered.append((bbsidx, keys))  # 방금 보낸 새 글 카드에 일시가 있었음
+                continue
+            ref = self._ref(bbsidx, entry)
+            if ref is None or not self._ref_matches_filters(ref):
+                continue
+            due.append((ref, event, keys))
+        return due, covered
+
+    def _send_event_reminders(
+        self, state: State, report: RunReport, now: datetime, dry_run: bool
+    ) -> None:
+        due, covered = self._due_event_reminders(state, now)
+        due = due[:MAX_REMINDERS_PER_MESSAGE]
+        if not dry_run:
+            for bbsidx, keys in covered:
+                state.mark_event_reminded(bbsidx, keys)
+        if not due:
+            return
+        report.event_reminders = [(ref, event) for ref, event, _ in due]
+        message = build_event_reminder_message(
+            report.event_reminders, now, mention=self.settings.mention
+        )
+        log.info("🕒 행사 리마인더 %d건", len(due))
+        if dry_run:
+            report.payloads.append(message)
+            return
+        try:
+            self._deliver(message)
+        except SlackError as exc:
+            report.slack_error = str(exc)
+            log.error("❌ 행사 리마인더 전송 실패: %s", exc)
+            return
+        report.messages_sent += 1
+        for ref, _, keys in due:
+            state.mark_event_reminded(ref.bbsidx, keys)
 
     def _select(self, report: RunReport, now: datetime) -> dict[str, list[Post]]:
         """새 글 중 보낼 글을 고릅니다. 게시판별 상한을 넘는 글은 overflow 로 묶습니다.
@@ -720,7 +835,19 @@ class Bot:
             key=lambda r: (r.posted, int(r.bbsidx)),
             reverse=True,
         )
-        log.info("🗓  주간 브리핑: 마감 %d건 · 새 글 %d건", len(deadlines), len(new_posts))
+        events = []
+        if settings.events:
+            for bbsidx, entry, event in state.events():
+                if now <= event.finish and event.start <= horizon:
+                    ref = self._ref(bbsidx, entry)
+                    if ref is not None and self._ref_matches_filters(ref):
+                        events.append((ref, event))
+        log.info(
+            "🗓  주간 브리핑: 마감 %d건 · 새 글 %d건 · 행사 %d건",
+            len(deadlines),
+            len(new_posts),
+            len(events),
+        )
         return build_digest_message(
             deadlines,
             new_posts,
@@ -729,6 +856,7 @@ class Bot:
             base_url=settings.base_url,
             boards=settings.boards,
             calendar_url=calendar_subscribe_url(settings),
+            events=events,
         )
 
     def _auto_digest(

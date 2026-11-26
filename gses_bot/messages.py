@@ -16,6 +16,7 @@ from gses_bot import __version__
 from gses_bot.boards import BOARDS, Board
 from gses_bot.config import Settings
 from gses_bot.deadlines import Deadline, fmt_dday, fmt_deadline, gcal_url, upcoming
+from gses_bot.events import Event, days_until, fmt_event_time, gcal_event_url, upcoming_events
 from gses_bot.models import NoticeRef, Post, TitleChange
 from gses_bot.state import Health
 from gses_bot.utils import KST, fmt_date, fmt_datetime, fmt_duration, slack_escape, truncate
@@ -143,6 +144,36 @@ def deadline_line(
     return text
 
 
+def event_line(
+    events: Sequence[Event],
+    now: datetime,
+    *,
+    title: str | None = None,
+    url: str | None = None,
+) -> str | None:
+    """'🕒 *11.16 (월) 10:00~12:50*  ·  📍 82동 113호  ·  💻 온라인  ·  📅 캘린더'"""
+    pending = upcoming_events(list(events), now)
+    if not pending:
+        return None
+    first = pending[0]
+    when = fmt_event_time(first)
+    if first.label:
+        when = f"{first.label} {when}"
+    if first.cancelled:
+        text = f"❌ *취소* · ~{slack_escape(when)}~"
+    else:
+        text = f"🕒 *{slack_escape(when)}*"
+        if first.place:
+            text += f"  ·  📍 {slack_escape(truncate(first.place, 60))}"
+        if first.link:
+            text += f"  ·  <{first.link}|💻 온라인>"
+        if len(pending) > 1:
+            text += f"  _외 {len(pending) - 1}회_"
+        if title and url:
+            text += f"  ·  <{gcal_event_url(title, first, url)}|📅 캘린더>"
+    return text
+
+
 def post_blocks(
     post: Post, include_images: bool = True, now: datetime | None = None
 ) -> list[Block]:
@@ -160,6 +191,13 @@ def post_blocks(
     )
     if due:
         text += f"\n{due}"
+    when = (
+        event_line(post.events, now, title=post.display_title, url=post.url)
+        if now and post.events
+        else None
+    )
+    if when:
+        text += f"\n{when}"
     blocks = [section(text, accessory=button("열기", post.url, f"open-{post.bbsidx}"))]
 
     if post.ai:
@@ -442,6 +480,9 @@ def _digest_post_line(ref: NoticeRef) -> str:
     return f"• {when}{BOARDS[ref.board].emoji} {link(ref.url, truncate(ref.title, 110))}"
 
 
+MAX_DIGEST_EVENTS = 10
+
+
 def build_digest_message(
     deadlines: Sequence[tuple[NoticeRef, Deadline]],
     new_posts: Sequence[NoticeRef],
@@ -451,14 +492,30 @@ def build_digest_message(
     base_url: str,
     boards: Sequence[str],
     calendar_url: str | None = None,
+    events: Sequence[tuple[NoticeRef, Event]] = (),
 ) -> Message:
     start = now.astimezone(KST).date()
     end = start + timedelta(days=days - 1)
     blocks = [
         header(f"🗓  주간 브리핑 · {fmt_date(start)} ~ {fmt_date(end)}"),
-        context(f"🏫 {BRAND}  ·  다가오는 마감과 지난 {days}일 새 글을 모았어요"),
+        context(f"🏫 {BRAND}  ·  다가오는 마감·행사와 지난 {days}일 새 글을 모았어요"),
     ]
     card: list[Block] = []
+    if events:
+        lines = []
+        for ref, event in list(events)[:MAX_DIGEST_EVENTS]:
+            place = f" · 📍 {slack_escape(truncate(event.place, 30))}" if event.place else ""
+            label = f" {slack_escape(event.label)}" if event.label else ""
+            cancelled = " ❌ 취소" if event.cancelled else ""
+            lines.append(
+                f"• *{slack_escape(fmt_event_time(event))}*{label}{cancelled}{place} — "
+                f"{BOARDS[ref.board].emoji} {link(ref.url, truncate(ref.title, 90))}"
+            )
+        extra = len(events) - MAX_DIGEST_EVENTS
+        if extra > 0:
+            lines.append(f"_외 {extra}건_")
+        card.extend(_list_sections(f"*🕒 이번 주 행사 {len(events)}건*", lines))
+        card.append(divider())
     if deadlines:
         lines = []
         for ref, deadline in list(deadlines)[:MAX_DIGEST_DEADLINES]:
@@ -512,6 +569,8 @@ def build_digest_message(
     )
     card.append(_footer())
     text = f"🗓 주간 브리핑: 마감 {len(deadlines)}건 · 새 글 {len(new_posts)}건"
+    if events:
+        text += f" · 행사 {len(events)}건"
     return _message(text, blocks, BOARDS["notice"].color, card)
 
 
@@ -550,3 +609,82 @@ def build_deadline_change_message(
     first = f"{new.label or ref.title} {fmt_deadline(new)}"
     more = f" 외 {len(changes) - 1}건" if len(changes) > 1 else ""
     return _message(f"📅 마감 일정 변경: {first}{more}", blocks, COLOR_EDIT, card)
+
+
+# ---------------------------------------------------------------------- 행사 리마인더·변경
+COLOR_EVENT = "#4a90d9"
+MAX_EVENT_ITEMS = 12
+
+
+def build_event_reminder_message(
+    items: Sequence[tuple[NoticeRef, Event]], now: datetime, *, mention: str | None = None
+) -> Message:
+    """'🕒 내일 행사 · 2건' — 행사 전날(기본) 아침에 보냅니다."""
+    items = list(items)[:MAX_EVENT_ITEMS]
+    soonest = min((days_until(event, now) for _, event in items), default=0)
+    title = "오늘 행사" if soonest <= 0 else "내일 행사" if soonest == 1 else "다가오는 행사"
+    blocks = [
+        header(f"🕒  {title} · {len(items)}건"),
+        context(f"🏫 {BRAND}  ·  🕐 {fmt_datetime(now)} KST"),
+    ]
+    highlighted = [ref for ref, _ in items if ref.highlight]
+    if highlighted and mention:
+        blocks.append(section(f"{mention} 🔥 주요 키워드 공지의 행사가 다가왔어요."))
+    card: list[Block] = []
+    for position, (ref, event) in enumerate(items):
+        if position:
+            card.append(divider())
+        board = BOARDS[ref.board]
+        line = event_line([event], now, title=ref.title, url=ref.url) or fmt_event_time(event)
+        days = days_until(event, now)
+        when = "오늘" if days <= 0 else "내일" if days == 1 else f"D-{days}"
+        line = f"*{when}* · {line}"
+        fire = "🔥 " if ref.highlight else ""
+        card.append(
+            section(
+                f"{line}\n{board.emoji} {fire}{link(ref.url, truncate(ref.title, 200))}",
+                accessory=button("열기", ref.url, f"event-{ref.bbsidx}-{position}"),
+            )
+        )
+    card.append(_footer())
+    first_ref, first = items[0]
+    summary = f"{first_ref.title} ({fmt_event_time(first)})"
+    if len(items) > 1:
+        summary += f" 외 {len(items) - 1}건"
+    text = f"🕒 {title}: {summary}"
+    if highlighted and mention:
+        text = f"{mention} {text}"
+    return _message(text, blocks, COLOR_EVENT, card)
+
+
+def build_event_change_message(
+    changes: Sequence[tuple[NoticeRef, Event, Event]], now: datetime
+) -> Message:
+    """본문 수정으로 행사가 취소되거나 시각·장소가 바뀐 글."""
+    changes = list(changes)[:MAX_EVENT_ITEMS]
+    blocks = [
+        header(f"🕒  행사 일정 변경 · {len(changes)}건"),
+        context(f"🏫 {BRAND}  ·  🕐 {fmt_datetime(now)} KST  ·  공지 본문이 수정되었어요"),
+    ]
+    card: list[Block] = []
+    for position, (ref, old, new) in enumerate(changes):
+        if position:
+            card.append(divider())
+        if new.cancelled:
+            change = f"❌ *취소* · ~{slack_escape(fmt_event_time(old))}~"
+        else:
+            before, after = slack_escape(fmt_event_time(old)), slack_escape(fmt_event_time(new))
+            change = f"~{before}~ → *{after}*"
+            if old.place != new.place and new.place:
+                change += f"  ·  📍 {slack_escape(truncate(new.place, 60))}"
+        card.append(
+            section(
+                f"{change}\n{BOARDS[ref.board].emoji} {link(ref.url, truncate(ref.title, 200))}",
+                accessory=button("열기", ref.url, f"event-moved-{ref.bbsidx}-{position}"),
+            )
+        )
+    card.append(_footer())
+    ref, _, new = changes[0]
+    state = "취소" if new.cancelled else fmt_event_time(new)
+    more = f" 외 {len(changes) - 1}건" if len(changes) > 1 else ""
+    return _message(f"🕒 행사 일정 변경: {ref.title} ({state}){more}", blocks, COLOR_EDIT, card)

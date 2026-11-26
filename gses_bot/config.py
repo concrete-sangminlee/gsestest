@@ -91,7 +91,9 @@ def parse_boards(raw: str | None) -> tuple[str, ...]:
     return keys
 
 
-def parse_days(raw: str | None, default: tuple[int, ...]) -> tuple[int, ...]:
+def parse_days(
+    raw: str | None, default: tuple[int, ...], name: str = "GSES_REMINDER_DAYS"
+) -> tuple[int, ...]:
     """'3,1,0' → (3, 1, 0). 'off'/'none' 은 기능 끔."""
     if raw is None:
         return default
@@ -100,11 +102,9 @@ def parse_days(raw: str | None, default: tuple[int, ...]) -> tuple[int, ...]:
     try:
         days = sorted({int(item) for item in parse_list(raw)}, reverse=True)
     except ValueError:
-        raise ConfigError(
-            f"GSES_REMINDER_DAYS 는 '3,1,0' 같은 숫자 목록이어야 합니다: {raw!r}"
-        ) from None
+        raise ConfigError(f"{name} 는 '3,1,0' 같은 숫자 목록이어야 합니다: {raw!r}") from None
     if any(day < 0 or day > 30 for day in days):
-        raise ConfigError(f"GSES_REMINDER_DAYS 값은 0~30 사이여야 합니다: {raw!r}")
+        raise ConfigError(f"{name} 값은 0~30 사이여야 합니다: {raw!r}")
     return tuple(days)
 
 
@@ -207,7 +207,9 @@ class Settings:
     digest_weekday: int | None = 0  # 0=월요일, None=자동 브리핑 끔
     digest_hour: int = 8
     deadline_recheck_hours: int = 24
-    deadline_recheck_max: int = 5
+    deadline_recheck_max: int = 8
+    events: bool = True
+    event_reminder_days: tuple[int, ...] = (1,)
     exports: bool = True
     feed_size: int = 50
     export_base_url: str | None = None
@@ -251,13 +253,17 @@ class Settings:
             max_state_entries=_int(env, "GSES_MAX_STATE_ENTRIES", 3000, 100, 100_000),
             board_webhooks=board_webhooks(env),
             reminder_days=parse_days(_get(env, "GSES_REMINDER_DAYS"), (1,)),
+            event_reminder_days=parse_days(
+                _get(env, "GSES_EVENT_REMINDER_DAYS"), (1,), "GSES_EVENT_REMINDER_DAYS"
+            ),
             reminder_hour=_int(env, "GSES_REMINDER_HOUR", 8, 0, 23),
             baseline_detail_days=_int(env, "GSES_BASELINE_DETAIL_DAYS", 21, 0, 365),
             digest_days=_int(env, "GSES_DIGEST_DAYS", 7, 1, 31),
             digest_weekday=parse_weekday(_get(env, "GSES_DIGEST_WEEKDAY")),
             digest_hour=_int(env, "GSES_DIGEST_HOUR", 8, 0, 23),
             deadline_recheck_hours=_int(env, "GSES_DEADLINE_RECHECK_HOURS", 24, 0, 24 * 30),
-            deadline_recheck_max=_int(env, "GSES_DEADLINE_RECHECK_MAX", 5, 1, 50),
+            deadline_recheck_max=_int(env, "GSES_DEADLINE_RECHECK_MAX", 8, 1, 50),
+            events=_bool(env, "GSES_EVENTS", True),
             exports=_bool(env, "GSES_EXPORTS", True),
             feed_size=_int(env, "GSES_FEED_SIZE", 50, 5, 500),
             export_base_url=export_base_url(env),
