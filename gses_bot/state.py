@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from gses_bot.deadlines import RULES_VERSION, Deadline
+from gses_bot.events import EVENT_RULES_VERSION, EVENT_TITLE, Event
 from gses_bot.models import Post
 
 STATE_VERSION = 2
@@ -220,22 +221,46 @@ class State:
         if post.deadlines:
             entry["deadlines"] = [deadline.to_dict() for deadline in post.deadlines]
             entry["rules"] = RULES_VERSION
-            if now is not None:
-                entry["checked_at"] = _iso(now)
         else:
-            for key in ("deadlines", "rules", "checked_at"):
+            for key in ("deadlines", "rules"):
                 entry.pop(key, None)
+        if post.events:
+            entry["events"] = [event.to_dict() for event in post.events]
+        else:
+            entry.pop("events", None)
+        # 행사 규칙 버전은 행사가 없어도 기록합니다 ('확인했고 없음' ↔ '아직 확인 전' 구분).
+        entry["event_rules"] = EVENT_RULES_VERSION
+        if (post.deadlines or post.events) and now is not None:
+            entry["checked_at"] = _iso(now)
+        elif not (post.deadlines or post.events):
+            entry.pop("checked_at", None)
 
     def recheck_candidates(self, now: datetime, interval: timedelta) -> list[tuple[str, dict]]:
-        """다가오는 마감이 있고 마지막 확인이 interval 보다 오래된 글 (마감 임박 순)."""
+        """다시 읽을 글: 다가오는 마감·행사가 있고 마지막 확인이 interval 보다 오래된 글(임박 순),
+        그 다음 행사 정보를 아직 읽지 않은 최근 행사 글(v2.4 이전에 기록된 글 보충)."""
         due: list[tuple[datetime, str, dict]] = []
+        backfill: list[tuple[str, str, dict]] = []
+        recent = (now - timedelta(days=30)).date().isoformat()
         for bbsidx, entry in self.seen.items():
             upcoming = [
-                d
+                d.at
                 for raw in entry.get("deadlines") or []
                 if (d := Deadline.from_dict(raw)) and d.at >= now
+            ] + [
+                e.start
+                for raw in entry.get("events") or []
+                if (e := Event.from_dict(raw)) and e.finish >= now
             ]
             if not upcoming:
+                if (
+                    "event_rules" not in entry
+                    and (entry.get("posted") or "") >= recent
+                    and (
+                        entry.get("board") == "seminars"
+                        or EVENT_TITLE.search(entry.get("full_title") or entry.get("title") or "")
+                    )
+                ):
+                    backfill.append((entry.get("posted") or "", bbsidx, entry))
                 continue
             checked = entry.get("checked_at")
             try:
@@ -243,8 +268,10 @@ class State:
             except ValueError:
                 fresh = False
             if not fresh:
-                due.append((min(d.at for d in upcoming), bbsidx, entry))
-        return [(bbsidx, entry) for _, bbsidx, entry in sorted(due, key=lambda item: item[0])]
+                due.append((min(upcoming), bbsidx, entry))
+        ordered = [(bbsidx, entry) for _, bbsidx, entry in sorted(due, key=lambda item: item[0])]
+        backfill.sort(key=lambda item: item[0], reverse=True)
+        return ordered + [(bbsidx, entry) for _, bbsidx, entry in backfill]
 
     # ------------------------------------------------------------------ 마감 리마인더
     def deadlines(self) -> list[tuple[str, dict[str, Any], Deadline]]:
@@ -255,6 +282,23 @@ class State:
                 if deadline is not None:
                     items.append((bbsidx, entry, deadline))
         return sorted(items, key=lambda item: item[2].at)
+
+    def events(self) -> list[tuple[str, dict[str, Any], Event]]:
+        items = []
+        for bbsidx, entry in self.seen.items():
+            for raw in entry.get("events") or []:
+                event = Event.from_dict(raw)
+                if event is not None:
+                    items.append((bbsidx, entry, event))
+        return sorted(items, key=lambda item: item[2].start)
+
+    def event_reminded(self, bbsidx: str) -> set[str]:
+        return set(self.seen.get(bbsidx, {}).get("event_reminded") or [])
+
+    def mark_event_reminded(self, bbsidx: str, keys: set[str]) -> None:
+        entry = self.seen.get(bbsidx)
+        if entry is not None:
+            entry["event_reminded"] = sorted(set(entry.get("event_reminded") or []) | keys)
 
     def reminded(self, bbsidx: str) -> set[str]:
         return set(self.seen.get(bbsidx, {}).get("reminded") or [])
@@ -283,6 +327,22 @@ class State:
                 entry["reminded"] = reminded
             else:
                 entry.pop("reminded", None)
+            # 끝난 지 하루 넘은 행사와 그 리마인더 기록
+            events = []
+            for raw in entry.get("events") or []:
+                event = Event.from_dict(raw)
+                if event is not None and event.finish.timestamp() >= cutoff:
+                    events.append(raw)
+            if events:
+                entry["events"] = events
+            else:
+                entry.pop("events", None)
+            starts = {raw["start"] for raw in events}
+            sent = [key for key in entry.get("event_reminded") or [] if key.split("|")[0] in starts]
+            if sent:
+                entry["event_reminded"] = sent
+            else:
+                entry.pop("event_reminded", None)
 
     def stored_title(self, bbsidx: str) -> str | None:
         entry = self.seen.get(bbsidx)

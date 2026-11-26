@@ -65,6 +65,7 @@ def site_pages() -> dict[str, str]:
         f"{BASE}/news/notice/news": empty,
         f"{BASE}/news/notice/notice?md=v&bbsidx=6298": fixture("detail_attachments.html"),
         f"{BASE}/news/notice/notice?md=v&bbsidx=6301": fixture("detail_image.html"),
+        f"{BASE}/news/notice/seminars?md=v&bbsidx=6290": fixture("detail_seminar.html"),
     }
 
 

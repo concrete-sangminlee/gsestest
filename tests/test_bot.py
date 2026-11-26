@@ -22,8 +22,9 @@ def make_bot(settings, scraper, slack=None, alert=None) -> Bot:
 
 
 def baseline(settings, scraper, forget=()):
-    """기준점을 잡은 뒤 일부 글을 '아직 못 본 글'로 되돌립니다."""
-    make_bot(settings, scraper, FakeSlack()).run()
+    """기준점을 잡은 뒤 일부 글을 '아직 못 본 글'로 되돌립니다 (기준점은 NOW 한 시간 전)."""
+    before = NOW.replace(hour=NOW.hour - 1)
+    Bot(settings, scraper=scraper, slack=FakeSlack(), clock=lambda: before).run()
     state = State.load(settings.state_file)
     for bbsidx in forget:
         del state.seen[bbsidx]
@@ -33,6 +34,11 @@ def baseline(settings, scraper, forget=()):
 
 def saved(settings) -> dict:
     return json.loads(settings.state_file.read_text(encoding="utf-8"))
+
+
+def notices(slack: FakeSlack) -> list[dict]:
+    """리마인더(⏰ 마감 / 🕒 행사)를 뺀 메시지 — 기준점 단계에서도 임박한 리마인더는 갑니다."""
+    return [m for m in slack.messages if not m["text"].startswith(("⏰", "🕒 오늘", "🕒 내일"))]
 
 
 def sent_ids(slack: FakeSlack) -> list[str]:
@@ -50,7 +56,7 @@ def test_first_run_sets_baseline_silently(settings, scraper):
     report = make_bot(settings, scraper, slack).run()
     assert report.exit_code == EXIT_OK
     assert report.baseline == {"notice": 40, "seminars": 10}
-    assert slack.messages == []
+    assert notices(slack) == []  # 새 글 알림 없음 (같은 날 세미나의 '오늘 행사' 리마인더만)
     data = saved(settings)
     assert set(data["boards"]) == {"notice", "seminars"}
     assert len(data["seen"]) == 50
@@ -77,6 +83,8 @@ def test_new_posts_are_sent_once(settings, scraper):
 
 def test_steady_state_uses_one_request_per_board(settings, scraper, session):
     baseline(settings, scraper)
+    make_bot(settings, scraper, FakeSlack()).run()  # 최근 행사 글의 일시 보충 (한 번만)
+    scraper.request_count = 0
     session.calls.clear()
     report = make_bot(settings, scraper, FakeSlack()).run()
     assert report.requests == 2
@@ -175,7 +183,7 @@ def test_board_added_later_is_baselined_without_spam(settings, scraper):
     slack = FakeSlack()
     report = make_bot(settings, scraper, slack).run()
     assert report.baseline == {"seminars": 10}
-    assert slack.messages == []
+    assert notices(slack) == []
 
 
 def test_send_on_first_run_sends_only_latest(settings, scraper):
@@ -280,7 +288,7 @@ def test_v1_state_migrates_without_spam(settings, scraper):
     )
     slack = FakeSlack()
     report = make_bot(settings, scraper, slack).run()
-    assert slack.messages == []
+    assert notices(slack) == []
     assert report.baseline == {"notice": 40, "seminars": 10}
     assert saved(settings)["version"] == 2
 
@@ -546,7 +554,7 @@ def test_rules_upgrade_updates_silently(settings, scraper, session):
     bot_at(settings, scraper, at(11, 5, 14, 0), slack).run()
     assert change_texts(slack) == []
     entry = saved(settings)["seen"]["6298"]
-    assert entry["rules"] == 4 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
+    assert entry["rules"] == 5 and entry["deadlines"][0]["at"] == "2026-12-01T17:00+09:00"
 
 
 def test_deadline_change_failure_is_retried(settings, scraper, session):
@@ -571,7 +579,7 @@ def test_recheck_can_be_disabled(settings, scraper, session):
 def test_exports_written_once_and_deterministic(settings, scraper):
     report = make_bot(settings, scraper, FakeSlack()).run()
     directory = settings.state_file.parent
-    assert sorted(report.exports_written) == ["deadlines.ics", "feed.xml"]
+    assert sorted(report.exports_written) == ["deadlines.ics", "events.ics", "feed.xml"]
     ics = (directory / "deadlines.ics").read_bytes()
     assert b"UID:gses-6298-20261127T0800@gses-notice-bot" in ics
     assert b"<id>tag:gses-notice-bot,2026:post-6303</id>" in (directory / "feed.xml").read_bytes()
@@ -711,3 +719,110 @@ def test_baseline_posts_are_not_treated_as_announced(settings, scraper):
     slack = FakeSlack()
     bot_at(settings, scraper, at(11, 26, 10, 0), slack).run()  # 첫 실행 = 기준점
     assert len(reminder_texts(slack)) == 1
+
+
+# ---------------------------------------------------------------------- 행사 일시·장소 (v2.4)
+SEMINAR = f"{BASE}/news/notice/seminars?md=v&bbsidx=6290"
+
+
+def event_reminder_texts(slack: FakeSlack) -> list[str]:
+    return [m["text"] for m in slack.messages if m["text"].startswith("🕒 ")]
+
+
+def card_texts(slack: FakeSlack) -> str:
+    return "\n".join(
+        block["text"]["text"]
+        for message in slack.messages
+        for block in message["attachments"][0]["blocks"]
+        if block["type"] == "section"
+    )
+
+
+def test_new_seminar_card_shows_time_and_place(settings, scraper):
+    baseline(settings, scraper, forget=["6290"])
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 4, 13, 40), slack).run()  # 세미나는 같은 날 15:00
+    assert "6290" in sent_ids(slack)
+    text = card_texts(slack)
+    assert "🕒 *11.04 (수) 15:00~17:00*" in text
+    assert "📍 서울대학교 환경대학원 82동 113호" in text
+    # 새 글 카드가 일시를 이미 알렸으므로 같은 실행에서 '오늘 행사' 리마인더는 보내지 않음
+    assert report.event_reminders == [] and event_reminder_texts(slack) == []
+    stored = saved(settings)["seen"]["6290"]
+    assert stored["events"] == [
+        {
+            "start": "2026-11-04T15:00+09:00",
+            "all_day": False,
+            "end": "2026-11-04T17:00+09:00",
+            "place": "서울대학교 환경대학원 82동 113호",
+        }
+    ]
+    assert stored["event_rules"] == 1
+    assert "deadlines" not in stored  # 행사 일시는 마감이 아님
+
+
+def test_event_reminder_on_the_morning_before(settings, scraper):
+    bot_at(settings, scraper, at(11, 2, 10, 0), FakeSlack()).run()  # 기준점 (세미나 일시 기록)
+    early = FakeSlack()
+    bot_at(settings, scraper, at(11, 3, 7, 30), early).run()
+    assert event_reminder_texts(early) == []  # 아침 8시 전에는 대기
+
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 3, 10, 0), slack).run()
+    assert [ref.bbsidx for ref, _ in report.event_reminders] == ["6290"]
+    (text,) = event_reminder_texts(slack)
+    assert text.startswith("🕒 내일 행사: [서울대학교 협동과정 조경학")
+    assert "*내일* · 🕒 *11.04 (수) 15:00~17:00*" in card_texts(slack)
+
+    again = FakeSlack()
+    bot_at(settings, scraper, at(11, 3, 15, 0), again).run()
+    bot_at(settings, scraper, at(11, 4, 16, 0), again).run()  # 행사 시작 후
+    assert event_reminder_texts(again) == []
+
+
+def test_event_reminders_can_be_disabled(settings, scraper):
+    settings.event_reminder_days = ()
+    bot_at(settings, scraper, at(11, 2, 10, 0), FakeSlack()).run()
+    slack = FakeSlack()
+    bot_at(settings, scraper, at(11, 3, 10, 0), slack).run()
+    assert event_reminder_texts(slack) == []
+    settings.event_reminder_days = (1,)
+    settings.events = False
+    bot_at(settings, scraper, at(11, 3, 11, 0), slack).run()
+    assert event_reminder_texts(slack) == []
+
+
+def test_digest_lists_this_weeks_events_and_ics_is_written(settings, scraper):
+    settings.export_base_url = "https://raw.githubusercontent.com/o/r/bot-state"
+    bot_at(settings, scraper, at(11, 1, 10, 0), FakeSlack()).run()
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 2, 9, 0), slack).run()  # 월요일 → 자동 브리핑
+    assert report.digest_sent
+    (digest,) = [m for m in slack.messages if m["text"].startswith("🗓")]
+    assert digest["text"].endswith("행사 1건")
+    assert "*🕒 이번 주 행사 1건*" in card_texts(slack)
+    ics = (settings.state_file.parent / "events.ics").read_text(encoding="utf-8")
+    assert "UID:gses-ev-6290-20261104T0600@gses-notice-bot" in ics
+    assert "LOCATION:서울대학교 환경대학원 82동 113호" in ics
+    assert "STATUS:CONFIRMED" in ics
+
+
+def test_cancelled_event_is_announced_once_and_not_reminded(settings, scraper, session):
+    bot_at(settings, scraper, at(11, 2, 10, 0), FakeSlack()).run()
+    session.pages[SEMINAR] = session.pages[SEMINAR].replace(
+        '<span style="font-size: 24px;">',
+        '<p>------------- 취 소 -------------</p><span style="font-size: 24px;">',
+        1,
+    )
+    slack = FakeSlack()
+    report = bot_at(settings, scraper, at(11, 3, 10, 30), slack).run()
+    assert [(ref.bbsidx, new.cancelled) for ref, _, new in report.event_changes] == [("6290", True)]
+    texts = [m["text"] for m in slack.messages]
+    assert any(text.startswith("🕒 행사 일정 변경") and "(취소)" in text for text in texts)
+    assert event_reminder_texts(slack) == [
+        text for text in texts if text.startswith("🕒 행사 일정 변경")
+    ]  # 취소된 행사는 리마인더 없음
+
+    again = FakeSlack()
+    bot_at(settings, scraper, at(11, 3, 12, 0), again).run()
+    assert again.messages == []

@@ -19,6 +19,7 @@ from xml.sax.saxutils import escape, quoteattr
 
 from gses_bot.boards import BOARDS
 from gses_bot.deadlines import Deadline, calendar_window
+from gses_bot.events import Event, fmt_event_time
 from gses_bot.models import NoticeRef
 from gses_bot.utils import KST
 
@@ -27,6 +28,8 @@ log = logging.getLogger(__name__)
 UTC = timezone.utc  # datetime.UTC 는 3.11+ 전용 (3.10 지원)
 
 ICS_NAME = "deadlines.ics"
+EVENTS_ICS_NAME = "events.ics"
+EVENTS_CALENDAR_TITLE = "서울대 환경대학원 세미나·행사"
 FEED_NAME = "feed.xml"
 CALENDAR_TITLE = "서울대 환경대학원 공지 마감"
 FEED_TITLE = "서울대학교 환경대학원 게시판"
@@ -105,6 +108,65 @@ def build_ics(items: Sequence[CalendarItem], *, url: str) -> str:
             f"DESCRIPTION:{_ics_text(summary)}",
             "TRIGGER:-P1D",
             "END:VALARM",
+            "END:VEVENT",
+        ]
+    lines.append("END:VCALENDAR")
+    return "\r\n".join(_fold(line) for line in lines) + "\r\n"
+
+
+@dataclass(frozen=True)
+class EventItem:
+    ref: NoticeRef
+    event: Event
+    stamp: datetime
+
+
+def build_events_ics(items: Sequence[EventItem], *, url: str) -> str:
+    """세미나·설명회 일정 캘린더. 마감 캘린더와 따로 두어 원하는 것만 구독할 수 있게 합니다."""
+    lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//GSES Notice Bot//gses.snu.ac.kr//KO",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        f"X-WR-CALNAME:{_ics_text(EVENTS_CALENDAR_TITLE)}",
+        "X-WR-TIMEZONE:Asia/Seoul",
+        f"X-WR-CALDESC:{_ics_text('게시판 공지에서 자동 추출한 세미나·행사 일정 · ' + url)}",
+        "REFRESH-INTERVAL;VALUE=DURATION:PT6H",
+        "X-PUBLISHED-TTL:PT6H",
+    ]
+    for item in sorted(items, key=lambda i: (i.event.start, int(i.ref.bbsidx))):
+        ref, event = item.ref, item.event
+        board = BOARDS[ref.board]
+        prefix = "[취소] " if event.cancelled else ""
+        label = f"{event.label} · " if event.label else ""
+        lines += [
+            "BEGIN:VEVENT",
+            f"UID:gses-ev-{ref.bbsidx}-{event.start.astimezone(UTC):%Y%m%dT%H%M}@gses-notice-bot",
+            f"DTSTAMP:{_utc(item.stamp)}",
+        ]
+        if event.all_day:
+            last = (event.end or event.start).date()
+            lines += [
+                f"DTSTART;VALUE=DATE:{event.start:%Y%m%d}",
+                f"DTEND;VALUE=DATE:{date.fromordinal(last.toordinal() + 1):%Y%m%d}",
+            ]
+        else:
+            lines += [f"DTSTART:{_utc(event.start)}", f"DTEND:{_utc(event.finish)}"]
+        details = [f"{board.name} · {ref.title}", fmt_event_time(event), ref.url]
+        if event.link:
+            details.append(f"온라인: {event.link}")
+        lines += [
+            f"SUMMARY:{_ics_text(f'{prefix}{label}{ref.title}')}",
+            f"DESCRIPTION:{_ics_text(chr(10).join(details))}",
+        ]
+        if event.place:
+            lines.append(f"LOCATION:{_ics_text(event.place)}")
+        lines += [
+            f"URL:{ref.url}",
+            f"CATEGORIES:{_ics_text(board.name)}",
+            f"STATUS:{'CANCELLED' if event.cancelled else 'CONFIRMED'}",
+            "TRANSP:TRANSPARENT",
             "END:VEVENT",
         ]
     lines.append("END:VCALENDAR")

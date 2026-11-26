@@ -106,6 +106,9 @@ jobs:
           GSES_DIGEST_HOUR: ${{ vars.GSES_DIGEST_HOUR }}
           GSES_DEADLINE_RECHECK_HOURS: ${{ vars.GSES_DEADLINE_RECHECK_HOURS }}
           GSES_EXPORTS: ${{ vars.GSES_EXPORTS }}
+          GSES_EVENTS: ${{ vars.GSES_EVENTS }}
+          GSES_EVENT_REMINDER_DAYS: ${{ vars.GSES_EVENT_REMINDER_DAYS }}
+          GSES_DEADLINE_RECHECK_MAX: ${{ vars.GSES_DEADLINE_RECHECK_MAX }}
           # AI 요약 (선택)
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GSES_AI_SUMMARY: ${{ vars.GSES_AI_SUMMARY }}

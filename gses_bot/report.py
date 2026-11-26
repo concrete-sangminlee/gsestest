@@ -9,6 +9,7 @@ from pathlib import Path
 from gses_bot.boards import BOARDS
 from gses_bot.bot import RunReport
 from gses_bot.deadlines import fmt_deadline
+from gses_bot.events import fmt_event_time
 from gses_bot.utils import slack_escape
 
 log = logging.getLogger(__name__)
@@ -76,6 +77,18 @@ def summary_markdown(report: RunReport) -> str:
             lines.append(
                 f"| {fmt_deadline(old) if old else '(추가)'} | {fmt_deadline(new)} | "
                 f"{_md_escape(new.label or '-')} | [{_md_escape(ref.title[:60])}]({ref.url}) |"
+            )
+    if report.event_reminders or report.event_changes:
+        verb = "보낼" if report.dry_run else "보낸"
+        lines += ["", f"**🕒 {verb} 행사 알림**", "", "| 종류 | 일시 | 글 |", "|---|---|---|"]
+        for ref, event in report.event_reminders:
+            title = _md_escape(ref.title[:60])
+            lines.append(f"| 리마인더 | {fmt_event_time(event)} | [{title}]({ref.url}) |")
+        for ref, old, new in report.event_changes:
+            kind = "취소" if new.cancelled else "변경"
+            lines.append(
+                f"| {kind} | {fmt_event_time(old)} → {fmt_event_time(new)} | "
+                f"[{_md_escape(ref.title[:60])}]({ref.url}) |"
             )
     extras = []
     if report.digest_sent:

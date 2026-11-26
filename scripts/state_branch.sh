@@ -64,7 +64,7 @@ restore() {
   fi
 }
 
-EXPORT_FILES="deadlines.ics feed.xml"
+EXPORT_FILES="deadlines.ics events.ics feed.xml"
 
 write_readme() {
   local raw="https://raw.githubusercontent.com/${GITHUB_REPOSITORY:-<owner>/<repo>}/$BRANCH"
@@ -74,8 +74,9 @@ write_readme() {
     printf '| 파일 | 용도 |\n|---|---|\n'
     printf '| [state.json](state.json) | 처리한 글·마감·리마인더 기록 (커밋 이력 = 처리 이력) |\n'
     printf '| [deadlines.ics](deadlines.ics) | 공지 마감 캘린더 — 구독 주소: %s/deadlines.ics |\n' "$raw"
+    printf '| [events.ics](events.ics) | 세미나·행사 캘린더 — 구독 주소: %s/events.ics |\n' "$raw"
     printf '| [feed.xml](feed.xml) | 새 글 Atom 피드 — 구독 주소: %s/feed.xml |\n\n' "$raw"
-    printf 'Google Calendar: 다른 캘린더 + → URL로 추가 → 위 deadlines.ics 주소 입력\n'
+    printf 'Google Calendar: 다른 캘린더 + → URL로 추가 → 위 deadlines.ics / events.ics 주소 입력\n'
   } > "$1"
 }
 

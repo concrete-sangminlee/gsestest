@@ -39,6 +39,11 @@ _PATTERNS = [
         r"(?<!\d)(?P<y>20\d{2})\s*[.\-/]\s*(?P<m>\d{1,2})\s*[.\-/]\s*(?P<d>\d{1,2})(?!\d)\.?" + _WD,
         re.I,
     ),
+    # '26.12.2.(수) — 연도를 두 자리로 줄여 쓴 표기 (작은따옴표 필수: 버전 번호·소수 오인 방지)
+    re.compile(
+        r"(?<!\d)['’‘](?P<y>\d{2})\s*\.\s*(?P<m>\d{1,2})\s*\.\s*(?P<d>\d{1,2})(?!\d)\.?" + _WD,
+        re.I,
+    ),
     # 2026년 12월 3일(목) / 9월 28일(월)
     re.compile(
         r"(?:(?P<y>20\d{2})\s*년\s*)?(?<!\d)(?P<m>\d{1,2})\s*월\s*(?P<d>\d{1,2})\s*일" + _WD, re.I
@@ -177,6 +182,50 @@ def _parse_time(text: str) -> tuple[int | None, int, int]:
     return hour, minute, match.end()
 
 
+def _full_year(raw: str | None) -> int | None:
+    if not raw:
+        return None
+    year = int(raw)
+    return year + 2000 if year < 100 else year
+
+
+def find_dates(line: str) -> list[_Hit]:
+    """줄 안의 날짜들 (시각은 읽지 않음, end = 날짜·요일의 끝). 행사 추출기와 공유합니다."""
+    spans: list[tuple[int, int, re.Match[str]]] = []
+    for pattern in _PATTERNS:
+        for match in pattern.finditer(line):
+            if any(s <= match.start() < e or match.start() <= s < match.end() for s, e, _ in spans):
+                continue
+            spans.append((match.start(), match.end(), match))
+    hits: list[_Hit] = []
+    for start, end, match in sorted(spans, key=lambda item: item[0]):
+        groups = match.groupdict()
+        month = _EN_MONTHS[groups["mon"][:3].lower()] if groups.get("mon") else int(groups["m"])
+        day = int(groups["d"])
+        if 1 <= month <= 12 and 1 <= day <= 31:
+            hits.append(
+                _Hit(
+                    start=start,
+                    end=end,
+                    month=month,
+                    day=day,
+                    year=_full_year(groups.get("y")),
+                    weekday=_weekday(groups.get("wd") or groups.get("wd2")),
+                    hour=None,
+                    minute=0,
+                )
+            )
+    return hits
+
+
+def weekday_index(raw: str | None) -> int | None:
+    return _weekday(raw)
+
+
+def resolve_year(hit: _Hit, reference: date, hint_year: int | None = None) -> date | None:
+    return _resolve_year(hit, reference, hint_year)
+
+
 def _find_hits(line: str) -> list[_Hit]:
     spans: list[tuple[int, int, re.Match[str]]] = []
     for pattern in _PATTERNS:
@@ -207,7 +256,7 @@ def _find_hits(line: str) -> list[_Hit]:
                 end=end + used,
                 month=month,
                 day=day,
-                year=int(groups["y"]) if groups.get("y") else None,
+                year=_full_year(groups.get("y")),
                 weekday=_weekday(groups.get("wd") or groups.get("wd2")),
                 hour=hour,
                 minute=minute,
@@ -261,8 +310,13 @@ def _label(line: str, first: _Hit, last: _Hit, context: str) -> str:
     return (label or context)[:40]
 
 
-def extract_deadlines(text: str, reference: date, title: str = "") -> list[Deadline]:
-    """본문(+제목)에서 기준일 이후의 마감 목록을 날짜순으로 반환합니다."""
+def extract_deadlines(
+    text: str, reference: date, title: str = "", skip_lines: set[str] | frozenset[str] = frozenset()
+) -> list[Deadline]:
+    """본문(+제목)에서 기준일 이후의 마감 목록을 날짜순으로 반환합니다.
+
+    skip_lines: 행사 일시로 이미 쓴 줄 (events.normalize_line 형태). 마감으로 보지 않습니다.
+    """
     found: dict[date, tuple[int, Deadline]] = {}
     lines = [title, *text.splitlines()] if title else text.splitlines()
     restricted = bool(_NON_DEADLINE_TITLE.search(title))
@@ -276,7 +330,7 @@ def extract_deadlines(text: str, reference: date, title: str = "") -> list[Deadl
         line = normalize_ws(raw_line.replace("～", "~").replace("〜", "~"))
         if not line:
             continue
-        hits = _find_hits(line) if re.search(r"\d", line) else []
+        hits = _find_hits(line) if re.search(r"\d", line) and line not in skip_lines else []
         if not hits:
             if _HEADING.match(line) and len(line) <= 60:
                 heading = _clean_label(line)
@@ -387,7 +441,7 @@ def fmt_dday(days: int) -> str:
 
 
 # 추출 규칙이 바뀌면 올립니다. 규칙 변경으로 달라진 마감은 '마감 변경' 알림 없이 조용히 갱신됩니다.
-RULES_VERSION = 4
+RULES_VERSION = 5
 
 
 def diff_deadlines(

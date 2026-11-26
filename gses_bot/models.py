@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gses_bot.deadlines import Deadline
+    from gses_bot.events import Event
 
 
 @dataclass
@@ -46,6 +47,7 @@ class Post:
     # 실행 중 계산되는 값
     highlight: str | None = None
     deadlines: list[Deadline] = field(default_factory=list)
+    events: list[Event] = field(default_factory=list)
     ai: AISummary | None = None
 
     @property
