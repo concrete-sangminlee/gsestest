@@ -90,4 +90,72 @@ CATEGORIES:세미나 및 강연
 STATUS:CONFIRMED
 TRANSP:TRANSPARENT
 END:VEVENT
+BEGIN:VEVENT
+UID:gses-ev-6333-20261208T0500@gses-notice-bot
+DTSTAMP:20261126T110752Z
+DTSTART:20261208T050000Z
+DTEND:20261208T083000Z
+SUMMARY:계획의 시대는 다시 오는가? AI 시대\, 공공계획의 
+ 재인식 (덕산 이한빈 선생 탄생 100주년 기념 심포지움)
+DESCRIPTION:세미나 및 강연 · 계획의 시대는 다시 오는가? A
+ I 시대\, 공공계획의 재인식 (덕산 이한빈 선생 탄생 100
+ 주년 기념 심포지움)\n12.08 (화) 14:00~17:30\nhttps://gses.snu.ac.
+ kr/news/notice/seminars?md=v&bbsidx=6333
+LOCATION:서울대학교 환경대학원 글로컬홀(82동 306호)
+URL:https://gses.snu.ac.kr/news/notice/seminars?md=v&bbsidx=6333
+CATEGORIES:세미나 및 강연
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-ev-6260-20261208T1500@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261209
+DTEND;VALUE=DATE:20261210
+SUMMARY:최종심사 발표일 · 2026-2 도시계획학과 석사학위논
+ 문 최종심사 공고
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사학위논문 
+ 최종심사 공고\n12.09 (수)\nhttps://gses.snu.ac.kr/news/notice/notic
+ e?md=v&bbsidx=6260
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6260
+CATEGORIES:공지사항
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-ev-6297-20261209T0130@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART:20261209T013000Z
+DTEND:20261209T023000Z
+SUMMARY:최종심사 발표 · [환경관리학과] 2026-2 환경관리학
+ 과 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. 
+ of Environmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 최종심사 공고 / Final Thesis Defense (Master/Dept. of E
+ nvironmental Management)\n12.09 (수) 10:30~11:30\nhttps://gses.snu.ac.kr/
+ news/notice/notice?md=v&bbsidx=6297
+LOCATION:82동 113호
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6297
+CATEGORIES:공지사항
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:gses-ev-6298-20261215T1500@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261216
+DTEND;VALUE=DATE:20261217
+SUMMARY:프로포절 발표 · [환경관리학과] 2026-2 환경관리학
+ 과 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of En
+ vironmental Management)
+DESCRIPTION:공지사항 · [환경관리학과] 2026-2 환경관리학과 
+ 석사논문 프로포절 공고 / Thesis Proposal (Master/Dept. of Enviro
+ nmental Management)\n12.16 (수)\nhttps://gses.snu.ac.kr/news/notice/notic
+ e?md=v&bbsidx=6298
+LOCATION:82동 113호 (대면심사로 진행)
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6298
+CATEGORIES:공지사항
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
 END:VCALENDAR

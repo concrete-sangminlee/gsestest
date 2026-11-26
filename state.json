@@ -15,6 +15,23 @@
     }
   },
   "seen": {
+    "6333": {
+      "board": "seminars",
+      "title": "계획의 시대는 다시 오는가? AI 시대, 공공계획의 재인식 (덕산 이한빈 선생 탄생 100주년 기념 심포지움)",
+      "category": "대학원 심포지엄",
+      "first_seen": "2026-11-26T20:07:52+09:00",
+      "posted": "2026-11-26",
+      "events": [
+        {
+          "start": "2026-12-08T14:00+09:00",
+          "all_day": false,
+          "end": "2026-12-08T17:30+09:00",
+          "place": "서울대학교 환경대학원 글로컬홀(82동 306호)"
+        }
+      ],
+      "event_rules": 1,
+      "checked_at": "2026-11-26T20:07:52+09:00"
+    },
     "6332": {
       "board": "seminars",
       "title": "[환경대학원 제269차 콜로키움] Urban cooling research and policy development in Sydney, Australia",
@@ -235,8 +252,9 @@
           "has_time": false
         }
       ],
-      "rules": 3,
-      "checked_at": "2026-11-25T14:31:47+09:00"
+      "rules": 5,
+      "checked_at": "2026-11-26T20:07:52+09:00",
+      "event_rules": 1
     },
     "6315": {
       "board": "notice",
@@ -289,18 +307,8 @@
       "category": "학사 학사",
       "first_seen": "2026-11-12T19:55:16+09:00",
       "posted": "2026-11-12",
-      "deadlines": [
-        {
-          "at": "2026-11-25T17:00+09:00",
-          "label": "수납일정",
-          "has_time": true
-        }
-      ],
       "rules": 3,
-      "checked_at": "2026-11-25T02:30:18+09:00",
-      "reminded": [
-        "2026-11-25T17:00+09:00|1"
-      ]
+      "checked_at": "2026-11-25T02:30:18+09:00"
     },
     "6309": {
       "board": "notice",
@@ -388,8 +396,9 @@
           "has_time": false
         }
       ],
-      "rules": 3,
-      "checked_at": "2026-11-25T14:31:47+09:00"
+      "rules": 5,
+      "checked_at": "2026-11-26T20:07:52+09:00",
+      "event_rules": 1
     },
     "6302": {
       "board": "notice",
@@ -449,11 +458,20 @@
           "has_time": true
         }
       ],
-      "rules": 3,
-      "checked_at": "2026-11-25T14:31:47+09:00",
+      "rules": 5,
+      "checked_at": "2026-11-26T20:07:52+09:00",
       "reminded": [
         "2026-11-27T17:00+09:00|1"
-      ]
+      ],
+      "events": [
+        {
+          "start": "2026-12-16T00:00+09:00",
+          "all_day": true,
+          "place": "82동 113호 (대면심사로 진행)",
+          "label": "프로포절 발표"
+        }
+      ],
+      "event_rules": 1
     },
     "6297": {
       "board": "notice",
@@ -479,8 +497,18 @@
           "has_time": true
         }
       ],
-      "rules": 3,
-      "checked_at": "2026-11-25T14:31:47+09:00"
+      "rules": 5,
+      "checked_at": "2026-11-26T20:07:52+09:00",
+      "events": [
+        {
+          "start": "2026-12-09T10:30+09:00",
+          "all_day": false,
+          "end": "2026-12-09T11:30+09:00",
+          "place": "82동 113호",
+          "label": "최종심사 발표"
+        }
+      ],
+      "event_rules": 1
     },
     "6296": {
       "board": "notice",
@@ -704,8 +732,16 @@
           "has_time": true
         }
       ],
-      "rules": 3,
-      "checked_at": "2026-11-25T14:31:47+09:00"
+      "rules": 5,
+      "checked_at": "2026-11-26T20:07:52+09:00",
+      "events": [
+        {
+          "start": "2026-12-09T00:00+09:00",
+          "all_day": true,
+          "label": "최종심사 발표일"
+        }
+      ],
+      "event_rules": 1
     },
     "6259": {
       "board": "notice",
@@ -1542,5 +1578,5 @@
     "last_sent_at": "2026-11-23T10:34:20+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-26T12:02:00+09:00"
+  "updated_at": "2026-11-26T20:07:52+09:00"
 }
