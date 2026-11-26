@@ -20,21 +20,53 @@
       "title": "[환경대학원 제269차 콜로키움] Urban cooling research and policy development in Sydney, Australia",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-25T14:31:47+09:00",
-      "posted": "2026-11-25"
+      "posted": "2026-11-25",
+      "events": [
+        {
+          "start": "2026-12-02T16:00+09:00",
+          "all_day": false,
+          "end": "2026-12-02T17:00+09:00",
+          "place": "서울대학교 환경대학원 82동 113호"
+        }
+      ],
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00"
     },
     "6331": {
       "board": "notice",
       "title": "세계 토양의 날 기념행사 안내",
       "category": "대학원 알림",
       "first_seen": "2026-11-24T14:55:23+09:00",
-      "posted": "2026-11-24"
+      "posted": "2026-11-24",
+      "events": [
+        {
+          "start": "2026-12-02T13:30+09:00",
+          "all_day": false,
+          "place": "aT센터 5층 그랜드홀(서울 서초구 소재)"
+        }
+      ],
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00"
     },
     "6330": {
       "board": "seminars",
       "title": "[환경대학원 제268차 콜로키움] Who Holds the Keys? AI, Power and Blind Spots in Property Markets",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-24T11:23:09+09:00",
-      "posted": "2026-11-24"
+      "posted": "2026-11-24",
+      "events": [
+        {
+          "start": "2026-11-27T15:00+09:00",
+          "all_day": false,
+          "end": "2026-11-27T17:00+09:00",
+          "place": "환경대학원 82동 113호"
+        }
+      ],
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00",
+      "event_reminded": [
+        "2026-11-27T15:00+09:00|1"
+      ]
     },
     "6329": {
       "board": "notice",
@@ -94,7 +126,9 @@
       "title": "[환경대학원 제267차 콜로키움] UAV-Based Intelligent Inspection in Transportation",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-23T18:43:16+09:00",
-      "posted": "2026-11-23"
+      "posted": "2026-11-23",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00"
     },
     "6323": {
       "board": "notice",
@@ -146,28 +180,47 @@
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-19T12:41:30+09:00",
       "posted": "2026-11-19",
-      "full_title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transition in Germany and North America"
+      "full_title": "[환경대학원 제 266차 콜로키움] A Just Transition for Auto Workers? Negotiating the Electric Vehicle Transition in Germany and North America",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00"
     },
     "6319": {
       "board": "seminars",
       "title": "[환경계획연구소] \"보호지역 지속가능관광의 세계적 도약: 첨단기술과 환경계획의 접목\" 공동세미나 개최(11/26, 목)",
       "category": "대학원 세미나",
       "first_seen": "2026-11-19T12:41:30+09:00",
-      "posted": "2026-11-19"
+      "posted": "2026-11-19",
+      "events": [
+        {
+          "start": "2026-11-26T14:00+09:00",
+          "all_day": false,
+          "end": "2026-11-26T17:00+09:00",
+          "place": "서울대학교 환경대학원 글로컬홀 (82동 306호)"
+        }
+      ],
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00",
+      "event_reminded": [
+        "2026-11-26T14:00+09:00|1"
+      ]
     },
     "6318": {
       "board": "seminars",
       "title": "[환경대학원 제265차 콜로키움] 정주지 흡수원 탄소공간지도 구축-다시기 항공영상·딥러닝 기반 탄소흡수량 산정",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-17T18:04:27+09:00",
-      "posted": "2026-11-17"
+      "posted": "2026-11-17",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00"
     },
     "6317": {
       "board": "seminars",
       "title": "[학술] \"2차 공공기관 지방이전의 성공적 추진 방향과 과제\" 심포지엄 개최 안내 (11/20, 금)",
       "category": "대학원 심포지엄",
       "first_seen": "2026-11-17T18:04:27+09:00",
-      "posted": "2026-11-17"
+      "posted": "2026-11-17",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:16:25+09:00"
     },
     "6316": {
       "board": "news",
@@ -1459,5 +1512,5 @@
     "last_sent_at": "2026-11-23T10:34:20+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-26T10:05:32+09:00"
+  "updated_at": "2026-11-26T10:16:25+09:00"
 }
