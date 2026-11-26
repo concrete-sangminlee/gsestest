@@ -243,14 +243,26 @@
       "title": "「2026 SNU 그랜드퀘스트 챌린지 콜로퀴엄」 안내",
       "category": "대학원 알림",
       "first_seen": "2026-11-17T13:39:37+09:00",
-      "posted": "2026-11-17"
+      "posted": "2026-11-17",
+      "events": [
+        {
+          "start": "2026-11-26T09:30+09:00",
+          "all_day": false,
+          "end": "2026-11-26T17:30+09:00",
+          "place": "서울대학교 Commons 중앙도서관 본관 1층"
+        }
+      ],
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6314": {
       "board": "seminars",
       "title": "[환경대학원 제263차 콜로키움] LLMs as Urban Simulators: A Preliminary Exploration",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-16T16:12:04+09:00",
-      "posted": "2026-11-16"
+      "posted": "2026-11-16",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6313": {
       "board": "seminars",
@@ -258,14 +270,18 @@
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-16T16:12:04+09:00",
       "posted": "2026-11-16",
-      "full_title": "[환경대학원 제262차 콜로키움] Seeing Walkable Cities Through Street View Images and AI: Why, What, How, and For Whom?"
+      "full_title": "[환경대학원 제262차 콜로키움] Seeing Walkable Cities Through Street View Images and AI: Why, What, How, and For Whom?",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6312": {
       "board": "notice",
       "title": "2026년 국토모니터링 성과 활용 정책세미나 개최 안내",
       "category": "대학원 알림",
       "first_seen": "2026-11-13T16:10:45+09:00",
-      "posted": "2026-11-13"
+      "posted": "2026-11-13",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6311": {
       "board": "notice",
@@ -317,14 +333,18 @@
       "title": "[환경대학원 제260차 콜로키움] 사라지는 마을, 어떻게 도시를 지킬까?",
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-10T11:18:11+09:00",
-      "posted": "2026-11-10"
+      "posted": "2026-11-10",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6306": {
       "board": "notice",
       "title": "「SNU Commons (특임)석좌교수 강연 시리즈」 안내",
       "category": "대학원 알림",
       "first_seen": "2026-11-09T17:08:59+09:00",
-      "posted": "2026-11-09"
+      "posted": "2026-11-09",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6305": {
       "board": "seminars",
@@ -332,7 +352,9 @@
       "category": "대학원 콜로키엄",
       "first_seen": "2026-11-05T18:28:45+09:00",
       "posted": "2026-11-05",
-      "full_title": "[GSES 제259차 콜로키움] From prediction to possibility: rethinking the future of urban planning under disruptive technological change"
+      "full_title": "[GSES 제259차 콜로키움] From prediction to possibility: rethinking the future of urban planning under disruptive technological change",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6304": {
       "board": "notice",
@@ -374,7 +396,9 @@
       "title": "2026년도 장애인식개선주간 운영 안내",
       "category": "대학원 알림",
       "first_seen": "2026-11-05T18:28:45+09:00",
-      "posted": "2026-11-03"
+      "posted": "2026-11-03",
+      "event_rules": 1,
+      "checked_at": "2026-11-26T10:22:05+09:00"
     },
     "6301": {
       "board": "notice",
@@ -1512,5 +1536,5 @@
     "last_sent_at": "2026-11-23T10:34:20+09:00"
   },
   "created_at": "2026-11-05T18:28:45+09:00",
-  "updated_at": "2026-11-26T10:16:25+09:00"
+  "updated_at": "2026-11-26T10:22:05+09:00"
 }

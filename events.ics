@@ -10,6 +10,21 @@ X-WR-CALDESC:게시판 공지에서 자동 추출한 세미나·행사 일
 REFRESH-INTERVAL;VALUE=DURATION:PT6H
 X-PUBLISHED-TTL:PT6H
 BEGIN:VEVENT
+UID:gses-ev-6315-20261126T0030@gses-notice-bot
+DTSTAMP:20261117T043937Z
+DTSTART:20261126T003000Z
+DTEND:20261126T083000Z
+SUMMARY:「2026 SNU 그랜드퀘스트 챌린지 콜로퀴엄」 안내
+DESCRIPTION:공지사항 · 「2026 SNU 그랜드퀘스트 챌린지 콜로
+ 퀴엄」 안내\n11.26 (목) 09:30~17:30\nhttps://gses.snu.ac.kr/news/not
+ ice/notice?md=v&bbsidx=6315
+LOCATION:서울대학교 Commons 중앙도서관 본관 1층
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6315
+CATEGORIES:공지사항
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:gses-ev-6319-20261126T0500@gses-notice-bot
 DTSTAMP:20261119T034130Z
 DTSTART:20261126T050000Z
