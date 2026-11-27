@@ -91,6 +91,21 @@ STATUS:CONFIRMED
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:gses-ev-6334-20261204T0200@gses-notice-bot
+DTSTAMP:20261127T040754Z
+DTSTART:20261204T020000Z
+DTEND:20261204T053000Z
+SUMMARY:[학술] 기후·환경경제학 신진 학자 세미나 (12/4)
+DESCRIPTION:세미나 및 강연 · [학술] 기후·환경경제학 신진
+  학자 세미나 (12/4)\n12.04 (금) 11:00~14:30\nhttps://gses.snu.ac.kr/
+ news/notice/seminars?md=v&bbsidx=6334
+LOCATION:서울대학교 환경대학원(82동) 113호
+URL:https://gses.snu.ac.kr/news/notice/seminars?md=v&bbsidx=6334
+CATEGORIES:세미나 및 강연
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:gses-ev-6333-20261208T0500@gses-notice-bot
 DTSTAMP:20261126T110752Z
 DTSTART:20261208T050000Z

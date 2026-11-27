@@ -5,8 +5,17 @@
   <link rel="alternate" href="https://gses.snu.ac.kr/news/notice/notice"/>
   <link rel="self" href="https://raw.githubusercontent.com/concrete-sangminlee/gsestest/bot-state/feed.xml"/>
   <id>tag:gses-notice-bot,2026:feed</id>
-  <updated>2026-11-26T00:00:00+09:00</updated>
+  <updated>2026-11-27T00:00:00+09:00</updated>
   <author><name>GSES Notice Bot</name></author>
+  <entry>
+    <title>[세미나 및 강연] [학술] 기후·환경경제학 신진 학자 세미나 (12/4)</title>
+    <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6334"/>
+    <id>tag:gses-notice-bot,2026:post-6334</id>
+    <updated>2026-11-27T00:00:00+09:00</updated>
+    <published>2026-11-27T00:00:00+09:00</published>
+    <category term="대학원 콜로키엄"/>
+    <summary>세미나 및 강연 · 대학원 콜로키엄</summary>
+  </entry>
   <entry>
     <title>[세미나 및 강연] 계획의 시대는 다시 오는가? AI 시대, 공공계획의 재인식 (덕산 이한빈 선생 탄생 100주년 기념 심포지움)</title>
     <link href="https://gses.snu.ac.kr/news/notice/seminars?md=v&amp;bbsidx=6333"/>
@@ -443,15 +452,6 @@
     <title>[공지사항] 2027학년도 사회과학대학 수시모집 입학 전형에 따른 건물 통제 알림</title>
     <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6284"/>
     <id>tag:gses-notice-bot,2026:post-6284</id>
-    <updated>2026-10-26T00:00:00+09:00</updated>
-    <published>2026-10-26T00:00:00+09:00</published>
-    <category term="대학원 알림"/>
-    <summary>공지사항 · 대학원 알림</summary>
-  </entry>
-  <entry>
-    <title>[공지사항] 2027학년도 경영대학 수시모집 입학전형에 따른 건물 통제 안내</title>
-    <link href="https://gses.snu.ac.kr/news/notice/notice?md=v&amp;bbsidx=6283"/>
-    <id>tag:gses-notice-bot,2026:post-6283</id>
     <updated>2026-10-26T00:00:00+09:00</updated>
     <published>2026-10-26T00:00:00+09:00</published>
     <category term="대학원 알림"/>
