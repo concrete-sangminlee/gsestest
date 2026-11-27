@@ -141,6 +141,23 @@ STATUS:CONFIRMED
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
+UID:gses-ev-6294-20261215T1500@gses-notice-bot
+DTSTAMP:20261105T092845Z
+DTSTART;VALUE=DATE:20261216
+DTEND;VALUE=DATE:20261217
+SUMMARY:발표 · 2026-2 도시계획학과 석사논문 프로포절 공
+ 고/Notice on Dissertation Proposal Presentation and Manuscript Submission
+  in Dept. of Urban Planning
+DESCRIPTION:공지사항 · 2026-2 도시계획학과 석사논문 프로
+ 포절 공고/Notice on Dissertation Proposal Presentation and Manuscript 
+ Submission in Dept. of Urban Planning\n12.16 (수)\nhttps://gses.snu.ac.kr
+ /news/notice/notice?md=v&bbsidx=6294
+URL:https://gses.snu.ac.kr/news/notice/notice?md=v&bbsidx=6294
+CATEGORIES:공지사항
+STATUS:CONFIRMED
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
 UID:gses-ev-6298-20261215T1500@gses-notice-bot
 DTSTAMP:20261105T092845Z
 DTSTART;VALUE=DATE:20261216
